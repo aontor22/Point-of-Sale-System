@@ -1,12 +1,13 @@
 import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import Header from "./components/ui/header";
 import Sidebar from "./components/view/SidebarView";
 import Dashboard from "./pages/Dashboard";
-import Sidebars from "./components/ui/Sidebars";
+import SaleDashboard from "./pages/saleDashboard";
+import Dashboard2 from "./pages/Dashboard-2";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [currentPage, setCurrentPage] = useState("dashboard");
 
   return (
     <div className="min-h-screen bg-[#FBFBFB] dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
@@ -14,8 +15,6 @@ function App() {
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
         />
 
         <div className="flex-1 flex flex-col min-h-0">
@@ -26,7 +25,11 @@ function App() {
 
           <main className="flex-1 overflow-y-auto no-scrollbar">
             <div className="p-6">
-              {currentPage === "dashboard" && <Dashboard />}
+              <Routes>
+                <Route path="/dashboard/admin" element={<Dashboard />} />
+                <Route path="/dashboard/admin2" element={<Dashboard2 />} />
+                <Route path="/dashboard/sales" element={<SaleDashboard />} />
+              </Routes>
             </div>
           </main>
         </div>

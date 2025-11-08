@@ -1,4 +1,3 @@
-// src/components/dashboard/RecentTransactions.jsx
 import React, { useState, useMemo } from "react";
 import { Receipt, ChevronRight } from "lucide-react";
 import rcs1 from '../../assets/products/rcs1.svg'
@@ -8,8 +7,7 @@ import rcs4 from '../../assets/products/rcs4.svg'
 
 const tabs = ["Sale", "Purchase", "Quotation", "Expenses", "Invoices"];
 
-// One grid template reused for header and rows
-const gridCols = "grid-cols-[110px_minmax(0,1fr)_140px_120px]"; // Date | Customer | Status | Total
+const gridCols = "grid-cols-[110px_minmax(0,1fr)_140px_120px]";
 
 const StatusBadge = ({ text }) => {
     const map = {
@@ -51,7 +49,6 @@ const Row = ({ date, name, orderNo, avatar, status, total }) => (
     </div>
 );
 
-// ---- Demo data (replace avatar paths with your assets) ----
 const demoSale = [
     { date: "24 OCT 2025", name: "Nguyen, Shane", orderNo: "114589", avatar: rcs1, status: "Completed", total: 4560 },
     { date: "23 OCT 2025", name: "Miles, Esther", orderNo: "114590", avatar: rcs2, status: "Processing", total: 3569 },
@@ -87,7 +84,6 @@ const demoByTab = {
 export default function RecentTransactions({ items = [], onViewAll }) {
     const [active, setActive] = useState("Sale");
 
-    // Use provided items if any; otherwise use demo for the active tab
     const rows = useMemo(() => {
         if (items && items.length) return items;
         return demoByTab[active] || [];
@@ -95,7 +91,6 @@ export default function RecentTransactions({ items = [], onViewAll }) {
 
     return (
         <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-            {/* Card header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
                 <div className="flex items-center gap-2">
                     <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-100">
@@ -105,7 +100,7 @@ export default function RecentTransactions({ items = [], onViewAll }) {
                 </div>
                 <button
                     onClick={onViewAll}
-                    className="text-xs text-slate-600 inline-flex items-center gap-1 hover:text-slate-800"
+                    className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
                 >
                     View All <ChevronRight className="h-3.5 w-3.5" />
                 </button>

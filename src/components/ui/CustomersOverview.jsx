@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import donutImg from '../../assets/Customers Overview Chart Container.svg'; // Path to your donut image
+import donutImg from '../../assets/Customers Overview Chart Container.svg';
 import {
     DropdownMenu, DropdownMenuTrigger, DropdownMenuContent,
     DropdownMenuItem, DropdownMenuLabel,

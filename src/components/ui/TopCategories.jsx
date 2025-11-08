@@ -1,4 +1,3 @@
-// src/components/dashboard/TopCategoriesCard.jsx
 import React from "react";
 import { PieChart, CalendarDays } from "lucide-react";
 import Donut from "./Donut";

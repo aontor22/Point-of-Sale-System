@@ -1,4 +1,3 @@
-// components/dashboard/InsightsRow.jsx
 import TopCategories from "./TopCategories";
 import OrderStatistics from "./OrderStatistics";
 import TopCustomers from "./TopCustomers";
