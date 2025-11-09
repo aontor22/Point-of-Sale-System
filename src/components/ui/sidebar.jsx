@@ -1,6 +1,6 @@
 // sidebar.jsx
 import { ChevronsLeft, ChevronsRight, ChevronDown } from "lucide-react";
-import { NavLink } from "react-router-dom";   // ⬅️ add this
+import { NavLink } from "react-router-dom";
 import logo1 from "../../assets/image1.png";
 import logo2 from "../../assets/image.png";
 import React, { createContext, useContext, useState } from "react";
@@ -50,7 +50,7 @@ export function SidebarItem({
   onClick,
   isParent = false,
   open = false,
-  to, // ⬅️ new: when provided and not a parent, this item becomes a link
+  to,
 }) {
   const { expanded } = useContext(SidebarContext);
 
@@ -81,7 +81,6 @@ export function SidebarItem({
     </>
   );
 
-  // Parent rows are toggles; non-parent rows navigate if `to` is given.
   if (isParent) {
     return (
       <li>

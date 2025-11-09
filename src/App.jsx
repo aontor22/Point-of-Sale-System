@@ -3,8 +3,14 @@ import { Routes, Route } from "react-router-dom";
 import Header from "./components/ui/header";
 import Sidebar from "./components/view/SidebarView";
 import Dashboard from "./pages/Dashboard";
-import SaleDashboard from "./pages/saleDashboard";
+import SaleDashboard from "./pages/SaleDashboard";
 import Dashboard2 from "./pages/Dashboard-2";
+import Product from "./pages/inventory/Product"
+import CreateProduct from "./pages/inventory/CreateProduct";
+import ExpiredProducts from "./pages/inventory/ExpiredProducts";
+import LowStocks from "./pages/inventory/LowStocks";
+import Category from "./pages/inventory/Category";
+import SubCategory from "./pages/inventory/SubCategory";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -29,6 +35,12 @@ function App() {
                 <Route path="/dashboard/admin" element={<Dashboard />} />
                 <Route path="/dashboard/admin2" element={<Dashboard2 />} />
                 <Route path="/dashboard/sales" element={<SaleDashboard />} />
+                <Route path="/products" element={<Product />} />
+                <Route path="/products/new" element={<CreateProduct />} />
+                <Route path="/products/expired" element={<ExpiredProducts />} />
+                <Route path="/products/low-stock" element={<LowStocks />} />
+                <Route path="/categories" element={<Category />} />
+                <Route path="/sub-categories" element={<SubCategory />} />
               </Routes>
             </div>
           </main>

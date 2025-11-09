@@ -4,7 +4,7 @@ import user from '../../assets/image.png'
 
 const header = ({sidebarCollapsed, onToggleSidebar}) => {
     return (
-        <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
+        <div className=" bg-white dark:bg-slate-900/80 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
             <div className="flex items-center justify-between ">
                 <div className="flex items-center space-x-4">
 
