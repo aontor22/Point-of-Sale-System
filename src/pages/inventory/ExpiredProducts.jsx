@@ -94,9 +94,26 @@ export default function ExpiredProducts() {
                             </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
-                            <TableHead className="inline-flew gap-1 justify-center items-center"><ArrowUpDown size={14} /> Manufactured Date</TableHead>
-                            <TableHead className="inline-flex justify-center items-center gap-1 "><ArrowUpDown size={14} /> Expired Date</TableHead>
-                            <TableHead className="w-[60px] text-right">Actions</TableHead>
+                            <TableHead className="align-middle whitespace-nowrap">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center gap-1 text-left"
+                                >
+                                    <ArrowUpDown className="h-4 w-4 opacity-60" />
+                                    <span>Manufactured Date</span>
+                                </button>
+                            </TableHead>
+
+                            <TableHead className="align-middle whitespace-nowrap">
+                                <button
+                                    type="button"
+                                    className="inline-flex items-center gap-1 text-left"
+                                >
+                                    <ArrowUpDown className="h-4 w-4 opacity-60" />
+                                    <span>Expired Date</span>
+                                </button>
+                            </TableHead>
+                            <TableHead className="w-15 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
