@@ -29,10 +29,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
-    Calendar,
     MoreHorizontal,
-    Plus,
-    Upload,
     Filter,
     Download,
     Search,
@@ -43,9 +40,11 @@ import {
 } from "lucide-react";
 
 import PRODUCT_ROWS from "@/data/ProductData";
-import ProductsHeader from "@/components/ui/ProductsHeader";
+import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
+import ExportsButtons from "@/components/ui/ExportsButtons";
+import AddImport from "@/components/ui/AddImport";
 
 export default function ProductsPage() {
     const [search, setSearch] = React.useState("");
@@ -67,7 +66,19 @@ export default function ProductsPage() {
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <ProductsHeader />
+            <div className="flex">
+                <ProductHeader
+                    title="Products"
+                    breadcrumbs={[
+                        { label: "Dashboard" },
+                        { label: "Products", active: true },
+                    ]}
+                />
+                <div className="flex gap-2">
+                    <ExportsButtons />
+                    <AddImport />
+                </div>
+            </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
                 <div className="flex min-w-[260px] flex-1 items-center gap-2">
@@ -136,12 +147,11 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            {/* ===== TABLE ===== */}
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[40px]">
+                        <TableRow className="bg-slate-200">
+                            <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
                             <TableHead>SKU</TableHead>

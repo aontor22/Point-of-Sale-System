@@ -11,6 +11,8 @@ import ExpiredProducts from "./pages/inventory/ExpiredProducts";
 import LowStocks from "./pages/inventory/LowStocks";
 import Category from "./pages/inventory/Category";
 import SubCategory from "./pages/inventory/SubCategory";
+import Brand from "./pages/inventory/Brand";
+import Units from "./pages/inventory/Units";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -41,6 +43,9 @@ function App() {
                 <Route path="/products/low-stock" element={<LowStocks />} />
                 <Route path="/categories" element={<Category />} />
                 <Route path="/sub-categories" element={<SubCategory />} />
+                <Route path="/brands" element={<Brand />} />
+                <Route path="/units" element={<Units />} />
+                <Route path="/brands" element={<Brand />} />
               </Routes>
             </div>
           </main>

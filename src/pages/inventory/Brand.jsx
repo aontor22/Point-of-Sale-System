@@ -36,38 +36,33 @@ import {
     Dot,
 } from "lucide-react";
 
-import CATALOG_ROWS from "@/data/ProductData";
+import BRAND_ROWS from "@/data/BrandData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
-export default function Category() {
+export default function Brand() {
     const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
     const [store, setStore] = React.useState("all");
-    const [warehouse, setWarehouse] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = CATALOG_ROWS.filter((r) => {
+    const filtered = BRAND_ROWS.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
             r.name.toLowerCase().includes(s) ||
-            r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
+            r.status.toLowerCase().includes(s);
         const matchBrand = store === "all" || r.store === store;
-        const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
-        return matchSearch && matchCat && matchBrand && matchWarehouse;
+        return matchSearch && matchBrand;
     });
 
     return (
         <div className="space-y-4">
             <ProductsDate />
             <ProductHeader
-                title="Category"
+                title="Brands"
                 breadcrumbs={[
                     { label: "Dashboard" },
-                    { label: "Category", active: true },
+                    { label: "Brands", active: true },
                 ]}
             />
 
@@ -83,19 +78,23 @@ export default function Category() {
                         />
                     </div>
 
-                    <div className="ml-auto">
-                        <Select value={category} onValueChange={setCategory}>
+                    <div className="ml-auto gap-3 flex">
+                        <Select value={store} onValueChange={setStore}>
                             <SelectTrigger className="w-42.5">
-                                <SelectValue placeholder="Category" />
+                                <SelectValue placeholder="Brand" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Status</SelectItem>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Electronics">Electronics</SelectItem>
-                                <SelectItem value="Shoe">Shoe</SelectItem>
-                                <SelectItem value="Furniture">Furniture</SelectItem>
-                                <SelectItem value="Bags">Bags</SelectItem>
-                                <SelectItem value="Phone">Phone</SelectItem>
+                                <SelectItem value="Electro Mart">Electro Mart</SelectItem>
+                                <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
+                                <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
+                                <SelectItem value="Gadget World">Gadget World</SelectItem>
+                                <SelectItem value="Vold Vault">Vold Vault</SelectItem>
+                                <SelectItem value="Elite Retail">Elite Retail</SelectItem>
+                                <SelectItem value="Prime Mart">Prime Mart</SelectItem>
+                                <SelectItem value="Neo Tech">Neo Tech</SelectItem>
+                                <SelectItem value="Urban Mart">Urban Mart</SelectItem>
+                                <SelectItem value="Travel Mart">Travel Mart</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -109,9 +108,9 @@ export default function Category() {
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Category Slug</TableHead>
-                            <TableHead className="inline-flex justify-center items-center gap-1 ">Created On <ArrowUpDown size={14} /></TableHead>
+                            <TableHead>Brand</TableHead>
+                            <TableHead>Image</TableHead>
+                            <TableHead className="inline-flex justify-center items-center gap-1 ">Created Date<ArrowUpDown size={14} /></TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead></TableHead>
                         </TableRow>
@@ -140,16 +139,22 @@ export default function Category() {
                             filtered.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        <Checkbox aria-label={`Select ${r.category}`} />
+                                        <Checkbox aria-label={`Select ${r.status}`} />
                                     </TableCell>
-                                    <TableCell className="font-medium">{r.category}</TableCell>
+                                    <TableCell className="font-medium">{r.name}</TableCell>
                                     <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{r.categorySlug}</span>
+                                        <div className="flex items-center gap-3">
+                                            <img
+                                                src={r.image}
+                                                alt={r.name}
+                                                className="h-8 w-8 rounded-md bg-slate-200 p-2 object-cover"
+                                                loading="lazy"
+                                            />
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.manufacturedDate}</TableCell>
-                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40}/> {r.status}</div></TableCell>
+
+                                    <TableCell className="text-slate-600">{r.createdDate}</TableCell>
+                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40} /> {r.status}</div></TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
