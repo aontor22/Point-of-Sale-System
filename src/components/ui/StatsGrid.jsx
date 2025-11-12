@@ -1,9 +1,9 @@
 import { CreditCard, DollarSign, Receipt, ShoppingCart, TrendingDown, TrendingUp } from "lucide-react";
 import React from "react";
-import sum1 from "../../assets/SummaryCard/icon.svg";
-import sum2 from "../../assets/SummaryCard/icon1.svg";
-import sum3 from "../../assets/SummaryCard/icon2.svg";
-import sum4 from "../../assets/SummaryCard/icon3.svg";
+import sum1 from "../../assets/SummaryCard/Icon.svg";
+import sum2 from "../../assets/SummaryCard/Icon1.svg";
+import sum3 from "../../assets/SummaryCard/Icon2.svg";
+import sum4 from "../../assets/SummaryCard/Icon3.svg";
 
 const stats = [
     {
