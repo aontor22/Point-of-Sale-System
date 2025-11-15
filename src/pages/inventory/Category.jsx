@@ -113,7 +113,7 @@ export default function Category() {
                             <TableHead>Category Slug</TableHead>
                             <TableHead className="inline-flex justify-center items-center gap-1 ">Created On <ArrowUpDown size={14} /></TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead></TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 

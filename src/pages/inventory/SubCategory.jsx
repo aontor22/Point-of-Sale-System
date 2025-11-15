@@ -134,7 +134,7 @@ export default function SubCategory() {
                             <TableHead className="inline-flex justify-center items-center gap-1 ">Category Codes<ArrowUpDown size={14} /></TableHead>
                             <TableHead >Description</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead></TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 

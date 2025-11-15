@@ -152,7 +152,7 @@ export default function ProductsPage() {
                             <TableHead className="inline-flex justify-center items-center gap-1 ">SKU<ArrowUpDown size={14} /></TableHead>
                             <TableHead >Qty</TableHead>
                             <TableHead>Qty Alert</TableHead>
-                            <TableHead></TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 

@@ -36,33 +36,35 @@ import {
     Dot,
 } from "lucide-react";
 
-import BRAND_ROWS from "@/data/BrandData";
+import warranties from "@/data/WarrantyData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
-export default function Brand() {
+export default function Units() {
     const [search, setSearch] = React.useState("");
+    const [category, setCategory] = React.useState("all");
     const [store, setStore] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = BRAND_ROWS.filter((r) => {
+    const filtered = warranties.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
             r.name.toLowerCase().includes(s) ||
-            r.status.toLowerCase().includes(s);
+            r.store.toLowerCase().includes(s);
+        const matchCat = category === "all" || r.category === category;
         const matchBrand = store === "all" || r.store === store;
-        return matchSearch && matchBrand;
+        return matchSearch && matchCat && matchBrand;
     });
 
     return (
         <div className="space-y-4">
             <ProductsDate />
             <ProductHeader
-                title="Brands"
+                title="Warranties"
                 breadcrumbs={[
                     { label: "Dashboard" },
-                    { label: "Brands", active: true },
+                    { label: "Warranties", active: true },
                 ]}
             />
 
@@ -89,7 +91,7 @@ export default function Brand() {
                                 <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
                                 <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
                                 <SelectItem value="Gadget World">Gadget World</SelectItem>
-                                <SelectItem value="Vold Vault">Vold Vault</SelectItem>
+                                <SelectItem value="Volt Vault">Volt Vault</SelectItem>
                                 <SelectItem value="Elite Retail">Elite Retail</SelectItem>
                                 <SelectItem value="Prime Mart">Prime Mart</SelectItem>
                                 <SelectItem value="Neo Tech">Neo Tech</SelectItem>
@@ -108,9 +110,9 @@ export default function Brand() {
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
-                            <TableHead>Brand</TableHead>
-                            <TableHead>Image</TableHead>
-                            <TableHead className="inline-flex justify-center items-center gap-1 ">Created Date<ArrowUpDown size={14} /></TableHead>
+                            <TableHead>Warranty</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead className="inline-flex justify-center items-center gap-1 ">Duration<ArrowUpDown size={14} /></TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -142,19 +144,9 @@ export default function Brand() {
                                         <Checkbox aria-label={`Select ${r.status}`} />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.name}</TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <img
-                                                src={r.image}
-                                                alt={r.name}
-                                                className="h-8 w-8 rounded-md bg-slate-200 p-2 object-cover"
-                                                loading="lazy"
-                                            />
-                                        </div>
-                                    </TableCell>
-
-                                    <TableCell className="text-slate-600">{r.createdDate}</TableCell>
-                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40} /> {r.status}</div></TableCell>
+                                    <TableCell className="text-slate-500">{r.description}</TableCell>
+                                    <TableCell className="text-slate-500">{r.durationValue} {r.durationUnit}</TableCell>
+                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40}/> {r.status}</div></TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>

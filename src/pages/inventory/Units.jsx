@@ -116,7 +116,7 @@ export default function Units() {
                             <TableHead>No of Products</TableHead>
                             <TableHead className="inline-flex justify-center items-center gap-1 ">Created Date<ArrowUpDown size={14} /></TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead></TableHead>
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 

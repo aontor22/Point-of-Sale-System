@@ -13,6 +13,10 @@ import Category from "./pages/inventory/Category";
 import SubCategory from "./pages/inventory/SubCategory";
 import Brand from "./pages/inventory/Brand";
 import Units from "./pages/inventory/Units";
+import Warranties from "./pages/inventory/Warranties";
+import PrintBarcode from "./pages/inventory/PrintBarcode";
+import PrintQR from "./pages/inventory/PrintQR";
+import BulkUpload from "./pages/inventory/BulkUpload";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -45,7 +49,10 @@ function App() {
                 <Route path="/sub-categories" element={<SubCategory />} />
                 <Route path="/brands" element={<Brand />} />
                 <Route path="/units" element={<Units />} />
-                <Route path="/brands" element={<Brand />} />
+                <Route path="/warranties" element={<Warranties />} />
+                <Route path="/print/barcode" element={<PrintBarcode />} />
+                <Route path="/print/qr" element={<PrintQR />} />
+                <Route path="/bulk-upload" element={<BulkUpload />} />
               </Routes>
             </div>
           </main>
