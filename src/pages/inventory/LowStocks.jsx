@@ -187,7 +187,19 @@ export default function ProductsPage() {
                                             <span className="font-medium">{r.store}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.name}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-sm bg-slate-100">
+                                                <img
+                                                    src={r.image}
+                                                    alt={r.name}
+                                                    className="h-6 w-6 object-contain"
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                            <span className="text-sm text-slate-800">{r.name}</span>
+                                        </div>
+                                    </TableCell>
                                     <TableCell>{r.category}</TableCell>
                                     <TableCell>{r.sku}</TableCell>
                                     <TableCell>{r.qty}</TableCell>

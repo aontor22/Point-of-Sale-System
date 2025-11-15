@@ -192,12 +192,23 @@ export default function ProductsPage() {
                                         <Checkbox aria-label={`Select ${r.name}`} />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
+
                                     <TableCell>
-                                        <div className="flex flex-col">
-                                            <span className="font-medium">{r.name}</span>
-                                            <span className="text-xs text-muted-foreground">
-                                                #{r.sku}
-                                            </span>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-slate-100">
+                                                <img
+                                                    src={r.image}
+                                                    alt={r.name}
+                                                    className="h-6 w-6 object-contain"
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">{r.name}</span>
+                                                <span className="text-xs text-muted-foreground">
+                                                    #{r.sku}
+                                                </span>
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>

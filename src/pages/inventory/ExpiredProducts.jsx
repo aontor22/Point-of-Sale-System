@@ -70,7 +70,7 @@ export default function ExpiredProducts() {
 
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
-                <div className="flex min-w-[260px] flex-1 items-center gap-2">
+                <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
@@ -94,26 +94,9 @@ export default function ExpiredProducts() {
                             </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
-                            <TableHead className="align-middle whitespace-nowrap">
-                                <button
-                                    type="button"
-                                    className="inline-flex items-center gap-1 text-left"
-                                >
-                                    <ArrowUpDown className="h-4 w-4 opacity-60" />
-                                    <span>Manufactured Date</span>
-                                </button>
-                            </TableHead>
-
-                            <TableHead className="align-middle whitespace-nowrap">
-                                <button
-                                    type="button"
-                                    className="inline-flex items-center gap-1 text-left"
-                                >
-                                    <ArrowUpDown className="h-4 w-4 opacity-60" />
-                                    <span>Expired Date</span>
-                                </button>
-                            </TableHead>
-                            <TableHead className="w-15 text-right">Actions</TableHead>
+                            <TableHead className="inline-flew gap-1 justify-center items-center"><ArrowUpDown size={14} /> Manufactured Date</TableHead>
+                            <TableHead className="inline-flex justify-center items-center gap-1 "><ArrowUpDown size={14} /> Expired Date</TableHead>
+                            <TableHead className="w-[60px] text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -144,11 +127,16 @@ export default function ExpiredProducts() {
                                     </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
                                     <TableCell>
-                                        <div className="flex gap-2">
-                                            <span className="bg-slate-100">
-                                                #
-                                            </span>
-                                            <span className="font-medium">{r.name}</span>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-sm bg-slate-100">
+                                                <img
+                                                    src={r.image}
+                                                    alt={r.name}
+                                                    className="h-6 w-6 object-contain"
+                                                    loading="lazy"
+                                                />
+                                            </div>
+                                            <span className="text-sm text-slate-800">{r.name}</span>
                                         </div>
                                     </TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>

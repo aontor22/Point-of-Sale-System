@@ -165,12 +165,14 @@ export default function SubCategory() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <img
-                                                src={r.image}
-                                                alt={r.name}
-                                                className="h-10 w-10 rounded-md object-cover"
-                                                loading="lazy"
-                                            />
+                                            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-sm bg-slate-100">
+                                                <img
+                                                    src={r.image}
+                                                    alt={r.name}
+                                                    className="h-6 w-6 object-contain"
+                                                    loading="lazy"
+                                                />
+                                            </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -181,7 +183,7 @@ export default function SubCategory() {
                                     <TableCell>{r.category}</TableCell>
                                     <TableCell>{r.categoryCode}</TableCell>
                                     <TableCell>{r.description}</TableCell>
-                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40}/> {r.status}</div></TableCell>
+                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40} /> {r.status}</div></TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
