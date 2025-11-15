@@ -17,6 +17,7 @@ import Warranties from "./pages/inventory/Warranties";
 import PrintBarcode from "./pages/inventory/PrintBarcode";
 import PrintQR from "./pages/inventory/PrintQR";
 import BulkUpload from "./pages/inventory/BulkUpload";
+import ManageStock from "./pages/stock/ManageStock";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -53,6 +54,7 @@ function App() {
                 <Route path="/print/barcode" element={<PrintBarcode />} />
                 <Route path="/print/qr" element={<PrintQR />} />
                 <Route path="/bulk-upload" element={<BulkUpload />} />
+                <Route path="/stock/manage" element={<ManageStock />} />
               </Routes>
             </div>
           </main>

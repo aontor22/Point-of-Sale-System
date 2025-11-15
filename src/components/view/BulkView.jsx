@@ -19,7 +19,7 @@ export function ProductBulkUploadView({
                 Upload multiple products at once using Excel or CSV files.
             </p>
 
-            <Card className="border border-slate-200 p-8 bg-slate-50/60 shadow-none">
+            <Card className="border border-slate-200 p-8 bg-slate-100 shadow-none">
                 <label
                     htmlFor={inputId}
                     className={cn(

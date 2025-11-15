@@ -9,10 +9,25 @@ import pst8 from "../assets/products/pst8.png";
 import pst9 from "../assets/products/pst9.png";
 import pst10 from "../assets/products/pst10.png";
 
+
+import p1 from "../assets/person/p1.png";
+import p2 from "../assets/person/p2.png";
+import p3 from "../assets/person/p3.png";
+import p4 from "../assets/person/p4.png";
+import p5 from "../assets/person/p5.png";
+import p6 from "../assets/person/p6.png";
+import p7 from "../assets/person/p7.png";
+import p8 from "../assets/person/p8.png";
+import p9 from "../assets/person/p9.png";
+import p10 from "../assets/person/p10.png";
+
+
 const CATALOG_ROWS = [
     {
         sku: "PT001",
         name: "Lenovo IdeaPad 3",
+        person: "James Kirwin",
+        personImg: p1,
         image: pst1,
         category: "Computers",
         categoryCode: "CT001",
@@ -36,6 +51,8 @@ const CATALOG_ROWS = [
         sku: "PT002",
         name: "Beats Pro",
         image: pst2,
+        person: "James Kirwin",
+        personImg: p2,
         category: "Electronics",
         categoryCode: "CT002",
         categorySlug: "electronics",
@@ -57,6 +74,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT003",
         name: "Nike Jordan",
+        person: "James Kirwin",
+        personImg: p3,
         image: pst3,
         category: "Shoe",
         categoryCode: "CT003",
@@ -79,6 +98,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT004",
         name: "Apple Series 6 Watch",
+        person: "James Kirwin",
+        personImg: p4,
         image: pst4,
         category: "Electronics",
         categoryCode: "CT004",
@@ -101,6 +122,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT005",
         name: "Amazon Echo Dot",
+        person: "James Kirwin",
+        personImg: p5,
         image: pst5,
         category: "Electronics",
         categoryCode: "CT005",
@@ -123,6 +146,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT006",
         name: "Sanford Chair Sofa",
+        person: "James Kirwin",
+        personImg: p6,
         image: pst6,
         category: "Furniture",
         categoryCode: "CT009",
@@ -145,6 +170,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT007",
         name: "Red Premium Satchel",
+        person: "James Kirwin",
+        personImg: p7,
         image: pst7,
         category: "Bags",
         categoryCode: "CT007",
@@ -167,6 +194,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT008",
         name: "iPhone 14 Pro",
+        person: "James Kirwin",
+        personImg: p8,
         image: pst8,
         category: "Phone",
         categoryCode: "CT011",
@@ -189,6 +218,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT009",
         name: "Gaming Chair",
+        person: "James Kirwin",
+        personImg: p9,
         image: pst9,
         category: "Furniture",
         categoryCode: "CT010",
@@ -211,6 +242,8 @@ const CATALOG_ROWS = [
     {
         sku: "PT010",
         name: "Borealis Backpack",
+        person: "James Kirwin",
+        personImg: p10,
         image: pst10,
         category: "Bags",
         categoryCode: "CT008",
