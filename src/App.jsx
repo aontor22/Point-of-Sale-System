@@ -18,6 +18,16 @@ import PrintBarcode from "./pages/inventory/PrintBarcode";
 import PrintQR from "./pages/inventory/PrintQR";
 import BulkUpload from "./pages/inventory/BulkUpload";
 import ManageStock from "./pages/stock/ManageStock";
+import StockAdjustment from "./pages/stock/StockAdjustment";
+import StockTransfer from "./pages/stock/StockTransfer";
+import StockValuationReport from "./pages/stock/StockValuationReport";
+import SaleReports from "./pages/reports/SaleReports";
+import PurchaseReports from "./pages/reports/PurchaseReports";
+import InventoryReports from "./pages/reports/InventoryReports";
+import InvoiceReports from "./pages/reports/InvoiceReports";
+import SupplierReports from "./pages/reports/SupplierReports";
+import CustomerReports from "./pages/reports/CustomerReports";
+import ProductReports from "./pages/reports/ProductReports";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -55,6 +65,17 @@ function App() {
                 <Route path="/print/qr" element={<PrintQR />} />
                 <Route path="/bulk-upload" element={<BulkUpload />} />
                 <Route path="/stock/manage" element={<ManageStock />} />
+                <Route path="/stock/adjustment" element={<StockAdjustment />} />
+                <Route path="/stock/transfer" element={<StockTransfer />} />
+                <Route path="/reports/stock-valuation" element={<StockValuationReport/>} />
+                <Route path="/reports/sales-report" element={<SaleReports />} />
+                <Route path="/reports/purchases-report" element={<PurchaseReports />} />
+                <Route path="/reports/inventory-report" element={<InventoryReports />} />
+                <Route path="/reports/invoice-report" element={<InvoiceReports />} />
+                <Route path="/reports/supplier-report" element={<SupplierReports />} />
+                <Route path="/reports/customer-report" element={<CustomerReports />} />
+                <Route path="/reports/product-report" element={<ProductReports />} />
+                
               </Routes>
             </div>
           </main>

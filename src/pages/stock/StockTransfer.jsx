@@ -40,9 +40,13 @@ import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
+import AddBrand from "@/components/ui/AddBrand";
 
-export default function ExpiredProducts() {
+export default function ProductsPage() {
     const [search, setSearch] = React.useState("");
+    const [category, setCategory] = React.useState("all");
+    const [store, setStore] = React.useState("all");
+    const [warehouse, setWarehouse] = React.useState("all");
     const [loading] = React.useState(false);
 
     const filtered = CATALOG_ROWS.filter((r) => {
@@ -50,8 +54,11 @@ export default function ExpiredProducts() {
         const matchSearch =
             r.sku.toLowerCase().includes(s) ||
             r.name.toLowerCase().includes(s) ||
-            r.brand.toLowerCase().includes(s);
-        return matchSearch;
+            r.store.toLowerCase().includes(s);
+        const matchCat = category === "all" || r.category === category;
+        const matchBrand = store === "all" || r.store === store;
+        const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
+        return matchSearch && matchCat && matchBrand && matchWarehouse;
     });
 
     return (
@@ -59,15 +66,17 @@ export default function ExpiredProducts() {
             <ProductsDate />
             <div className="flex">
                 <ProductHeader
-                    title="Expired Products"
+                    title="Stock Transfer"
                     breadcrumbs={[
                         { label: "Dashboard" },
-                        { label: "Expired Products", active: true },
+                        { label: "Stock Transfer", active: true },
                     ]}
                 />
-                <ExportsButtons />
+                <div className="flex gap-2">
+                    <ExportsButtons />
+                    <AddBrand />
+                </div>
             </div>
-
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
@@ -81,8 +90,6 @@ export default function ExpiredProducts() {
                         />
                     </div>
                 </div>
-
-
             </div>
 
             <div className="overflow-hidden rounded-md border">
@@ -92,21 +99,39 @@ export default function ExpiredProducts() {
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
-                            <TableHead>SKU</TableHead>
-                            <TableHead>Product Name</TableHead>
+
+                            <TableHead>From Warehouse</TableHead>
+                            <TableHead>To Warehouse</TableHead>
+
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Manufactured Date</span>
+                                    <span>No of Products</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
+
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Expired Date</span>
+                                    <span>Quantity Transfer</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
-                            <TableHead className="w-[60px] text-right">Actions</TableHead>
+
+                            <TableHead>
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <span>Reference Number</span>
+                                    <ArrowUpDown className="h-3.5 w-3.5" />
+                                </div>
+                            </TableHead>
+
+                            <TableHead>
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <span>Date</span>
+                                    <ArrowUpDown className="h-3.5 w-3.5" />
+                                </div>
+                            </TableHead>
+
+                            <TableHead>Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -135,23 +160,13 @@ export default function ExpiredProducts() {
                                     <TableCell>
                                         <Checkbox aria-label={`Select ${r.name}`} />
                                     </TableCell>
-                                    <TableCell className="font-medium">{r.sku}</TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-sm bg-slate-100">
-                                                <img
-                                                    src={r.image}
-                                                    alt={r.name}
-                                                    className="h-6 w-6 object-contain"
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                            <span className="text-sm text-slate-800">{r.name}</span>
-                                        </div>
-                                    </TableCell>
+                                    <TableCell>{r.warehouse}</TableCell>
+                                    <TableCell>{r.toWareHouse}</TableCell>
+                                    <TableCell>{r.locationQty}</TableCell>
+                                    <TableCell>{r.qtyAlert}</TableCell>
+                                    <TableCell>{r.refNumber}</TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
-                                    <TableCell>${r.expiredDate}</TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button
@@ -182,7 +197,6 @@ export default function ExpiredProducts() {
                 </Table>
             </div>
 
-            {/* ===== PAGINATION ===== */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="text-sm text-muted-foreground">
                     Row per page:

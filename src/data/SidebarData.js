@@ -1,86 +1,69 @@
-import { 
-    Package, Settings, LayoutDashboard,
-    UserPen,
-    Box,
+import {
+    Package, Settings,
     Boxes,
-    Info,
     ClockFading,
-    MoveDownRight,
     LayoutList,
     LayoutGrid,
-    GalleryVertical,
-    Shapes,
-    Group,
     Ribbon,
     ScanBarcode,
     ScanQrCode,
-    FileBadge,
     Layers,
-    TrendingUp,
     ChartNoAxesCombined,
-    MessageSquareShare,
-    RefreshCcwDot,
-    SquareCheckBig,
     ShoppingCart,
     FileSignal,
     FileOutput,
-    Files,
-    TvMinimal,
     BarChart,
     ChartNoAxesColumnIncreasing,
-    ChartPie,
-    FolderGit2,
     UserCog,
-    ClipboardClock,
-    ClipboardList,
     FileChartPie,
-    FileSearchCorner,
-    ChartNetwork,
     BadgeDollarSign,
     ChartSpline,
     Users,
-    UserStar,
     UserLock,
-    Archive,
     Handbag,
     FileUp,
     FileQuestion,
-    FileX,
     FileStack,
-    FilePen,
-    Puzzle,
-    WalletCards,
     Landmark,
     Receipt,
     BadgeCent,
-    SearchCheck,
     FileMinusCorner,
     User,
-    CircuitBoard,
-    GitFork,
-    Calendar,
-    Calendar1,
-    CalendarCheck2,
-    DollarSign,
     Shuffle,
     ShieldUser,
     Trash2,
-    Shredder,
-    GitCompare,
+    Store,
+    GitCompareArrows,
+    GitMerge,
+    Calendar,
+    Calendar1,
+    FilePen,
+    FileSliders,
+    Scale,
+    Info,
+    FileX,
+    Gift,
     Globe,
-    Bolt,
-    Cog,
-    Smartphone,
     Monitor,
-    Store
+    Smartphone,
+    Bolt
 } from 'lucide-react';
+
+import { MdOutlineOtherHouses } from "react-icons/md";
+import { TbFileDollar, TbFileInfinity, TbSettingsDollar } from "react-icons/tb";
+import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { LiaSearchDollarSolid } from "react-icons/lia";
+import { RiCoupon3Line } from "react-icons/ri";
+import { Global } from 'recharts';
+
+
 
 export const sidebarData = [
     {
         title: "Main",
         items: [
             {
-                name: "Dashboard", icon: LayoutGrid, path: "/dashboard", active: true , subItems: [
+                name: "Dashboard", icon: LayoutGrid, path: "/dashboard", active: true, subItems: [
                     { name: "Admin Dashboard", path: "/dashboard/admin" },
                     { name: "Admin Dashboard 2", path: "/dashboard/admin2" },
                     { name: "Sales Dashboard", path: "/dashboard/sales" }
@@ -90,7 +73,7 @@ export const sidebarData = [
                 name: "Super Admin", icon: UserCog, path: "/super-admin", subItems: [
                     { name: "Dashboard", path: "/super-admin/dashboard" },
                     { name: "Companies", path: "/super-admin/companies" },
-                    { name: "Subscriptions", path: "/super-admin/subscriptions"},
+                    { name: "Subscriptions", path: "/super-admin/subscriptions" },
                     { name: "Packages", path: "/super-admin/packages" },
                     { name: "Domain", path: "/super-admin/domain" },
                     { name: "Purchase Transaction", path: "/super-admin/transactions" },
@@ -105,7 +88,7 @@ export const sidebarData = [
         items: [
             { name: "Products", icon: Package, path: "/products" },
             { name: "Create Product", icon: FileUp, path: "/products/new" },
-            { name: "Expired Products", icon: ClockFading, path: "/products/expired"},
+            { name: "Expired Products", icon: ClockFading, path: "/products/expired" },
             { name: "Low Stocks", icon: BarChart, path: "/products/low-stock" },
             { name: "Category", icon: LayoutList, path: "/categories" },
             { name: "Sub Category", icon: LayoutList, path: "/sub-categories" },
@@ -131,10 +114,10 @@ export const sidebarData = [
         items: [
             {
                 name: "Sales", icon: ChartNoAxesCombined, path: "/sales/sales", subItems: [
-                    {
-                        name: "Online Orders", path: "sales/sales/online-orders",
-                        name: "POS Orders", path: "sales/sales/pos-orders"
-                    }
+
+                    { name: "Online Orders", path: "sales/sales/online-orders" },
+                    { name: "POS Orders", path: "sales/sales/pos-orders" },
+
                 ]
             },
             { name: "Invoice", icon: Receipt, path: "/sales/invoice" },
@@ -142,13 +125,13 @@ export const sidebarData = [
             { name: "Quotation", icon: FileQuestion, path: "/sales/quotation" },
             {
                 name: "POS", icon: ShoppingCart, path: "/sales/pos", subItems: [
-                    {
-                        name: "Split/Hold Bill", path: "sales/pos/split-hold-bill",
-                        name: "Return/Exchange", path: "sales/pos/pos-orders",
-                        name: "Multi payment Support", path: "sales/pos/multi-payment-support",
-                        name: "POS 4", path: "sales/pos/pos-4",
-                        name: "POS 5", path: "sales/pos/pos-5",
-                    }
+
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
                 ]
             }
         ]
@@ -184,22 +167,111 @@ export const sidebarData = [
         title: "Purchases",
         items: [
             { name: "Purchases", icon: ShoppingCart, path: "/purchases/purchases" },
-            { name: "Purchases Order", icon: Receipt, path: "/purchases/purchases-order" },
-            { name: "Purchases Return", icon: MoveDownRight, path: "/purchases/purchases-return" },
+            { name: "Purchases Order", icon: FileQuestion, path: "/purchases/purchases-order" },
+            { name: "Purchases Return", icon: FileUp, path: "/purchases/purchases-return" },
         ]
     },
     {
         title: "Promo",
         items: [
-            { name: "Coupons", icon: WalletCards, path: "/purchases/purchases" },
-            { name: "Purchases Order", icon: Receipt, path: "/purchases/purchases-order" },
-            { name: "Purchases Return", icon: MoveDownRight, path: "/purchases/purchases-return" },
+            { name: "Coupons", icon: RiCoupon3Line, path: "/promo/coupons" },
+            { name: "Gift Card", icon: Gift, path: "/promo/gift-card" },
+            { name: "Discount", icon: FileX, path: "/promo/discount" },
+        ]
+    },
+    {
+        title: "Finance & Accounts",
+        items: [
+            { name: "Expenses", icon: FileSliders, path: "/finance/expenses" },
+            { name: "Income", icon: FilePen, path: "/finance/income" },
+            { name: "Bank Accounts", icon: Landmark, path: "/finance/bank-accounts" },
+            { name: "Money Transfer", icon: FaMoneyBillTransfer, path: "/finance/money-transfer" },
+            { name: "Balance Sheet", icon: Scale, path: "/finance/balance-sheet" },
+            { name: "Trial Balance", icon: Info, path: "/finance/trial-balance" },
+            { name: "Cash Flow", icon: LiaSearchDollarSolid, path: "/finance/cash-flow" },
+            { name: "Account Statement", icon: TbFileInfinity, path: "/finance/account-statement" },
+        ]
+    },
+    {
+        title: "HRM",
+        items: [
+            { name: "Employees", icon: User, path: "/hrm/employees" },
+            { name: "Departments", icon: MdOutlineOtherHouses, path: "/hrm/departments" },
+            { name: "Designation", icon: GitMerge, path: "/hrm/designation" },
+            { name: "Shifts", icon: Shuffle, path: "/hrm/shifts" },
+            { name: "Attendance", icon: UserCog, path: "/hrm/attendance" },
+            { name: "Leaves", icon: Calendar, path: "/hrm/leaves" },
+            { name: "Holidays", icon: Calendar1, path: "/hrm/holidays" },
+            { name: "Payroll", icon: TbFileDollar, path: "/hrm/payroll" },
+        ]
+    },
+    {
+        title: "User Management",
+        items: [
+            { name: "Users", icon: ShieldUser, path: "/user/users" },
+            { name: "Roles & Permissions", icon: GitCompareArrows, path: "/user/roles-permission" },
+            { name: "Delete Account Request", icon: Trash2, path: "/user/delete-account-request" },
         ]
     },
     {
         title: "Settings",
         items: [
-            { name: "General Settings", icon: Settings, path: "/settings/general", subItems: ["...", "..."] },
+            {
+                name: "General Settings", icon: Settings, path: "/settings/general", subItems: [
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
+                ]
+            },
+            {
+                name: "Website Settings", icon: Globe, path: "/settings/general", subItems: [
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
+                ]
+            }, {
+                name: "App Settings", icon: Smartphone, path: "/settings/general", subItems: [
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
+                ]
+            }, {
+                name: "System Settings", icon: Monitor, path: "/settings/general", subItems: [
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
+                ]
+            }, {
+                name: "Financial Settings", icon: TbSettingsDollar, path: "/settings/general", subItems: [
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
+                ]
+            }, {
+                name: "Other Settings", icon: Bolt, path: "/settings/general", subItems: [
+                    { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
+                    { name: "Return/Exchange", path: "sales/pos/pos-orders" },
+                    { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
+                    { name: "POS 4", path: "sales/pos/pos-4" },
+                    { name: "POS 5", path: "sales/pos/pos-5" },
+
+                ]
+            },
             { name: "Logout", icon: UserLock, path: "/logout", isLogout: true }
         ]
     }

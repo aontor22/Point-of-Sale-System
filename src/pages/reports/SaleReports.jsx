@@ -1,4 +1,5 @@
-import React from "react";
+import StatView from '@/components/view/repStatView'
+import React from 'react'
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,69 +24,65 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import {
-    MoreHorizontal,
-    Search,
     Loader2,
-    Edit,
-    Eye,
-    Trash2,
     ArrowUpDown,
 } from "lucide-react";
 
-import CATALOG_ROWS from "@/data/ProductData";
-import ProductHeader from "@/components/ui/ProductHeader";
+import PRODUCT_ROWS from "@/data/ProductData";
+import SalesCat from "@/components/ui/SalesCat";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
-import ExportsButtons from "@/components/ui/ExportsButtons";
+import ExportsButtonSale from "@/components/ui/ExportButtonSale";
+import ProductsHeader from '@/components/ui/ProductHeader';
+import RefreshButtons from '@/components/ui/RefreshButton';
 
-export default function ExpiredProducts() {
+export default function SaleReports() {
     const [search, setSearch] = React.useState("");
+    const [category, setCategory] = React.useState("all");
+    const [brand, setBrand] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = CATALOG_ROWS.filter((r) => {
+    const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
             r.sku.toLowerCase().includes(s) ||
             r.name.toLowerCase().includes(s) ||
             r.brand.toLowerCase().includes(s);
-        return matchSearch;
+        const matchCat = category === "all" || r.category === category;
+        const matchBrand = brand === "all" || r.brand === brand;
+        return matchSearch && matchCat && matchBrand;
     });
-
     return (
         <div className="space-y-4">
             <ProductsDate />
             <div className="flex">
-                <ProductHeader
-                    title="Expired Products"
-                    breadcrumbs={[
-                        { label: "Dashboard" },
-                        { label: "Expired Products", active: true },
-                    ]}
-                />
-                <ExportsButtons />
+                <ProductsHeader
+                    title="Sales Report" breadcrumbs={
+                        [
+                            { label: "Dashboard" },
+                            { label: "Sales Report", active: true },
+                        ]
+                    } />
+                <RefreshButtons />
+            </div>
+            <div className="space-y-4">
+                <StatView />
+            </div>
+            <div className="space-y-4">
+                <SalesCat />
             </div>
 
-
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
-                <div className="flex w-full flex-1 items-center gap-2">
-                    <div className="relative w-full max-w-sm">
-                        <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                        <Input
-                            placeholder="Search product, SKU, brand"
-                            className="pl-8"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
+            <div className="flex-1 items-center justify-between gap-3 overflow-hidden rounded-md border bg-background p-5">
+                <div className="flex items-center gap-2 pb-4 w-full">
+                    <h3 className="text-lg font-semibold">Sales Report</h3>
+                    <div className="ml-auto flex items-center gap-2">
+                        <ExportsButtonSale />
                     </div>
                 </div>
-
-
-            </div>
-
-            <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-200">
@@ -94,19 +91,26 @@ export default function ExpiredProducts() {
                             </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
+                            <TableHead>Brand</TableHead>
+                            <TableHead>Category</TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Manufactured Date</span>
+                                    <span>Sold Qty</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Expired Date</span>
+                                    <span>Sold Amount</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
-                            <TableHead className="w-[60px] text-right">Actions</TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <span>Instock Qty</span>
+                                    <ArrowUpDown className="h-3.5 w-3.5" />
+                                </div>
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -136,9 +140,10 @@ export default function ExpiredProducts() {
                                         <Checkbox aria-label={`Select ${r.name}`} />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
+
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="flex h-7.5 w-7.5 items-center justify-center rounded-sm bg-slate-100">
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-slate-100">
                                                 <img
                                                     src={r.image}
                                                     alt={r.name}
@@ -146,35 +151,20 @@ export default function ExpiredProducts() {
                                                     loading="lazy"
                                                 />
                                             </div>
-                                            <span className="text-sm text-slate-800">{r.name}</span>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">{r.name}</span>
+                                            </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.manufacturedDate}</TableCell>
-                                    <TableCell>${r.expiredDate}</TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8"
-                                                >
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
-                                                    <Eye className="h-4 w-4" /> View
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
-                                                    <Edit className="h-4 w-4" /> Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-destructive">
-                                                    <Trash2 className="h-4 w-4" /> Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                    <TableCell>{r.brand}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary" className="font-normal">
+                                            {r.category}
+                                        </Badge>
                                     </TableCell>
+                                    <TableCell>${r.price}</TableCell>
+                                    <TableCell>{r.unit}</TableCell>
+                                    <TableCell>{r.qty}</TableCell>
                                 </TableRow>
                             ))
                         )}
@@ -218,5 +208,5 @@ export default function ExpiredProducts() {
             </div>
             <Footer />
         </div>
-    );
+    )
 }

@@ -9,7 +9,6 @@ import pst8 from "../assets/products/pst8.png";
 import pst9 from "../assets/products/pst9.png";
 import pst10 from "../assets/products/pst10.png";
 
-
 import p1 from "../assets/person/p1.png";
 import p2 from "../assets/person/p2.png";
 import p3 from "../assets/person/p3.png";
@@ -20,7 +19,6 @@ import p7 from "../assets/person/p7.png";
 import p8 from "../assets/person/p8.png";
 import p9 from "../assets/person/p9.png";
 import p10 from "../assets/person/p10.png";
-
 
 const CATALOG_ROWS = [
     {
@@ -37,8 +35,17 @@ const CATALOG_ROWS = [
         price: 460,
         unit: "Pc",
         qty: 100,
+        soldQty: 5, // Sold Quantity
+        soldAmount: "$3000", // Sold Amount
+        instockQty: 100, // Instock Quantity
+        costPrice: 899.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Flores, Juanita", avatar: "" },
         warehouse: "Lavish Warehouse",
+        toWareHouse: "North Zone Warehouse",
+        refNumber: "#458924",
         store: "Electro Mart",
         locationQty: 20,
         qtyAlert: 15,
@@ -61,8 +68,17 @@ const CATALOG_ROWS = [
         price: 120,
         unit: "Pc",
         qty: 300,
+        soldQty: 10, // Sold Quantity
+        soldAmount: "$1600", // Sold Amount
+        instockQty: 140, // Instock Quantity
+        costPrice: 2499.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Nguyen, Shane", avatar: "" },
         warehouse: "Quaint Warehouse",
+        toWareHouse: "Nova Storage Hub",
+        refNumber: "#429054",
         store: "Quantum Gadgets",
         locationQty: 25,
         qtyAlert: 20,
@@ -85,8 +101,17 @@ const CATALOG_ROWS = [
         price: 180,
         unit: "Pc",
         qty: 120,
+        soldQty: 8, // Sold Quantity
+        soldAmount: "$880", // Sold Amount
+        instockQty: 300, // Instock Quantity
+        costPrice: 399.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Flores, Juanita", avatar: "" },
         warehouse: "Traditional Warehouse",
+        toWareHouse: "Cool Warehouse",
+        refNumber: "#419893",
         store: "Prime Bazaar",
         locationQty: 40,
         qtyAlert: 35,
@@ -109,8 +134,17 @@ const CATALOG_ROWS = [
         price: 420,
         unit: "Pc",
         qty: 80,
+        soldQty: 10, // Sold Quantity
+        soldAmount: "$1200", // Sold Amount
+        instockQty: 450, // Instock Quantity
+        costPrice: 599.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Miles, Esther", avatar: "" },
         warehouse: "Cool Warehouse",
+        toWareHouse: "Retail Supply Hub",
+        refNumber: "#386914",
         store: "Gadget World",
         locationQty: 50,
         qtyAlert: 45,
@@ -133,8 +167,17 @@ const CATALOG_ROWS = [
         price: 80,
         unit: "Pc",
         qty: 320,
+        soldQty: 15, // Sold Quantity
+        soldAmount: "$900", // Sold Amount
+        instockQty: 700, // Instock Quantity
+        costPrice: 1299.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Henry, Arthur", avatar: "" },
         warehouse: "Overflow Warehouse",
+        toWareHouse: "Quaint Warehouse",
+        refNumber: "#366713",
         store: "Volt Vault",
         locationQty: 30,
         qtyAlert: 25,
@@ -157,8 +200,17 @@ const CATALOG_ROWS = [
         price: 700,
         unit: "Pc",
         qty: 76,
+        soldQty: 12, // Sold Quantity
+        soldAmount: "$6480", // Sold Amount
+        instockQty: 630, // Instock Quantity
+        costPrice: 99.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Miles, Esther", avatar: "" },
         warehouse: "Nova Storage Hub",
+        toWareHouse: "Traditional Warehouse",
+        refNumber: "#327814",
         store: "Elite Retail",
         locationQty: 10,
         qtyAlert: 8,
@@ -181,8 +233,17 @@ const CATALOG_ROWS = [
         price: 90,
         unit: "Pc",
         qty: 210,
+        soldQty: 20, // Sold Quantity
+        soldAmount: "$1800", // Sold Amount
+        instockQty: 550, // Instock Quantity
+        costPrice: 349.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Henry, Arthur", avatar: "" },
         warehouse: "Retail Supply Hub",
+        toWareHouse: "Overflow Warehouse",
+        refNumber: "#274509",
         store: "Prime Mart",
         locationQty: 70,
         qtyAlert: 60,
@@ -205,8 +266,17 @@ const CATALOG_ROWS = [
         price: 540,
         unit: "Pc",
         qty: 60,
+        soldQty: 5, // Sold Quantity
+        soldAmount: "$2700", // Sold Amount
+        instockQty: 410, // Instock Quantity
+        costPrice: 429.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Henry, Arthur", avatar: "" },
         warehouse: "EdgeWare Solutions",
+        toWareHouse: "Lavish Warehouse",
+        refNumber: "#239073",
         store: "NeoTech Store",
         locationQty: 35,
         qtyAlert: 30,
@@ -229,8 +299,17 @@ const CATALOG_ROWS = [
         price: 420,
         unit: "Pc",
         qty: 140,
+        soldQty: 7, // Sold Quantity
+        soldAmount: "$2940", // Sold Amount
+        instockQty: 550, // Instock Quantity
+        costPrice: 2499.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Black, Marvin", avatar: "" },
         warehouse: "North Zone Warehouse",
+        toWareHouse: "Fulfillment Hub",
+        refNumber: "#187204",
         store: "Urban Mart",
         locationQty: 15,
         qtyAlert: 10,
@@ -253,8 +332,17 @@ const CATALOG_ROWS = [
         price: 45,
         unit: "Pc",
         qty: 550,
+        soldQty: 20, // Sold Quantity
+        soldAmount: "$900", // Sold Amount
+        instockQty: 550, // Instock Quantity
+        costPrice: 129.99,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
         user: { name: "Cooper, Kristin", avatar: "" },
         warehouse: "Fulfillment Hub",
+        toWareHouse: "EdgeWare Solutions",
+        refNumber: "#139064",
         store: "Travel Mart",
         locationQty: 45,
         qtyAlert: 40,
