@@ -79,13 +79,14 @@ export default function SaleReports() {
                             { label: "Customer", active: true },
                         ]
                     } />
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center">
                     <ExportsButtons />
                     <ButtonComponent
                         title="Add Customer"
                         isVisible={isInventoryReportVisible}
                         // onClick={handleInventoryReportClick}
-                        className="bg-orange-500 text-white"
+                        className="bg-orange-500 text-white gap-2 hover:bg-orange-600"
+                        icon={<PlusCircle size={16} />}
                     ><PlusCircle size={20} /></ButtonComponent>
                 </div>
             </div>

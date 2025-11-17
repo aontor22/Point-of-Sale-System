@@ -1,13 +1,19 @@
-import React from 'react';
+import React from "react";
 
-const ButtonComponent = ({ title, isVisible, onClick, className }) => {
-    if (!isVisible) return null; // If the button should not be visible, return null
+const ButtonComponent = ({ title, icon, isVisible = true, onClick, className = "" }) => {
+    if (!isVisible) return null;
 
     return (
         <button
             onClick={onClick}
-            className={`px-4 py-2 rounded-md font-medium text-sm ${className}`}
+            className={`
+        inline-flex items-center justify-center
+        h-10 px-4 rounded-sm
+        text-sm font-medium
+        whitespace-nowrap
+        ${className}`}
         >
+            {icon}
             {title}
         </button>
     );
