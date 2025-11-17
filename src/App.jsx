@@ -5,7 +5,7 @@ import Sidebar from "./components/view/SidebarView";
 import Dashboard from "./pages/Dashboard";
 import SaleDashboard from "./pages/SaleDashboard";
 import Dashboard2 from "./pages/Dashboard-2";
-import Product from "./pages/inventory/Product"
+import Product from "./pages/inventory/Product";
 import CreateProduct from "./pages/inventory/CreateProduct";
 import ExpiredProducts from "./pages/inventory/ExpiredProducts";
 import LowStocks from "./pages/inventory/LowStocks";
@@ -40,8 +40,8 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#FBFBFB] dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
-      <div className="flex min-h-screen">
+    <div className="h-screen bg-[#FBFBFB] dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
+      <div className="flex h-full overflow-hidden">
         <Sidebar
           collapsed={sidebarCollapsed}
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -74,7 +74,7 @@ function App() {
                 <Route path="/stock/manage" element={<ManageStock />} />
                 <Route path="/stock/adjustment" element={<StockAdjustment />} />
                 <Route path="/stock/transfer" element={<StockTransfer />} />
-                <Route path="/reports/stock-valuation" element={<StockValuationReport/>} />
+                <Route path="/reports/stock-valuation" element={<StockValuationReport />} />
                 <Route path="/reports/sales-report" element={<SaleReports />} />
                 <Route path="/reports/purchases-report" element={<PurchaseReports />} />
                 <Route path="/reports/inventory-report" element={<InventoryReports />} />
@@ -89,7 +89,6 @@ function App() {
                 <Route path="/peoples/warehouses" element={<WareHouses />} />
                 <Route path="/finance/expenses" element={<Expense />} />
                 <Route path="/finance/income" element={<Income />} />
-                
               </Routes>
             </div>
           </main>

@@ -1,4 +1,3 @@
-// SidebarView.jsx
 import React, { useState } from "react";
 import Sidebar, { SidebarItem } from "../ui/sidebar";
 import { sidebarData } from "../../data/SidebarData";
@@ -30,7 +29,7 @@ const SidebarView = () => {
                     text={item.name}
                     active={item.active}
                     alert={item.alert}
-                    to={item.path}            // ⬅️ link for single items
+                    to={item.path}
                   />
                 );
               }
