@@ -8,61 +8,96 @@ import {
     Search,
     Settings,
     Sun,
+    Moon,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import user from "../../assets/image.png";
 
 const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [theme, setTheme] = useState("light"); // "light" | "dark"
 
-    // keep React state in sync with browser fullscreen
+    // Get initial theme
+    useEffect(() => {
+        const stored = localStorage.getItem("theme");
+        if (stored === "dark" || stored === "light") {
+            setTheme(stored);
+        } else if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+            setTheme("dark");
+        }
+    }, []);
+
+    // Apply theme to <html> and persist
+    useEffect(() => {
+        if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    // Keep fullscreen state in sync
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
         };
 
         document.addEventListener("fullscreenchange", handleFullscreenChange);
-        return () => {
+        return () =>
             document.removeEventListener("fullscreenchange", handleFullscreenChange);
-        };
     }, []);
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
-            // enter fullscreen for the whole page (same effect as F11)
             document.documentElement.requestFullscreen?.();
         } else {
-            // exit fullscreen
             document.exitFullscreen?.();
         }
     };
 
+    const toggleTheme = () => {
+        setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    };
+
     return (
-        <div className="bg-white dark:bg-slate-900/80 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
+        <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                     <div className="relative mr-4">
-                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+                        <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 dark:text-slate-300" />
                         <input
                             type="text"
                             placeholder="Search"
-                            className="w-full pl-10 pr-10 py-2 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-sm text-slate-800 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue500 focus:border-transparent transition-all"
+                            className="w-full pl-10 pr-10 py-2 bg-slate-100 dark:bg-slate-700 border-slate-200 dark:border-slate-300 rounded-sm text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue500 focus:border-transparent transition-all"
                         />
                     </div>
                 </div>
 
                 <div className="flex items-center space-x-3">
-                    <div className="border-r border-slate-200 dark:border-slate-700 px-4">
+                    <div className="border-r border-slate-200 dark:border-slate-300 px-4">
                         <button className="hidden lg:flex items-center space-x-2 py-2 px-4 bg-blue-300 text-blue-950 rounded hover:shadow-lg transition-all">
                             <CirclePlus className="w-4 h-4" />
                             <span className="text-sm font-medium">Add New</span>
                         </button>
                     </div>
 
-                    <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <Sun className="w-5 h-5" />
+                    {/* Theme toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        title={
+                            theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+                        }
+                    >
+                        {theme === "dark" ? (
+                            <Sun className="w-5 h-5" />
+                        ) : (
+                            <Moon className="w-5 h-5" />
+                        )}
                     </button>
 
+                    {/* Fullscreen toggle */}
                     <button
                         onClick={toggleFullscreen}
                         className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"

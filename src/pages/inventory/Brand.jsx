@@ -89,7 +89,7 @@ export default function Brand() {
                                 <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
                                 <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
                                 <SelectItem value="Gadget World">Gadget World</SelectItem>
-                                <SelectItem value="Vold Vault">Vold Vault</SelectItem>
+                                <SelectItem value="Volt Vault">Vold Vault</SelectItem>
                                 <SelectItem value="Elite Retail">Elite Retail</SelectItem>
                                 <SelectItem value="Prime Mart">Prime Mart</SelectItem>
                                 <SelectItem value="Neo Tech">Neo Tech</SelectItem>
@@ -104,7 +104,7 @@ export default function Brand() {
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-slate-200">
+                        <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>

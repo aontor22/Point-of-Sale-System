@@ -1,4 +1,3 @@
-// SidebarView.jsx
 import React, { useState } from "react";
 import Sidebar, { SidebarItem, SidebarSectionTitle } from "../ui/sidebar";
 import { sidebarData } from "../../data/SidebarData";

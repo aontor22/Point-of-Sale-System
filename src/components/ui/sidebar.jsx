@@ -1,4 +1,3 @@
-// sidebar.jsx
 import { ChevronsLeft, ChevronsRight, ChevronDown } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import logo1 from "../../assets/image1.png";
@@ -14,7 +13,7 @@ export default function Sidebar({ children }) {
     <aside
       className={`relative shrink-0 border-r ${
         expanded ? "w-[220px]" : "w-[70px]"
-      } h-screen flex flex-col bg-white`}
+      } h-screen flex flex-col bg-white dark:bg-gray-800`}
     >
       <button
         onClick={() => setExpanded((c) => !c)}
@@ -36,9 +35,7 @@ export default function Sidebar({ children }) {
         </div>
 
         <SidebarContext.Provider value={{ expanded }}>
-          <ul className="flex-1 px-3 overflow-y-auto no-scrollbar">
-            {children}
-          </ul>
+          <ul className="flex-1 px-3 overflow-y-auto no-scrollbar">{children}</ul>
         </SidebarContext.Provider>
       </nav>
     </aside>
@@ -67,7 +64,7 @@ export function SidebarItem({
     `${
       active
         ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-        : "hover:bg-indigo-50 text-gray-600"
+        : "dark:hover:bg-gradient-to-tr dark:hover:from-indigo-200 dark:hover:to-indigo-100 dark:hover:text-indigo-800 text-gray-600 dark:text-slate-300"
     } ` +
     className;
 
@@ -133,14 +130,13 @@ export function SidebarItem({
   );
 }
 
-// New: section title that hides when sidebar is collapsed
 export function SidebarSectionTitle({ children }) {
   const { expanded } = useContext(SidebarContext);
 
   if (!expanded) return null;
 
   return (
-    <p className="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+    <p className="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-300">
       {children}
     </p>
   );

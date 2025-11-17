@@ -40,7 +40,7 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="h-screen bg-[#FBFBFB] dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
+    <div className="h-screen bg-[#FBFBFB] dark:bg-slate-900/80 dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
       <div className="flex h-full overflow-hidden">
         <Sidebar
           collapsed={sidebarCollapsed}

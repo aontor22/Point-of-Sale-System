@@ -24,7 +24,7 @@ export default function ProductsHeader({
         <div className={`w-full ${className}`}>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
-                    <h2 className="text-[22px] font-bold tracking-tight text-slate-800">
+                    <h2 className="text-[22px] font-bold tracking-tight text-slate-800 dark:text-slate-300">
                         {title}
                     </h2>
 
@@ -35,7 +35,7 @@ export default function ProductsHeader({
                                 return (
                                     <React.Fragment key={`${bc.label}-${idx}`}>
                                         <span
-                                            className={`${bc.active || isLast ? "font-medium text-slate-800" : "font-semibold text-slate-600"}`}
+                                            className={`${bc.active || isLast ? "font-medium text-slate-800 dark:text-slate-400" : "font-semibold text-slate-600 dark:text-slate-400"}`}
                                         >
                                             {bc.label}
                                         </span>
