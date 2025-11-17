@@ -1,8 +1,6 @@
-import StatView from '@/components/view/repStatView'
 import React, { useState } from 'react'
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
@@ -20,6 +18,7 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -32,7 +31,7 @@ import {
     ArrowUpDown,
 } from "lucide-react";
 
-import PRODUCT_ROWS from "@/data/ProductData";
+import suppliers from "@/data/SupplierData";
 import SalesCat from "@/components/ui/SalesCat";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
@@ -47,12 +46,10 @@ export default function SaleReports() {
     const [brand, setBrand] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = PRODUCT_ROWS.filter((r) => {
+    const filtered = suppliers.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
-            r.name.toLowerCase().includes(s) ||
-            r.brand.toLowerCase().includes(s);
+            r.suRef.toLowerCase().includes(s);
         const matchCat = category === "all" || r.category === category;
         const matchBrand = brand === "all" || r.brand === brand;
         return matchSearch && matchCat && matchBrand;
@@ -60,6 +57,12 @@ export default function SaleReports() {
 
     const [isInventoryReportVisible, setInventoryReportVisible] = useState(true);
     const [isStockHistoryVisible, setStockHistoryVisible] = useState(true);
+
+    const totalAmount = suppliers.reduce(
+        (sum, r) => sum + Number(r.suAmount.replace(/[$,]/g, "")),
+        0
+    );
+
 
     return (
         <div className="space-y-4">
@@ -102,31 +105,28 @@ export default function SaleReports() {
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-200">
-                            <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
-                            </TableHead>
-                            <TableHead>SKU</TableHead>
-                            <TableHead>Product Name</TableHead>
-                            <TableHead>Brand</TableHead>
-                            <TableHead>Category</TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Qty</span>
+                                    <span>Reference</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Amount</span>
+                                    <span>ID</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
+                            <TableHead>Supplier</TableHead>
+                            <TableHead>Total Items</TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Instock Qty</span>
+                                    <span>Amount</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
+                            <TableHead>Payment Method</TableHead>
+                            <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -151,40 +151,65 @@ export default function SaleReports() {
                             </TableRow>
                         ) : (
                             filtered.map((r) => (
-                                <TableRow key={r.sku}>
-                                    <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
-                                    </TableCell>
-                                    <TableCell className="font-medium">{r.sku}</TableCell>
-
+                                <TableRow key={r.suRef}>
+                                    <TableCell className="font-medium">{r.suRef}</TableCell>
+                                    <TableCell>{r.suID}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-slate-100">
+                                            <div className="h-8 w-8 rounded-sm overflow-hidden flex items-center justify-center bg-slate-100">
                                                 <img
-                                                    src={r.image}
-                                                    alt={r.name}
-                                                    className="h-6 w-6 object-contain"
+                                                    src={r.suImg}
+                                                    alt={r.suName}
+                                                    className="h-full w-full object-cover"
                                                     loading="lazy"
                                                 />
                                             </div>
+
                                             <div className="flex flex-col">
-                                                <span className="font-medium">{r.name}</span>
+                                                <span className="font-medium">{r.suName}</span>
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.brand}</TableCell>
+
+                                    <TableCell>{r.suTotalItems}</TableCell>
+                                    <TableCell>{r.suAmount}</TableCell>
+                                    <TableCell>{r.suPaymentMethod}</TableCell>
                                     <TableCell>
-                                        <Badge variant="secondary" className="font-normal">
-                                            {r.category}
-                                        </Badge>
+                                        <div
+                                            className={`inline-flex items-center justify-center px-3 py-1
+                                                rounded-lg text-xs font-medium
+                                                ${r.suStatus === "Received"
+                                                    ? "bg-emerald-500 text-white"
+                                                    : r.suStatus === "Pending"
+                                                        ? "bg-sky-500 text-white"
+                                                        : r.suStatus === "Order Placed"
+                                                            ? "bg-yellow-400 text-white"
+                                                            : "bg-yellow-400 text-white"
+                                                }`}
+                                        >
+                                            {r.suStatus}
+                                        </div>
                                     </TableCell>
-                                    <TableCell>${r.price}</TableCell>
-                                    <TableCell>{r.unit}</TableCell>
-                                    <TableCell>{r.qty}</TableCell>
+
                                 </TableRow>
                             ))
                         )}
                     </TableBody>
+                    <TableFooter className="bg-slate-200">
+                        <TableRow>
+                            <TableCell colSpan={4} className="font-semibold">
+                                Total
+                            </TableCell>
+                            <TableCell className="font-semibold">
+                                {totalAmount.toLocaleString("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                })}
+                            </TableCell>
+                            <TableCell />
+                            <TableCell />
+                        </TableRow>
+                    </TableFooter>
                 </Table>
             </div>
 

@@ -114,7 +114,7 @@ export default function SaleReports() {
 
             <div className="flex-1 items-center justify-between gap-3 overflow-hidden rounded-md border bg-background p-5">
                 <div className="flex items-center gap-2 pb-4 w-full">
-                    <h3 className="text-lg font-semibold">Invoice Report</h3>
+                    <h3 className="text-lg font-semibold">Inventory Report</h3>
                     <div className="ml-auto flex items-center gap-2">
                         <ExportsButtonSale />
                     </div>
@@ -122,31 +122,11 @@ export default function SaleReports() {
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-200">
-                            <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
-                            </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
-                            <TableHead>Brand</TableHead>
                             <TableHead>Category</TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Qty</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Amount</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Instock Qty</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
+                            <TableHead>Unit</TableHead>
+                            <TableHead>Instock</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -172,11 +152,7 @@ export default function SaleReports() {
                         ) : (
                             filtered.map((r) => (
                                 <TableRow key={r.sku}>
-                                    <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
-                                    </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
-
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-slate-100">
@@ -192,15 +168,13 @@ export default function SaleReports() {
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.brand}</TableCell>
+                                    <TableCell>{r.category}</TableCell>
                                     <TableCell>
                                         <Badge variant="secondary" className="font-normal">
-                                            {r.category}
+                                            {r.unit}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>${r.price}</TableCell>
-                                    <TableCell>{r.unit}</TableCell>
-                                    <TableCell>{r.qty}</TableCell>
+                                    <TableCell>${r.instockQty}</TableCell>
                                 </TableRow>
                             ))
                         )}

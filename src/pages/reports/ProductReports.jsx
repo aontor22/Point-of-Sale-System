@@ -101,7 +101,7 @@ export default function SaleReports() {
 
             <div className="flex-1 items-center justify-between gap-3 overflow-hidden rounded-md border bg-background p-5">
                 <div className="flex items-center gap-2 pb-4 w-full">
-                    <h3 className="text-lg font-semibold">Sales Report</h3>
+                    <h3 className="text-lg font-semibold">Product Report</h3>
                     <div className="ml-auto flex items-center gap-2">
                         <ExportsButtonSale />
                     </div>
@@ -114,8 +114,8 @@ export default function SaleReports() {
                             </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
-                            <TableHead>Brand</TableHead>
                             <TableHead>Category</TableHead>
+                            <TableHead>Brand</TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
                                     <span>Qty</span>
@@ -185,12 +185,12 @@ export default function SaleReports() {
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.brand}</TableCell>
                                     <TableCell>
                                         <Badge variant="secondary" className="font-normal">
                                             {r.category}
                                         </Badge>
                                     </TableCell>
+                                    <TableCell>{r.brand}</TableCell>
                                     <TableCell>{r.qty}</TableCell>
                                     <TableCell>${r.price}</TableCell>
                                     <TableCell>{r.qty}</TableCell>

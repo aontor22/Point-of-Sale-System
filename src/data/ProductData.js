@@ -23,6 +23,7 @@ import p10 from "../assets/person/p10.png";
 const CATALOG_ROWS = [
     {
         sku: "PT001",
+        invID: "INV001",
         name: "Lenovo IdeaPad 3",
         person: "James Kirwin",
         personImg: p1,
@@ -35,9 +36,11 @@ const CATALOG_ROWS = [
         price: 460,
         unit: "Pc",
         qty: 100,
-        soldQty: 5, // Sold Quantity
-        soldAmount: "$3000", // Sold Amount
-        instockQty: 100, // Instock Quantity
+        soldQty: 5,
+        soldAmount: "$3000",
+        instockQty: 100,
+        purchaseQty: 5,
+        purchaseAmount: "$500",
         costPrice: 899.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -56,6 +59,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT002",
+        invID: "INV002",
         name: "Beats Pro",
         image: pst2,
         person: "James Kirwin",
@@ -71,6 +75,8 @@ const CATALOG_ROWS = [
         soldQty: 10, // Sold Quantity
         soldAmount: "$1600", // Sold Amount
         instockQty: 140, // Instock Quantity
+        purchaseQty: 10,
+        purchaseAmount: "$1500",
         costPrice: 2499.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -89,6 +95,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT003",
+        invID: "INV003",
         name: "Nike Jordan",
         person: "James Kirwin",
         personImg: p3,
@@ -104,6 +111,8 @@ const CATALOG_ROWS = [
         soldQty: 8, // Sold Quantity
         soldAmount: "$880", // Sold Amount
         instockQty: 300, // Instock Quantity
+        purchaseQty: 8,
+        purchaseAmount: "$600",
         costPrice: 399.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -122,6 +131,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT004",
+        invID: "INV004",
         name: "Apple Series 6 Watch",
         person: "James Kirwin",
         personImg: p4,
@@ -137,6 +147,8 @@ const CATALOG_ROWS = [
         soldQty: 10, // Sold Quantity
         soldAmount: "$1200", // Sold Amount
         instockQty: 450, // Instock Quantity
+        purchaseQty: 10,
+        purchaseAmount: "$1000",
         costPrice: 599.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -155,6 +167,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT005",
+        invID: "INV005",
         name: "Amazon Echo Dot",
         person: "James Kirwin",
         personImg: p5,
@@ -170,6 +183,8 @@ const CATALOG_ROWS = [
         soldQty: 15, // Sold Quantity
         soldAmount: "$900", // Sold Amount
         instockQty: 700, // Instock Quantity
+        purchaseQty: 5,
+        purchaseAmount: "$1200",
         costPrice: 1299.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -188,6 +203,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT006",
+        invID: "INV006",
         name: "Sanford Chair Sofa",
         person: "James Kirwin",
         personImg: p6,
@@ -203,6 +219,8 @@ const CATALOG_ROWS = [
         soldQty: 12, // Sold Quantity
         soldAmount: "$6480", // Sold Amount
         instockQty: 630, // Instock Quantity
+        purchaseQty: 7,
+        purchaseAmount: "$800",
         costPrice: 99.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -221,6 +239,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT007",
+        invID: "INV007",
         name: "Red Premium Satchel",
         person: "James Kirwin",
         personImg: p7,
@@ -236,6 +255,8 @@ const CATALOG_ROWS = [
         soldQty: 20, // Sold Quantity
         soldAmount: "$1800", // Sold Amount
         instockQty: 550, // Instock Quantity
+        purchaseQty: 15,
+        purchaseAmount: "$2000",
         costPrice: 349.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -254,6 +275,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT008",
+        invID: "INV008",
         name: "iPhone 14 Pro",
         person: "James Kirwin",
         personImg: p8,
@@ -269,6 +291,8 @@ const CATALOG_ROWS = [
         soldQty: 5, // Sold Quantity
         soldAmount: "$2700", // Sold Amount
         instockQty: 410, // Instock Quantity
+        purchaseQty: 12,
+        purchaseAmount: "$100",
         costPrice: 429.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -287,6 +311,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT009",
+        invID: "INV009",
         name: "Gaming Chair",
         person: "James Kirwin",
         personImg: p9,
@@ -302,6 +327,8 @@ const CATALOG_ROWS = [
         soldQty: 7, // Sold Quantity
         soldAmount: "$2940", // Sold Amount
         instockQty: 550, // Instock Quantity
+        purchaseQty: 10,
+        purchaseAmount: "$300",
         costPrice: 2499.99,
         get totalPrice() {
             return this.qty * this.costPrice;
@@ -320,6 +347,7 @@ const CATALOG_ROWS = [
     },
     {
         sku: "PT010",
+        invID: "INV0010",
         name: "Borealis Backpack",
         person: "James Kirwin",
         personImg: p10,
@@ -335,6 +363,8 @@ const CATALOG_ROWS = [
         soldQty: 20, // Sold Quantity
         soldAmount: "$900", // Sold Amount
         instockQty: 550, // Instock Quantity
+        purchaseQty: 20,
+        purchaseAmount: "$5000",
         costPrice: 129.99,
         get totalPrice() {
             return this.qty * this.costPrice;

@@ -2,7 +2,6 @@ import StatView from '@/components/view/repStatView'
 import React from 'react'
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
     Select,
     SelectContent,
@@ -162,9 +161,9 @@ export default function SaleReports() {
                                             {r.category}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>${r.price}</TableCell>
-                                    <TableCell>{r.unit}</TableCell>
-                                    <TableCell>{r.qty}</TableCell>
+                                    <TableCell>{r.soldQty}</TableCell>
+                                    <TableCell>{r.soldAmount}</TableCell>
+                                    <TableCell>{r.instockQty}</TableCell>
                                 </TableRow>
                             ))
                         )}

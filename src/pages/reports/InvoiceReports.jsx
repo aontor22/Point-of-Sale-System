@@ -30,9 +30,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
     Loader2,
     ArrowUpDown,
+    Dot,
 } from "lucide-react";
 
-import PRODUCT_ROWS from "@/data/ProductData";
+import PRODUCT_ROWS from "@/data/CustomerData";
 import SalesCat from "@/components/ui/SalesCat";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
@@ -50,9 +51,7 @@ export default function SaleReports() {
     const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
-            r.name.toLowerCase().includes(s) ||
-            r.brand.toLowerCase().includes(s);
+            r.invoiceNumber.toLowerCase().includes(s);
         const matchCat = category === "all" || r.category === category;
         const matchBrand = brand === "all" || r.brand === brand;
         return matchSearch && matchCat && matchBrand;
@@ -87,31 +86,13 @@ export default function SaleReports() {
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-200">
-                            <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
-                            </TableHead>
-                            <TableHead>SKU</TableHead>
-                            <TableHead>Product Name</TableHead>
-                            <TableHead>Brand</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Qty</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Amount</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Instock Qty</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
+                            <TableHead>Invoice Number</TableHead>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>Due Date</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Paid</TableHead>
+                            <TableHead>Amount Due</TableHead>
+                            <TableHead>Status</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -136,36 +117,36 @@ export default function SaleReports() {
                             </TableRow>
                         ) : (
                             filtered.map((r) => (
-                                <TableRow key={r.sku}>
-                                    <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
-                                    </TableCell>
-                                    <TableCell className="font-medium">{r.sku}</TableCell>
-
-                                    <TableCell>
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-slate-100">
-                                                <img
-                                                    src={r.image}
-                                                    alt={r.name}
-                                                    className="h-6 w-6 object-contain"
-                                                    loading="lazy"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-medium">{r.name}</span>
-                                            </div>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{r.brand}</TableCell>
+                                <TableRow key={r.invoiceNumber}>
+                                    <TableCell className="font-medium text-orange-400">{r.invoiceNumber}</TableCell>
+                                    <TableCell>{r.customer}</TableCell>
                                     <TableCell>
                                         <Badge variant="secondary" className="font-normal">
-                                            {r.category}
+                                            {r.dueDate}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>${r.price}</TableCell>
-                                    <TableCell>{r.unit}</TableCell>
-                                    <TableCell>{r.qty}</TableCell>
+                                    <TableCell>{r.amount}</TableCell>
+                                    <TableCell>{r.paid}</TableCell>
+                                    <TableCell>{r.amountDue}</TableCell>
+                                    <TableCell>
+                                        <div
+                                            className={`w-15 items-center text-center h-4.5 rounded-lg text-xs font-medium
+                                                ${r.trxStatus === "Unpaid"
+                                                    ? "bg-red-600 text-white"
+                                                    : r.trxStatus === "Paid"
+                                                        ? "bg-emerald-600 text-white"
+                                                        : "bg-slate-100 text-slate-700"
+                                                }`}
+                                        >
+                                            {/* <Dot
+                                                size={40}
+                                                className={`-ml-1 mr-1 
+                                                    ${r.trxStatus === "Unpaid" ? "text-red-100" : "text-emerald-100"}`}
+                                            /> */}
+                                            {r.trxStatus}
+                                        </div>
+                                    </TableCell>
+
                                 </TableRow>
                             ))
                         )}

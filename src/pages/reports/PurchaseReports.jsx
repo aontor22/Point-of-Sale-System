@@ -84,27 +84,29 @@ export default function SaleReports() {
                     <TableHeader>
                         <TableRow className="bg-slate-200">
                             <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
+                                Reference
                             </TableHead>
-                            <TableHead>SKU</TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <span>SKU</span>
+                                    <ArrowUpDown className="h-3.5 w-3.5" />
+                                </div>
+                            </TableHead>
+                            <TableHead>Due Date</TableHead>
                             <TableHead>Product Name</TableHead>
-                            <TableHead>Brand</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Qty</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
-                                    <span>Sold Amount</span>
-                                    <ArrowUpDown className="h-3.5 w-3.5" />
-                                </div>
-                            </TableHead>
-                            <TableHead>
-                                <div className="flex items-center gap-1 whitespace-nowrap">
                                     <span>Instock Qty</span>
+                                    <ArrowUpDown className="h-3.5 w-3.5" />
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                Purchase Qty
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1 whitespace-nowrap">
+                                    <span>Purchase Amount</span>
                                     <ArrowUpDown className="h-3.5 w-3.5" />
                                 </div>
                             </TableHead>
@@ -133,11 +135,11 @@ export default function SaleReports() {
                         ) : (
                             filtered.map((r) => (
                                 <TableRow key={r.sku}>
-                                    <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
+                                    <TableCell className="text-orange-400">
+                                        PO2025
                                     </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
-
+                                    <TableCell>{r.manufacturedDate}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-slate-100">
@@ -153,15 +155,14 @@ export default function SaleReports() {
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{r.brand}</TableCell>
                                     <TableCell>
                                         <Badge variant="secondary" className="font-normal">
                                             {r.category}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>${r.price}</TableCell>
-                                    <TableCell>{r.unit}</TableCell>
-                                    <TableCell>{r.qty}</TableCell>
+                                    <TableCell>{r.instockQty}</TableCell>
+                                    <TableCell>{r.purchaseQty}</TableCell>
+                                    <TableCell>{r.purchaseAmount}</TableCell>
                                 </TableRow>
                             ))
                         )}

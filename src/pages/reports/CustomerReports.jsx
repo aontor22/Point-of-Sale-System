@@ -61,6 +61,11 @@ export default function SaleReports() {
     const [isStockHistoryVisible, setStockHistoryVisible] = useState(true);
     const [isSoldStockVisible, setSoldStockVisible] = useState(true);
 
+    const totalAmount = orders.reduce(
+        (sum, r) => sum + Number(r.amount.replace(/[$,]/g, "")),
+        0
+    );
+
     return (
         <div className="space-y-4">
             <ProductsDate />
@@ -154,14 +159,15 @@ export default function SaleReports() {
                                     <TableCell>{r.code}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="flex">
+                                            <div className="h-8 w-8 rounded-sm overflow-hidden flex items-center justify-center bg-slate-100">
                                                 <img
                                                     src={r.customerImg}
                                                     alt={r.customer}
-                                                    className="h-7.5 w-7.5 rounded-sm"
+                                                    className="h-full w-full object-cover"
                                                     loading="lazy"
                                                 />
                                             </div>
+
                                             <div className="flex flex-col">
                                                 <span className="font-medium">{r.customer}</span>
                                             </div>
@@ -174,45 +180,25 @@ export default function SaleReports() {
                                     </TableCell>
                                     <TableCell>{r.amount}</TableCell>
                                     <TableCell>{r.paymentMethod}</TableCell>
-                                    <TableCell><div className="bg-green-600 w-22 items-center rounded-lg text-white text-center h-5">{r.status}</div></TableCell>
+                                    <TableCell><div className="bg-green-600 h-5.5 w-22 items-center rounded-lg text-white text-center h-5">{r.status}</div></TableCell>
                                 </TableRow>
                             ))
                         )}
                     </TableBody>
-                    <TableFooter>
-                        {/* {loading ? (
+                    <TableFooter className="bg-slate-200">
                         <TableRow>
-                            <TableCell colSpan={10} className="h-24 text-center">
-                                <div className="inline-flex items-center gap-2 text-muted-foreground">
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Loading products…
-                                </div>
+                            <TableCell colSpan={4} className="font-semibold">
+                                Total
                             </TableCell>
-                        </TableRow>
-                    ) : filtered.length === 0 ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={10}
-                                className="h-24 text-center text-muted-foreground"
-                            >
-                                No products found
+                            <TableCell className="font-semibold">
+                                {totalAmount.toLocaleString("en-US", {
+                                    style: "currency",
+                                    currency: "USD",
+                                })}
                             </TableCell>
+                            <TableCell />
+                            <TableCell />
                         </TableRow>
-                    ) : (
-                        filtered.map((r) => ( */}
-                            <TableRow className="bg-slate-200 w-full">
-                                <TableCell className="w-10">
-                                    Total
-                                </TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                            </TableRow>
-                    {/* //     ))
-                    // )} */}
                     </TableFooter>
                 </Table>
             </div>
