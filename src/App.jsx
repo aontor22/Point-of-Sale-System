@@ -28,6 +28,11 @@ import InvoiceReports from "./pages/reports/InvoiceReports";
 import SupplierReports from "./pages/reports/SupplierReports";
 import CustomerReports from "./pages/reports/CustomerReports";
 import ProductReports from "./pages/reports/ProductReports";
+import Customer from "./pages/people/Customer";
+import Billers from "./pages/people/Billers";
+import Suppliers from "./pages/people/Supplier";
+import Stores from "./pages/people/Store";
+import WareHouses from "./pages/people/WareHouse";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -75,6 +80,11 @@ function App() {
                 <Route path="/reports/supplier-report" element={<SupplierReports />} />
                 <Route path="/reports/customer-report" element={<CustomerReports />} />
                 <Route path="/reports/product-report" element={<ProductReports />} />
+                <Route path="/peoples/customers" element={<Customer />} />
+                <Route path="/peoples/billers" element={<Billers />} />
+                <Route path="/peoples/suppliers" element={<Suppliers />} />
+                <Route path="/peoples/stores" element={<Stores />} />
+                <Route path="/peoples/warehouses" element={<WareHouses />} />
                 
               </Routes>
             </div>
