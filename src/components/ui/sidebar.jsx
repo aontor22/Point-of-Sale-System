@@ -64,9 +64,10 @@ export function SidebarItem({
 
   const base =
     `relative flex items-center max-h-10 py-2 px-3 my-1 font-medium rounded-md transition-colors group ` +
-    `${active
-      ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-      : "hover:bg-indigo-50 text-gray-600"
+    `${
+      active
+        ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+        : "hover:bg-indigo-50 text-gray-600"
     } ` +
     className;
 
@@ -129,5 +130,18 @@ export function SidebarItem({
         <div className={`w-full ${base}`}>{Label}</div>
       )}
     </li>
+  );
+}
+
+// New: section title that hides when sidebar is collapsed
+export function SidebarSectionTitle({ children }) {
+  const { expanded } = useContext(SidebarContext);
+
+  if (!expanded) return null;
+
+  return (
+    <p className="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+      {children}
+    </p>
   );
 }
