@@ -2,7 +2,7 @@ import React from "react";
 import StatExpenseCard from "../ui/CardChange";
 import { FileText, Users, Calendar, UserCheck, Clock } from "lucide-react";
 
-function IncomeRow() {
+function AttendanceView() {
     const stats = [
         {
             title: "Total Employees",
@@ -59,4 +59,4 @@ function IncomeRow() {
     );
 }
 
-export default IncomeRow;
+export default AttendanceView;

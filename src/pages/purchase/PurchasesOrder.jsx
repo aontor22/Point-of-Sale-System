@@ -1,4 +1,3 @@
-import UserView from '@/components/view/UserView'
 import React, { useState } from 'react'
 
 import { Button } from "@/components/ui/button";
@@ -49,6 +48,7 @@ import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ButtonComponent from '@/components/ui/ChangeButton'
 import { useNavigate } from 'react-router-dom';
+import PurchasesOverview from '@/components/view/PurchasesOrderView';
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
@@ -106,11 +106,7 @@ export default function SaleReports() {
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <div className="flex-1">
-                <h1 className="text-xl font-semibold text-blue-800">User Management</h1>
-                <span className="text-slate-500">Manage system users and their access permissions</span>
-            </div>
-            <UserView />
+            <PurchasesOverview />
 
             <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
                 <div className="flex w-full items-center p-3 gap-2">

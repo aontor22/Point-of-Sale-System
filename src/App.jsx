@@ -39,6 +39,9 @@ import Employee from "./pages/hrm/Employee";
 import Attendance from "./pages/hrm/Attendance";
 import AddEmployee from "./pages/hrm/AddEmployee";
 import Users from "./pages/userManagement/Users";
+import Purchase from "./pages/purchase/Purchases";
+import PurchaseReturn from "./pages/purchase/PurchasesReturn";
+import PurchaseOrder from "./pages/purchase/PurchasesOrder";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -97,6 +100,9 @@ function App() {
                 <Route path="/hrm/attendance" element={<Attendance />} />
                 <Route path="/hrm/employees/add" element={<AddEmployee />} />
                 <Route path="/user/users" element={<Users />} />
+                <Route path="/purchases/purchases" element={<Purchase />} />
+                <Route path="/purchases/purchases-return" element={<PurchaseReturn />} />
+                <Route path="/purchases/purchases-order" element={<PurchaseOrder />} />
               </Routes>
             </div>
           </main>

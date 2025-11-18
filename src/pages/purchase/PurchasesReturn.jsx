@@ -1,4 +1,3 @@
-import UserView from '@/components/view/UserView'
 import React, { useState } from 'react'
 
 import { Button } from "@/components/ui/button";
@@ -44,11 +43,12 @@ import {
     MoreHorizontal,
 } from "lucide-react";
 
-import users from "@/data/UserData";
+import purchaseReturns from "@/data/PurchaseReturnData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ButtonComponent from '@/components/ui/ChangeButton'
 import { useNavigate } from 'react-router-dom';
+import PurchasesOverview from '@/components/view/PurchasesReturnView';
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
@@ -56,12 +56,12 @@ export default function SaleReports() {
     const [status, setStatus] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = users.filter((r) => {
+    const filtered = purchaseReturns.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.userName.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.userDepartment === category;
-        const matchBrand = status === "all" || r.userStatus === status;
+            r.prSupplier.toLowerCase().includes(s);
+        const matchCat = category === "all" || r.prSupplier === category;
+        const matchBrand = status === "all" || r.prStatus === status;
         return matchSearch && matchCat && matchBrand;
     });
 
@@ -106,11 +106,7 @@ export default function SaleReports() {
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <div className="flex-1">
-                <h1 className="text-xl font-semibold text-blue-800">User Management</h1>
-                <span className="text-slate-500">Manage system users and their access permissions</span>
-            </div>
-            <UserView />
+            <PurchasesOverview />
 
             <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
                 <div className="flex w-full items-center p-3 gap-2">
@@ -176,14 +172,15 @@ export default function SaleReports() {
                                 <TableHead className="w-10">
                                     <Checkbox aria-label="Select all" />
                                 </TableHead>
-                                <TableHead>User</TableHead>
-                                <TableHead>User ID</TableHead>
-                                <TableHead>Contact</TableHead>
-                                <TableHead>Role</TableHead>
-                                <TableHead>Department</TableHead>
+                                <TableHead>Order ID</TableHead>
+                                <TableHead>Supplier</TableHead>
+                                <TableHead>Order Date</TableHead>
+                                <TableHead>Expected Delivery</TableHead>
+                                <TableHead>Total Items</TableHead>
+                                <TableHead>Total Amount</TableHead>
+                                <TableHead>Priority</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Joined Date</TableHead>
-                                <TableHead>Last Login</TableHead>
+                                <TableHead>Created By</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -209,48 +206,27 @@ export default function SaleReports() {
                                 </TableRow>
                             ) : (
                                 filtered.map((r) => (
-                                    <TableRow key={r.userCode}>
+                                    <TableRow key={r.prID}>
                                         <TableCell>
-                                            <Checkbox aria-label={`Select ${r.userName}`} />
+                                            <Checkbox aria-label={`Select ${r.prID}`} />
                                         </TableCell>
 
-                                        <TableCell className="align-top">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-9 w-9 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
-                                                    <img
-                                                        src={r.userImage}
-                                                        alt={r.userName}
-                                                        className="h-full w-full object-cover"
-                                                        loading="lazy"
-                                                    />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium whitespace-normal break-words">
-                                                        {r.userName}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </TableCell>
+                                        <TableCell>{r.prCode}</TableCell>
 
                                         <TableCell className="whitespace-nowrap">
-                                            {r.userCode}
+                                            {r.prSupplier}
+                                        </TableCell>
+
+                                        <TableCell className="whitespace-normal break-words">{r.prOrderDate}</TableCell>
+
+                                        <TableCell>{r.prExpectedDelivery}</TableCell>
+
+                                        <TableCell className="whitespace-normal break-words">
+                                            {r.prTotalItems}
                                         </TableCell>
 
                                         <TableCell className="whitespace-normal break-words">
-                                            <div className="flex flex-col text-slate-600">
-                                                <span className="flex items-center font-medium text-muted-foreground gap-1">
-                                                    <Mail size={14} />
-                                                    <span className="whitespace-normal break-words">
-                                                        {r.userEmail}
-                                                    </span>
-                                                </span>
-                                                <span className="flex items-center text-xs text-muted-foreground gap-1">
-                                                    <PhoneCall size={12} />
-                                                    <span className="whitespace-normal break-words">
-                                                        {r.userPhone}
-                                                    </span>
-                                                </span>
-                                            </div>
+                                            {r.prTotalAmount}
                                         </TableCell>
 
                                         <TableCell>
@@ -259,15 +235,18 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-[80px] h-7
                                                     rounded-full text-xs font-medium
-                                                    ${categoryColors[r.userRole] || "bg-slate-100 text-slate-700"}
-                                                    `}
+                                                    ${r.prPriority === "Low"
+                                                        ? "bg-blue-100 text-blue-600"
+                                                        : r.prPriority === "Medium"
+                                                            ? "bg-amber-100 text-amber-600"
+                                                            : r.prPriority === "High"
+                                                                ? "bg-red-100 text-red-600"
+                                                                : "bg-slate-200 text-slate-600"
+                                                    }
+            `}
                                             >
-                                                {r.userRole}
+                                                {r.prPriority}
                                             </div>
-                                        </TableCell>
-
-                                        <TableCell className="whitespace-normal break-words">
-                                            {r.userDepartment}
                                         </TableCell>
 
                                         <TableCell>
@@ -276,26 +255,26 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-[80px] h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.userStatus === "Active"
-                                                        ? "bg-emerald-300 text-green-600"
-                                                        : r.userStatus === "Inactive"
-                                                            ? "bg-gray-300 text-gray-600"
-                                                            : r.userStatus === "Suspended"
+                                                    ${r.prStatus === "Approved"
+                                                        ? "bg-blue-600 text-white"
+                                                        : r.prStatus === "Pending Approval"
+                                                            ? "bg-amber-500 text-white"
+                                                            : r.prStatus === "Completed"
+                                                                ? "bg-green-600 text-white"
+                                                            : r.prStatus === "Draft"
+                                                                ? "bg-slate-500 text-white"
+                                                            : r.prStatus === "Canceled"
                                                                 ? "bg-red-300 text-red-600"
                                                                 : "bg-slate-200 text-slate-600"
                                                     }
             `}
                                             >
-                                                {r.userStatus}
+                                                {r.prStatus}
                                             </div>
                                         </TableCell>
 
-                                        <TableCell className="whitespace-normal break-words">
-                                            {r.userJoinedDate}
-                                        </TableCell>
-
                                         <TableCell className="whitespace-nowrap">
-                                            {r.userLastLogin}
+                                            {r.prCreatedBy}
                                         </TableCell>
 
                                         <TableCell>
