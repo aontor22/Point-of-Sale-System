@@ -4,8 +4,8 @@ import { Wallet2, WalletCards, Clock3, FileText } from "lucide-react";
 
 function IncomeRow() {
     return (
-        <div className="flex gap-4">
-            {/* 1. Total Income */}
+        <div className="flex-1 min-w-0">
+            <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
             <StatExpenseCard
                 title="Total Income"
                 amount="$113,170.00"
@@ -14,7 +14,6 @@ function IncomeRow() {
                 tone="green"
             />
 
-            {/* 2. Received Income */}
             <StatExpenseCard
                 title="Received Income"
                 amount="$65,170.00"
@@ -40,6 +39,7 @@ function IncomeRow() {
                 icon={<FileText className="h-6 w-6" />}
                 tone="blue"
             />
+            </div>
         </div>
     );
 }

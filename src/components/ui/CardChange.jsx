@@ -68,7 +68,7 @@ function StatExpenseCard({
     return (
         <Card
             className={cn(
-                "w-64 p-0 h-48 relative bg-white rounded-2xl",
+                " p-0 w-full h-full rounded-xl relative bg-white",
                 styles.card,
                 className
             )}

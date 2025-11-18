@@ -4,7 +4,8 @@ import { DollarSign, Wallet2, Clock3, FileText } from "lucide-react";
 
 function ExpensesRow() {
     return (
-        <div className="flex gap-4">
+        <div className="flex-1 min-w-0">
+            <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(230px,1fr))]">
             <StatExpenseCard
                 title="Total Expenses"
                 amount="$21,424.50"
@@ -36,6 +37,7 @@ function ExpensesRow() {
                 icon={<FileText className="h-6 w-6" />}
                 tone="violet"
             />
+            </div>
         </div>
     );
 }

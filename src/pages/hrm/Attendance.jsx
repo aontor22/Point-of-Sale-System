@@ -1,4 +1,4 @@
-import IncomeView from '@/components/view/IncomeView'
+import EmployeeView from '@/components/view/AttendanceView'
 import React, { useState } from 'react'
 
 import { Button } from "@/components/ui/button";
@@ -36,26 +36,35 @@ import {
     PlusCircle,
     Download,
     Plus,
+    Mail,
+    PhoneCall,
+    Clock,
+    Map,
+    MapPin,
+    MoreHorizontal,
+    Eye,
+    Edit,
+    Trash2,
 } from "lucide-react";
 
-import incomes from "@/data/IncomeData";
+import employee from "@/data/EmployeeData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ButtonComponent from '@/components/ui/ChangeButton'
+import { AttendanceHeader } from '@/components/ui/AttendanceHeader';
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
     const [category, setCategory] = React.useState("all");
-    const [brand, setBrand] = React.useState("all");
     const [status, setStatus] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = incomes.filter((r) => {
+    const filtered = employee.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.inDate.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = brand === "all" || r.brand === brand;
+            r.empName.toLowerCase().includes(s);
+        const matchCat = category === "all" || r.empDepartment === category;
+        const matchBrand = status === "all" || r.empStatus === status;
         return matchSearch && matchCat && matchBrand;
     });
 
@@ -82,13 +91,24 @@ export default function SaleReports() {
         "Rental Income": "bg-orange-100 text-orange-600",
         Commission: "bg-pink-100 text-pink-600",
         "Licensing Revenue": "bg-teal-100 text-teal-700",
-    };
 
+        "Store Operations": "bg-blue-100 text-blue-600",
+        "POS Operations": "bg-purple-100 text-purple-600",
+        Inventory: "bg-emerald-100 text-emerald-700",
+        Sales: "bg-sky-100 text-sky-600",
+        "Customer Service": "bg-orange-100 text-orange-600",
+        Finance: "bg-green-100 text-green-600",
+    };
 
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <IncomeView />
+            <div className="flex-1">
+                <div>
+                    <AttendanceHeader attendanceRate={0.6} />
+                </div>
+                <EmployeeView />
+            </div>
 
             <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
                 <div className="flex w-full items-center p-3 gap-2">
@@ -108,17 +128,13 @@ export default function SaleReports() {
                                 <SelectValue placeholder="Brand" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Categories</SelectItem>
-                                <SelectItem value="Electro Mart">Electro Mart</SelectItem>
-                                <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
-                                <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
-                                <SelectItem value="Gadget World">Gadget World</SelectItem>
-                                <SelectItem value="Volt Vault">Volt Vault</SelectItem>
-                                <SelectItem value="Elite Retail">Elite Retail</SelectItem>
-                                <SelectItem value="Prime Mart">Prime Mart</SelectItem>
-                                <SelectItem value="Neo Tech">Neo Tech</SelectItem>
-                                <SelectItem value="Urban Mart">Urban Mart</SelectItem>
-                                <SelectItem value="Travel Mart">Travel Mart</SelectItem>
+                                <SelectItem value="all">All Department</SelectItem>
+                                <SelectItem value="Store Operations">Store Operations</SelectItem>
+                                <SelectItem value="POS Operations">POS Operations</SelectItem>
+                                <SelectItem value="Inventory">Inventory</SelectItem>
+                                <SelectItem value="Sales">Sales</SelectItem>
+                                <SelectItem value="Customer Service">Customer Service</SelectItem>
+                                <SelectItem value="Finance">Finance</SelectItem>
                             </SelectContent>
                         </Select>
                         <Select value={status} onValueChange={setStatus}>
@@ -127,9 +143,9 @@ export default function SaleReports() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="Electro Mart">Paid</SelectItem>
-                                <SelectItem value="Quantum Gadgets">Pending</SelectItem>
-                                <SelectItem value="Prime Bazaar">Unpaid</SelectItem>
+                                <SelectItem value="Electro Mart">Active</SelectItem>
+                                <SelectItem value="Quantum Gadgets">Inactive</SelectItem>
+                                <SelectItem value="Prime Bazaar">On Leave</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -143,29 +159,31 @@ export default function SaleReports() {
                     ><PlusCircle size={20} /></ButtonComponent>
 
                     <ButtonComponent
-                        title="Add Income"
+                        title="Mark Attendance"
                         isVisible={isInventoryReportVisible}
                         // onClick={handleInventoryReportClick}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
-                        icon={<Plus size={16} />}
+                        icon={<Clock size={16} />}
                     ><PlusCircle size={20} /></ButtonComponent>
                 </div>
 
                 <div className="overflow-hidden">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-slate-200">
+                            <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
                                     <Checkbox aria-label="Select all" />
                                 </TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Source</TableHead>
-                                <TableHead className="text-right">Amount</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Payment Method</TableHead>
-                                <TableHead>Invoice #</TableHead>
+                                <TableHead>Employee</TableHead>
+                                <TableHead>Employee ID</TableHead>
+                                <TableHead>Department</TableHead>
+                                <TableHead>Position</TableHead>
+                                <TableHead>Check In</TableHead>
+                                <TableHead>Check Out</TableHead>
+                                <TableHead>Work Hours</TableHead>
+                                <TableHead>Location</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead></TableHead>
+                                <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
 
@@ -190,46 +208,118 @@ export default function SaleReports() {
                                 </TableRow>
                             ) : (
                                 filtered.map((r) => (
-                                    <TableRow key={r.inSource}>
+                                    <TableRow key={r.empName}>
                                         <TableCell>
-                                            <Checkbox aria-label={`Select ${r.inStatus}`} />
+                                            <Checkbox aria-label={`Select ${r.empStatus}`} />
                                         </TableCell>
-                                        <TableCell>{r.inDate}</TableCell>
-                                        <TableCell>{r.inSource}</TableCell>
-                                        <TableCell className="text-right">${r.inAmount.toFixed(2)}</TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-9 w-9 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
+                                                    <img
+                                                        src={r.empImage}
+                                                        alt={r.empName}
+                                                        className="h-full w-full object-cover"
+                                                        loading="lazy"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{r.empName}</span>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{r.empCode}</TableCell>
                                         <TableCell>
                                             <div className={`
                                                 inline-flex items-center justify-center
                                                 px-3 py-1 min-w-[120px] h-7
                                                 rounded-full text-xs font-medium
-                                                ${categoryColors[r.inCategory || r.inCategory] || "bg-slate-100 text-slate-700"}
+                                                ${categoryColors[r.empDepartment || r.empDepartment] || "bg-slate-100 text-slate-700"}
                                                 `}>
-                                                {r.inCategory || r.inCategory}
+                                                {r.empDepartment || r.empDepartment}
                                             </div>
 
                                         </TableCell>
-                                        <TableCell>{r.inPaymentMethod}</TableCell>
-                                        <TableCell>{r.inInvoice}</TableCell>
+                                        <TableCell>{r.empRole}</TableCell>
+                                        <TableCell>
+                                            {r.empCheckIn && r.empCheckIn !== "-" ? (
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="text-green-500" size={14} />
+                                                    {r.empCheckIn}
+                                                </div>
+                                            ) : (
+                                                <span>-</span>
+                                            )}
+                                        </TableCell>
+
+                                        <TableCell>
+                                            {r.empCheckOut && r.empCheckOut !== "-" ? (
+                                                <div className="flex items-center gap-1">
+                                                    <Clock className="text-red-500" size={14} />
+                                                    {r.empCheckOut}
+                                                </div>
+                                            ) : (
+                                                <span>-</span>
+                                            )}
+                                        </TableCell>
+
+                                        <TableCell>{r.empWorkHours}</TableCell>
+                                        <TableCell>
+                                            {r.empLocation && r.empLocation !== "-" ? (
+                                                <div className="flex items-center gap-1">
+                                                    <MapPin className="text-gray-500" size={14} />
+                                                    {r.empLocation}
+                                                </div>
+                                            ) : (
+                                                <span>-</span>
+                                            )}
+                                        </TableCell>
                                         <TableCell>
                                             <div
                                                 className={`
                                                     inline-flex items-center justify-center
-                                                    px-3 py-1 min-w-20 h-7
+                                                    px-3 py-1 min-w-[80px] h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.inStatus === "Received"
+                                                    ${r.empAttendanceStatus === "Present"
                                                         ? "bg-emerald-500 text-white"
-                                                        : r.inStatus === "Processing"
-                                                            ? "bg-blue-500 text-white"
-                                                            : r.inStatus === "Pending"
-                                                                ? "bg-amber-400 text-white"
-                                                                : "bg-slate-200 text-slate-700"
+                                                        : r.empAttendanceStatus === "Late"
+                                                            ? "bg-orange-500 text-white"
+                                                            : r.empAttendanceStatus === "On Leave"
+                                                                ? "bg-blue-400 text-white"
+                                                                : r.empAttendanceStatus === "Half Day"
+                                                                    ? "bg-purple-600 text-white"
+                                                                    : r.empAttendanceStatus === "Absent"
+                                                                        ? "bg-red-600 text-white"
+                                                                        : ""
                                                     }
     `}
                                             >
-                                                {r.inStatus}
+                                                {r.empAttendanceStatus}
                                             </div>
                                         </TableCell>
-                                        <TableCell></TableCell>
+                                        <TableCell>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                    >
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem className="gap-2">
+                                                        <Eye className="h-4 w-4" /> View
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="gap-2">
+                                                        <Edit className="h-4 w-4" /> Edit
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem className="gap-2 text-destructive">
+                                                        <Trash2 className="h-4 w-4" /> Delete
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
 
                                     </TableRow>
                                 ))

@@ -150,7 +150,7 @@ export default function ProductsPage() {
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-slate-200">
+                        <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>

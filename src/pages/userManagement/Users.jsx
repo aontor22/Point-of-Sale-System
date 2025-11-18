@@ -1,4 +1,4 @@
-import IncomeView from '@/components/view/IncomeView'
+import UserView from '@/components/view/UserView'
 import React, { useState } from 'react'
 
 import { Button } from "@/components/ui/button";
@@ -36,32 +36,40 @@ import {
     PlusCircle,
     Download,
     Plus,
+    Mail,
+    PhoneCall,
 } from "lucide-react";
 
-import incomes from "@/data/IncomeData";
+import employee from "@/data/EmployeeData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ButtonComponent from '@/components/ui/ChangeButton'
+import { useNavigate } from 'react-router-dom';
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
     const [category, setCategory] = React.useState("all");
-    const [brand, setBrand] = React.useState("all");
     const [status, setStatus] = React.useState("all");
     const [loading] = React.useState(false);
 
-    const filtered = incomes.filter((r) => {
+    const filtered = employee.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.inDate.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = brand === "all" || r.brand === brand;
+            r.empName.toLowerCase().includes(s);
+        const matchCat = category === "all" || r.empDepartment === category;
+        const matchBrand = status === "all" || r.empStatus === status;
         return matchSearch && matchCat && matchBrand;
     });
 
     const [isInventoryReportVisible, setInventoryReportVisible] = useState(true);
     const [isStockHistoryVisible, setStockHistoryVisible] = useState(true);
     const [isSoldStockVisible, setSoldStockVisible] = useState(true);
+
+    const navigate = useNavigate();
+
+    const handleAddEmployeeClick = () => {
+        navigate("/hrm/employees/add");
+    };
 
     const categoryColors = {
         "Office Supplies": "bg-purple-100 text-purple-600",
@@ -82,13 +90,23 @@ export default function SaleReports() {
         "Rental Income": "bg-orange-100 text-orange-600",
         Commission: "bg-pink-100 text-pink-600",
         "Licensing Revenue": "bg-teal-100 text-teal-700",
-    };
 
+        "Store Operations": "bg-blue-100 text-blue-600",
+        "POS Operations": "bg-purple-100 text-purple-600",
+        Inventory: "bg-emerald-100 text-emerald-700",
+        Sales: "bg-sky-100 text-sky-600",
+        "Customer Service": "bg-orange-100 text-orange-600",
+        Finance: "bg-green-100 text-green-600",
+    };
 
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <IncomeView />
+            <div className="flex-1">
+                <h1 className="text-xl font-semibold text-blue-800">User Management</h1>
+                <span className="text-slate-500">Manage system users and their access permissions</span>
+            </div>
+            <UserView />
 
             <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
                 <div className="flex w-full items-center p-3 gap-2">
@@ -108,17 +126,13 @@ export default function SaleReports() {
                                 <SelectValue placeholder="Brand" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Categories</SelectItem>
-                                <SelectItem value="Electro Mart">Electro Mart</SelectItem>
-                                <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
-                                <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
-                                <SelectItem value="Gadget World">Gadget World</SelectItem>
-                                <SelectItem value="Volt Vault">Volt Vault</SelectItem>
-                                <SelectItem value="Elite Retail">Elite Retail</SelectItem>
-                                <SelectItem value="Prime Mart">Prime Mart</SelectItem>
-                                <SelectItem value="Neo Tech">Neo Tech</SelectItem>
-                                <SelectItem value="Urban Mart">Urban Mart</SelectItem>
-                                <SelectItem value="Travel Mart">Travel Mart</SelectItem>
+                                <SelectItem value="all">All Department</SelectItem>
+                                <SelectItem value="Store Operations">Store Operations</SelectItem>
+                                <SelectItem value="POS Operations">POS Operations</SelectItem>
+                                <SelectItem value="Inventory">Inventory</SelectItem>
+                                <SelectItem value="Sales">Sales</SelectItem>
+                                <SelectItem value="Customer Service">Customer Service</SelectItem>
+                                <SelectItem value="Finance">Finance</SelectItem>
                             </SelectContent>
                         </Select>
                         <Select value={status} onValueChange={setStatus}>
@@ -127,9 +141,9 @@ export default function SaleReports() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="Electro Mart">Paid</SelectItem>
-                                <SelectItem value="Quantum Gadgets">Pending</SelectItem>
-                                <SelectItem value="Prime Bazaar">Unpaid</SelectItem>
+                                <SelectItem value="Electro Mart">Active</SelectItem>
+                                <SelectItem value="Quantum Gadgets">Inactive</SelectItem>
+                                <SelectItem value="Prime Bazaar">On Leave</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -143,9 +157,9 @@ export default function SaleReports() {
                     ><PlusCircle size={20} /></ButtonComponent>
 
                     <ButtonComponent
-                        title="Add Income"
+                        title="Add User"
                         isVisible={isInventoryReportVisible}
-                        // onClick={handleInventoryReportClick}
+                        onClick={handleAddEmployeeClick}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Plus size={16} />}
                     ><PlusCircle size={20} /></ButtonComponent>
@@ -154,16 +168,16 @@ export default function SaleReports() {
                 <div className="overflow-hidden">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-slate-200">
+                            <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
                                     <Checkbox aria-label="Select all" />
                                 </TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Source</TableHead>
-                                <TableHead className="text-right">Amount</TableHead>
-                                <TableHead>Category</TableHead>
-                                <TableHead>Payment Method</TableHead>
-                                <TableHead>Invoice #</TableHead>
+                                <TableHead>User</TableHead>
+                                <TableHead>User ID</TableHead>
+                                <TableHead>Contact</TableHead>
+                                <TableHead>Position</TableHead>
+                                <TableHead>Contact</TableHead>
+                                <TableHead>Join Date</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead></TableHead>
                             </TableRow>
@@ -190,43 +204,64 @@ export default function SaleReports() {
                                 </TableRow>
                             ) : (
                                 filtered.map((r) => (
-                                    <TableRow key={r.inSource}>
+                                    <TableRow key={r.empName}>
                                         <TableCell>
-                                            <Checkbox aria-label={`Select ${r.inStatus}`} />
+                                            <Checkbox aria-label={`Select ${r.empStatus}`} />
                                         </TableCell>
-                                        <TableCell>{r.inDate}</TableCell>
-                                        <TableCell>{r.inSource}</TableCell>
-                                        <TableCell className="text-right">${r.inAmount.toFixed(2)}</TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-9 w-9 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">
+                                                    <img
+                                                        src={r.empImage}
+                                                        alt={r.empName}
+                                                        className="h-full w-full object-cover"
+                                                        loading="lazy"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="font-medium">{r.empName}</span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {r.empEmail}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{r.empCode}</TableCell>
                                         <TableCell>
                                             <div className={`
                                                 inline-flex items-center justify-center
                                                 px-3 py-1 min-w-[120px] h-7
                                                 rounded-full text-xs font-medium
-                                                ${categoryColors[r.inCategory || r.inCategory] || "bg-slate-100 text-slate-700"}
+                                                ${categoryColors[r.empDepartment || r.empDepartment] || "bg-slate-100 text-slate-700"}
                                                 `}>
-                                                {r.inCategory || r.inCategory}
+                                                {r.empDepartment || r.empDepartment}
                                             </div>
 
                                         </TableCell>
-                                        <TableCell>{r.inPaymentMethod}</TableCell>
-                                        <TableCell>{r.inInvoice}</TableCell>
+                                        <TableCell>{r.empRole}</TableCell>
+                                        <TableCell>
+                                            <div className="flex flex-col text-slate-600">
+                                                <span className="flex items-center font-medium text-muted-foreground gap-1"><Mail size={14} />{r.empEmail}</span>
+                                                <span className="flex items-center text-xs text-muted-foreground gap-1 "><PhoneCall size={12} /> {r.empPhone}</span>
+                                            </div></TableCell>
+                                        <TableCell>{r.empHireDate}</TableCell>
                                         <TableCell>
                                             <div
                                                 className={`
                                                     inline-flex items-center justify-center
-                                                    px-3 py-1 min-w-20 h-7
+                                                    px-3 py-1 min-w-[80px] h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.inStatus === "Received"
+                                                    ${r.empStatus === "Active"
                                                         ? "bg-emerald-500 text-white"
-                                                        : r.inStatus === "Processing"
-                                                            ? "bg-blue-500 text-white"
-                                                            : r.inStatus === "Pending"
+                                                        : r.empStatus === "Inactive"
+                                                            ? "bg-gray-500 text-white"
+                                                            : r.empStatus === "On Leave"
                                                                 ? "bg-amber-400 text-white"
                                                                 : "bg-slate-200 text-slate-700"
                                                     }
     `}
                                             >
-                                                {r.inStatus}
+                                                {r.empStatus}
                                             </div>
                                         </TableCell>
                                         <TableCell></TableCell>

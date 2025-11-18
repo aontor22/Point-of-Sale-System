@@ -35,6 +35,10 @@ import Stores from "./pages/people/Store";
 import WareHouses from "./pages/people/WareHouse";
 import Expense from "./pages/finance&accounts/Expense";
 import Income from "./pages/finance&accounts/Income";
+import Employee from "./pages/hrm/Employee";
+import Attendance from "./pages/hrm/Attendance";
+import AddEmployee from "./pages/hrm/AddEmployee";
+import Users from "./pages/userManagement/Users";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -89,6 +93,10 @@ function App() {
                 <Route path="/peoples/warehouses" element={<WareHouses />} />
                 <Route path="/finance/expenses" element={<Expense />} />
                 <Route path="/finance/income" element={<Income />} />
+                <Route path="/hrm/employees" element={<Employee />} />
+                <Route path="/hrm/attendance" element={<Attendance />} />
+                <Route path="/hrm/employees/add" element={<AddEmployee />} />
+                <Route path="/user/users" element={<Users />} />
               </Routes>
             </div>
           </main>
