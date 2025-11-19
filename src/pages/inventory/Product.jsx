@@ -80,20 +80,20 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border dark:bg-slate-800 p-3">
                 <div className="flex min-w-[260px] flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8"
+                            className="pl-8 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
 
                     <Select value={category} onValueChange={setCategory}>
-                        <SelectTrigger className="w-[170px]">
+                        <SelectTrigger className="w-[170px] dark:bg-slate-900">
                             <SelectValue placeholder="Category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -108,7 +108,7 @@ export default function ProductsPage() {
                     </Select>
 
                     <Select value={brand} onValueChange={setBrand}>
-                        <SelectTrigger className="w-[170px]">
+                        <SelectTrigger className="w-[170px] dark:bg-slate-900">
                             <SelectValue placeholder="Brand" />
                         </SelectTrigger>
                         <SelectContent>
@@ -127,13 +127,13 @@ export default function ProductsPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <Button size="sm" variant="outline" className="gap-2">
+                    <Button size="sm" variant="outline" className="gap-2 dark:bg-slate-900">
                         <Filter className="h-4 w-4" />
                         Filters
                     </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="outline" className="gap-2">
+                            <Button size="sm" variant="outline" className="gap-2 dark:bg-slate-900">
                                 <Download className="h-4 w-4" />
                                 Export
                             </Button>

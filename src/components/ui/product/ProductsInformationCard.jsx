@@ -38,14 +38,14 @@ export default function ProductInformationCard({
     };
 
     return (
-        <div className="rounded-md border bg-white">
+        <div className="rounded-md border bg-white dark:bg-slate-800">
             <div className="flex items-center justify-between px-4 py-2">
                 <p className="text-sm flex font-semibold text-blue-800 items-center gap-1.5"> <Info size={16} /> Product Information</p>
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                     onClick={toggle}
                 >
                     <ChevronUpCircle
@@ -116,7 +116,7 @@ export default function ProductInformationCard({
                                     type="button"
                                     variant="secondary"
                                     onClick={onGenerateSku}
-                                    className="shrink-0"
+                                    className="shrink-0 cursor-pointer"
                                 >
                                     <Wand2 className="mr-2 h-4 w-4" />
                                     Generate
@@ -150,7 +150,7 @@ export default function ProductInformationCard({
                                 <Button
                                     type="button"
                                     variant="link"
-                                    className="h-auto p-0 text-sm"
+                                    className="h-auto p-0 text-sm cursor-pointer"
                                     onClick={onAddCategory}
                                 >
                                     <Plus className="mr-1 h-4 w-4" />
@@ -229,7 +229,7 @@ export default function ProductInformationCard({
                                     type="button"
                                     variant="secondary"
                                     onClick={onGenerateItemCode}
-                                    className="shrink-0"
+                                    className="shrink-0 cursor-pointer"
                                 >
                                     <Wand2 className="mr-2 h-4 w-4" />
                                     Generate
@@ -257,7 +257,7 @@ export default function ProductInformationCard({
                     <div className="space-y-1.5">
                         <Label htmlFor="desc">Description</Label>
 
-                        <div className="flex-1 items-center rounded-md border bg-white text-sm text-slate-600">
+                        <div className="flex-1 items-center rounded-md border bg-white dark:bg-slate-900 text-sm text-slate-600">
                             <div className="border-b flex p-4 gap-2">
                                 <span className="text-lg px-1.5 py-0.5">B</span>
                                 <span className="text-lg px-1.5 py-0.5 italic">I</span>

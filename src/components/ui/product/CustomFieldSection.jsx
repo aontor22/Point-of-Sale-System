@@ -29,14 +29,14 @@ export default function CustomFieldsSection({ values, onCollapse, onChange }) {
     };
 
     return (
-        <Card className="border rounded-md p-0">
+        <Card className="border rounded-md dark:bg-slate-800 p-0">
             <div className="flex items-center border-b justify-between px-4 py-2">
                 <p className="text-sm flex font-semibold text-green-700 items-center gap-1.5"> <List size={16} /> Custom Fields</p>
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                     onClick={toggle1}
                 >
                     <ChevronUpCircle
@@ -49,7 +49,7 @@ export default function CustomFieldsSection({ values, onCollapse, onChange }) {
 
             {!collapsed && (
                 <CardContent className="space-y-4 pb-4">
-                    <div className="flex items-center gap-4 bg-indigo-50 rounded-md p-4">
+                    <div className="flex items-center gap-4 bg-indigo-50 dark:bg-slate-700/40 border rounded-md p-4">
                         <div className="flex items-center gap-2">
                             <Checkbox
                                 id="warranties"

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import ProductInformationCard from "../ui/ProductsInformationCard";
-import PricingStocksSection from "../ui/PricingStocksSection";
-import ImagesSection from "../ui/ImagesSection";
+import ProductInformationCard from "../ui/product/ProductsInformationCard";
+import PricingStocksSection from "../ui/product/PricingStocksSection";
+import ImagesSection from "../ui/product/ImagesSection";
 import { Button } from "../ui/button";
-import CustomFieldsSection from "../ui/CustomFieldSection";
+import CustomFieldsSection from "../ui/product/CustomFieldSection";
 
 export default function AddProduct() {
 
@@ -55,8 +55,8 @@ export default function AddProduct() {
                 <CustomFieldsSection values={customs} onChange={setCustoms} />
 
                 <div className="flex items-center justify-end gap-3">
-                    <Button type="button" variant="outline">Cancel</Button>
-                    <Button type="submit">Add Product</Button>
+                    <Button type="button" variant="outline" className="cursor-pointer ">Cancel</Button>
+                    <Button type="submit" className="dark:bg-slate-700 dark:text-slate-300 cursor-pointer">Add Product</Button>
                 </div>
             </form>
 

@@ -26,14 +26,14 @@ export default function ImagesSection({ files, setFiles, onCollapse }) {
     };
 
     return (
-        <Card className="border rounded-md p-0">
+        <Card className="border dark:bg-slate-800 rounded-md p-0">
             <div className="flex items-center border-b justify-between px-4 py-2">
                 <p className="text-sm flex font-semibold text-green-700 items-center gap-1.5"> <Image size={16} /> Images</p>
                 <Button
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-8 w-8 cursor-pointer"
                     onClick={toggle}
                 >
                     <ChevronUpCircle
@@ -55,7 +55,7 @@ export default function ImagesSection({ files, setFiles, onCollapse }) {
                         <p className="text-sm text-muted-foreground">
                             Click to upload or drag & drop
                         </p>
-                        <Button type="button" variant="secondary" size="sm">
+                        <Button type="button" className="dark:bg-slate-700" variant="secondary" size="sm">
                             Choose Files
                         </Button>
                         <input
