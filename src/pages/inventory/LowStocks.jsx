@@ -70,13 +70,13 @@ export default function ProductsPage() {
                 ]}
             />
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8"
+                            className="pl-8 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -84,7 +84,7 @@ export default function ProductsPage() {
 
                     <div className="ml-auto gap-3 flex">
                         <Select value={warehouse} onValueChange={setWarehouse}>
-                            <SelectTrigger className="w-42.5">
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -103,7 +103,7 @@ export default function ProductsPage() {
                         </Select>
 
                         <Select value={store} onValueChange={setStore}>
-                            <SelectTrigger className="w-42.5">
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Brand" />
                             </SelectTrigger>
                             <SelectContent>
@@ -121,7 +121,7 @@ export default function ProductsPage() {
                             </SelectContent>
                         </Select>
                         <Select value={category} onValueChange={setCategory}>
-                            <SelectTrigger className="w-42.5">
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -141,7 +141,7 @@ export default function ProductsPage() {
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-slate-200">
+                        <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
@@ -197,7 +197,7 @@ export default function ProductsPage() {
                                                     loading="lazy"
                                                 />
                                             </div>
-                                            <span className="text-sm text-slate-800">{r.name}</span>
+                                            <span className="text-sm text-slate-800 dark:text-slate-300">{r.name}</span>
                                         </div>
                                     </TableCell>
                                     <TableCell>{r.category}</TableCell>

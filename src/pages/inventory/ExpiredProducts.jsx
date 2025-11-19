@@ -69,13 +69,13 @@ export default function ExpiredProducts() {
             </div>
 
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
+            <div className="flex flex-wrap dark:bg-slate-800 items-center justify-between gap-3 rounded-md border bg-background p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8"
+                            className="pl-8 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -88,7 +88,7 @@ export default function ExpiredProducts() {
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-slate-200">
+                        <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
@@ -146,7 +146,7 @@ export default function ExpiredProducts() {
                                                     loading="lazy"
                                                 />
                                             </div>
-                                            <span className="text-sm text-slate-800">{r.name}</span>
+                                            <span className="text-sm text-slate-800 dark:text-slate-300">{r.name}</span>
                                         </div>
                                     </TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
