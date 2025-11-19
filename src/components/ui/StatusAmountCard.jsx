@@ -10,7 +10,7 @@ export default function PurchaseStatCard({
 }) {
     return (
         <Card
-            className={`${bgClass} text-white rounded-[9.71px] border-none p-0 h-32 ${className}`}
+            className={`${bgClass} text-white rounded-md border-none p-0 h-32 ${className}`}
         >
             <CardContent className="h-full px-6 pt-6 pb-4 flex flex-col justify-between items-start">
                 <p className="text-sm leading-5 font-normal opacity-90">

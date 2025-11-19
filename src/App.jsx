@@ -42,6 +42,7 @@ import Users from "./pages/userManagement/Users";
 import Purchase from "./pages/purchase/Purchases";
 import PurchaseReturn from "./pages/purchase/PurchasesReturn";
 import PurchaseOrder from "./pages/purchase/PurchasesOrder";
+import POS1 from "./pages/sales/POS1";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -103,6 +104,7 @@ function App() {
                 <Route path="/purchases/purchases" element={<Purchase />} />
                 <Route path="/purchases/purchases-return" element={<PurchaseReturn />} />
                 <Route path="/purchases/purchases-order" element={<PurchaseOrder />} />
+                <Route path="/sales/pos/pos-4" element={<POS1 />} />
               </Routes>
             </div>
           </main>
