@@ -127,7 +127,7 @@ export default function ProductView() {
     ];
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 pb-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-4 pb-4">
             {products.map((product, index) => (
                 <ProductCard
                     key={index}

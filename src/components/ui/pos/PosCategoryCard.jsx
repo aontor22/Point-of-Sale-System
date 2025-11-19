@@ -13,7 +13,7 @@ function CategoryCard({
     return (
         <Card
             className={cn(
-                "flex-1 p-3.5 inline-flex flex-col justify-center items-center gap-2.5",
+                "p-3.5 flex flex-col justify-center items-center gap-2.5",
                 "bg-white dark:bg-slate-800 rounded-lg cursor-pointer",
                 active
                     ? "border-2 border-orange-500"
@@ -23,21 +23,21 @@ function CategoryCard({
             {...props}
         >
             <CardContent className="p-0 flex flex-col justify-center items-center gap-2.5">
-                <div className="size-10 flex items-center justify-center overflow-hidden">
+                <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
                     {iconSrc && (
                         <img
                             src={iconSrc}
                             alt={title}
-                            className="h-10 w-10 object-contain"
+                            className="max-w-full max-h-full object-contain"
                         />
                     )}
                 </div>
 
                 <div className="flex flex-col justify-center items-center">
-                    <div className="text-slate-900 dark:text-slate-200 text-sm font-bold font-['Nunito_Sans'] leading-5">
+                    <div className="text-slate-900 dark:text-slate-200 text-sm font-bold leading-5">
                         {title}
                     </div>
-                    <div className="text-slate-500 dark:text-slate-400 text-sm font-normal font-['Nunito_Sans'] leading-5">
+                    <div className="text-slate-500 dark:text-slate-400 text-sm leading-5">
                         {itemsText}
                     </div>
                 </div>

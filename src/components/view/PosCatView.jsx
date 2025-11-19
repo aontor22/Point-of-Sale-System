@@ -22,7 +22,7 @@ export const POS_CATEGORIES = [
 
 function PosCatView({ activeIndex, onChangeActive }) {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4 pb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 gap-4 pb-4">
             {POS_CATEGORIES.map((cat, index) => (
                 <CategoryCard
                     key={`${cat.title}-${index}`}
