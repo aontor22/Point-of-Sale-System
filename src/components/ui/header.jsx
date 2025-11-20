@@ -12,12 +12,18 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import user from "../../assets/image.png";
+import { useNavigate } from "react-router-dom";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [theme, setTheme] = useState("light"); // "light" | "dark"
+    const [theme, setTheme] = useState("light");
 
-    // Get initial theme
     useEffect(() => {
         const stored = localStorage.getItem("theme");
         if (stored === "dark" || stored === "light") {
@@ -27,7 +33,6 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
         }
     }, []);
 
-    // Apply theme to <html> and persist
     useEffect(() => {
         if (theme === "dark") {
             document.documentElement.classList.add("dark");
@@ -37,7 +42,6 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
         localStorage.setItem("theme", theme);
     }, [theme]);
 
-    // Keep fullscreen state in sync
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -59,6 +63,8 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
     const toggleTheme = () => {
         setTheme((prev) => (prev === "dark" ? "light" : "dark"));
     };
+
+    const navigate = useNavigate();
 
     return (
         <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
@@ -82,7 +88,6 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
                         </button>
                     </div>
 
-                    {/* Theme toggle */}
                     <button
                         onClick={toggleTheme}
                         className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -97,7 +102,6 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
                         )}
                     </button>
 
-                    {/* Fullscreen toggle */}
                     <button
                         onClick={toggleFullscreen}
                         className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -110,22 +114,45 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
                         )}
                     </button>
 
-                    <button className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button title="Mail" className="relative p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <Mail className="w-5 h-5" />
                         <span className="absolute -top-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                             1
                         </span>
                     </button>
 
-                    <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button title="Notification" className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <Bell className="w-5 h-5" />
                     </button>
 
-                    <button className="p-2.5 flex gap-1 items-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <Monitor className="w-5 h-5" /> POS
-                    </button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="p-2.5 flex gap-1 items-center rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                <Monitor className="w-5 h-5" />
+                                <span>POS</span>
+                            </button>
+                        </DropdownMenuTrigger>
 
-                    <button className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem
+                                onClick={() => navigate("/sales/pos/pos-1")}
+                            >
+                                POS 1
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => navigate("/sales/pos/pos-2")}
+                            >
+                                POS 2
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => navigate("/sales/pos/pos-3")}
+                            >
+                                POS 3
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <button title="Settings" className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <Settings className="w-5 h-5" />
                     </button>
 

@@ -129,8 +129,9 @@ export const sidebarData = [
                     { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
                     { name: "Return/Exchange", path: "sales/pos/pos-orders" },
                     { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
-                    { name: "POS 4", path: "sales/pos/pos-4" },
-                    { name: "POS 5", path: "sales/pos/pos-5" },
+                    { name: "POS 1", path: "sales/pos/pos-1" },
+                    { name: "POS 2", path: "sales/pos/pos-2" },
+                    { name: "POS 3", path: "sales/pos/pos-3" },
 
                 ]
             }
@@ -231,8 +232,10 @@ export const sidebarData = [
                     { name: "Split/Hold Bill", path: "sales/pos/split-hold-bill" },
                     { name: "Return/Exchange", path: "sales/pos/pos-orders" },
                     { name: "Multi payment Support", path: "sales/pos/multi-payment-support" },
-                    { name: "POS 4", path: "sales/pos/pos-4" },
-                    { name: "POS 5", path: "sales/pos/pos-5" },
+                    { name: "POS 1", path: "sales/pos/pos-1" },
+                    { name: "POS 2", path: "sales/pos/pos-2" },
+                    { name: "POS 3", path: "sales/pos/pos-3" },
+
 
                 ]
             }, {
