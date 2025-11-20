@@ -3,11 +3,10 @@ import { ChevronLeft, ChevronRight, RefreshCcwDot, Search } from "lucide-react";
 
 import ButtonComponent from "@/components/ui/ChangeButton";
 import Pos2CatView, { POS_CATEGORIES } from "@/components/view/Pos2CatView";
-import Pos2ProductView from "@/components/view/Pos2ProductView";
+import Pos3ProductView from "@/components/view/Pos3ProductView";
 import Footer from "@/components/ui/Footer";
 import { Input } from "@/components/ui/input";
 import Pos3Sidebar from "@/components/ui/pos/Pos3Sidebar";
-import { CartProvider } from "@/context/CartContext";
 
 export default function POS1() {
     const [isInventoryReportVisible, setInventoryReportVisible] = useState(true);
@@ -37,49 +36,50 @@ export default function POS1() {
     const [expanded, setExpanded] = useState(true);
 
     return (
-        <CartProvider>
-            <div className="space-y-6">
-                <div className="flex gap-4 items-start">
-                    <div className="flex-1 space-y-4">
-                        <div className="flex justify-between pb-4 items-center">
-                            <div className="flex-1">
-                                <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-300">
-                                    Welcome, {name}
-                                </h1>
-                                <span className="text-slate-500">{currentdate}</span>
-                            </div>
-                            <div className="relative w-auto max-w-sm">
-                                <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search products"
-                                    className="pl-8"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-                            <ButtonComponent
-                                title="View All Categories"
-                                isVisible={isInventoryReportVisible}
-                                className="bg-indigo-900 ml-2 text-white gap-2 hover:bg-orange-600"
-                                icon=""
+        <div className="space-y-6">
+            <div className="flex gap-4 items-start">
+                <div className="flex-1 space-y-4">
+                    <div className="flex justify-between pb-4 items-center">
+                        <div className="flex-1">
+                            <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-300">
+                                Welcome, {name}
+                            </h1>
+                            <span className="text-slate-500">{currentdate}</span>
+                        </div>
+                        <div className="relative w-auto max-w-sm">
+                            <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                            <Input
+                                placeholder="Search products"
+                                className="pl-8"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
-
-                        <div className="flex-1 border-gray-200 dark:border-slate-700">
-                            
-                        </div>
-                        <div className="flex-1">
-                            <Pos2ProductView isSidebarCollapsed={!expanded} />
-                        </div>
+                        <ButtonComponent
+                            title="View All Categories"
+                            isVisible={isInventoryReportVisible}
+                            className="bg-indigo-900 ml-2 text-white gap-2 hover:bg-orange-600"
+                            icon=""
+                        />
                     </div>
 
-                    <div className="w-[340px] xl:w-[360px] shrink-0">
-                        <Pos3Sidebar orderId="#0" />
+                    <div className="flex-1 border-gray-200 dark:border-slate-700">
+                        <Pos2CatView
+                            activeIndex={activeCategoryIndex}
+                            onChangeActive={setActiveCategoryIndex}
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <Pos3ProductView isSidebarCollapsed={!expanded} />
                     </div>
                 </div>
 
-                <Footer />
+                <div className="w-[340px] xl:w-[360px] shrink-0">
+                    <Pos3Sidebar orderId="#0" />
+                </div>
             </div>
-        </CartProvider>
+
+            <Footer />
+        </div>
     );
 }

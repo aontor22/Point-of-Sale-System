@@ -1,23 +1,19 @@
-// src/context/CartContext.jsx
 import React, { createContext, useContext, useMemo, useState } from "react";
 
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-    // items: { [key]: { key, name, price, imageSrc, quantityLabel, stock, qty } }
     const [items, setItems] = useState({});
 
-    // add/remove from product card (just toggle presence)
     const toggleItem = (product) => {
         const key = product.key || product.name;
 
         setItems((prev) => {
             if (prev[key]) {
-                // remove completely
                 const { [key]: _removed, ...rest } = prev;
                 return rest;
             }
-            // add with qty = 1
+
             return {
                 ...prev,
                 [key]: {
@@ -25,8 +21,8 @@ export function CartProvider({ children }) {
                     name: product.name,
                     price: Number(product.price) || 0,
                     imageSrc: product.imageSrc,
-                    quantityLabel: product.quantity, // like "25 Pcs"
-                    stock: product.stock,            // optional
+                    quantityLabel: product.quantity,
+                    stock: product.stock,
                     qty: 1,
                 },
             };
@@ -35,13 +31,11 @@ export function CartProvider({ children }) {
 
     const incrementQty = (key) => {
         setItems((prev) => {
-            if (!prev[key]) return prev;
+            const item = prev[key];
+            if (!item) return prev;
             return {
                 ...prev,
-                [key]: {
-                    ...prev[key],
-                    qty: prev[key].qty + 1,
-                },
+                [key]: { ...item, qty: item.qty + 1 },
             };
         });
     };
@@ -54,14 +48,11 @@ export function CartProvider({ children }) {
             if (item.qty > 1) {
                 return {
                     ...prev,
-                    [key]: {
-                        ...item,
-                        qty: item.qty - 1,
-                    },
+                    [key]: { ...item, qty: item.qty - 1 },
                 };
             }
 
-            // qty would become 0 ⇒ remove row
+            // if qty would go to 0, remove row
             const { [key]: _removed, ...rest } = prev;
             return rest;
         });

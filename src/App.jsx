@@ -45,76 +45,79 @@ import PurchaseOrder from "./pages/purchase/PurchasesOrder";
 import POS1 from "./pages/sales/POS1";
 import POS2 from "./pages/sales/POS2";
 import POS3 from "./pages/sales/POS3";
+import { CartProvider } from "@/context/CartContext1";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
-    <div className="h-screen bg-[#FBFBFB] dark:bg-slate-900/80 dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
-      <div className="flex h-full overflow-hidden">
-        <Sidebar
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
-
-        <div className="flex-1 flex flex-col min-h-0">
-          <Header
-            sidebarCollapsed={sidebarCollapsed}
-            onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+    <CartProvider>
+      <div className="h-screen bg-[#FBFBFB] dark:bg-slate-900/80 dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
+        <div className="flex h-full overflow-hidden">
+          <Sidebar
+            collapsed={sidebarCollapsed}
+            onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
           />
 
-          <main className="flex-1 overflow-y-auto no-scrollbar">
-            <div className="p-6">
-              <Routes>
-                <Route path="/dashboard/admin" element={<Dashboard />} />
-                <Route path="/dashboard/admin2" element={<Dashboard2 />} />
-                <Route path="/dashboard/sales" element={<SaleDashboard />} />
-                <Route path="/products" element={<Product />} />
-                <Route path="/products/new" element={<CreateProduct />} />
-                <Route path="/products/expired" element={<ExpiredProducts />} />
-                <Route path="/products/low-stock" element={<LowStocks />} />
-                <Route path="/categories" element={<Category />} />
-                <Route path="/sub-categories" element={<SubCategory />} />
-                <Route path="/brands" element={<Brand />} />
-                <Route path="/units" element={<Units />} />
-                <Route path="/warranties" element={<Warranties />} />
-                <Route path="/print/barcode" element={<PrintBarcode />} />
-                <Route path="/print/qr" element={<PrintQR />} />
-                <Route path="/bulk-upload" element={<BulkUpload />} />
-                <Route path="/stock/manage" element={<ManageStock />} />
-                <Route path="/stock/adjustment" element={<StockAdjustment />} />
-                <Route path="/stock/transfer" element={<StockTransfer />} />
-                <Route path="/reports/stock-valuation" element={<StockValuationReport />} />
-                <Route path="/reports/sales-report" element={<SaleReports />} />
-                <Route path="/reports/purchases-report" element={<PurchaseReports />} />
-                <Route path="/reports/inventory-report" element={<InventoryReports />} />
-                <Route path="/reports/invoice-report" element={<InvoiceReports />} />
-                <Route path="/reports/supplier-report" element={<SupplierReports />} />
-                <Route path="/reports/customer-report" element={<CustomerReports />} />
-                <Route path="/reports/product-report" element={<ProductReports />} />
-                <Route path="/peoples/customers" element={<Customer />} />
-                <Route path="/peoples/billers" element={<Billers />} />
-                <Route path="/peoples/suppliers" element={<Suppliers />} />
-                <Route path="/peoples/stores" element={<Stores />} />
-                <Route path="/peoples/warehouses" element={<WareHouses />} />
-                <Route path="/finance/expenses" element={<Expense />} />
-                <Route path="/finance/income" element={<Income />} />
-                <Route path="/hrm/employees" element={<Employee />} />
-                <Route path="/hrm/attendance" element={<Attendance />} />
-                <Route path="/hrm/employees/add" element={<AddEmployee />} />
-                <Route path="/user/users" element={<Users />} />
-                <Route path="/purchases/purchases" element={<Purchase />} />
-                <Route path="/purchases/purchases-return" element={<PurchaseReturn />} />
-                <Route path="/purchases/purchases-order" element={<PurchaseOrder />} />
-                <Route path="/sales/pos/pos-1" element={<POS1 />} />
-                <Route path="/sales/pos/pos-2" element={<POS2 />} />
-                <Route path="/sales/pos/pos-3" element={<POS3 />} />
-              </Routes>
-            </div>
-          </main>
+          <div className="flex-1 flex flex-col min-h-0">
+            <Header
+              sidebarCollapsed={sidebarCollapsed}
+              onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+            />
+
+            <main className="flex-1 overflow-y-auto no-scrollbar">
+              <div className="p-6">
+                <Routes>
+                  <Route path="/dashboard/admin" element={<Dashboard />} />
+                  <Route path="/dashboard/admin2" element={<Dashboard2 />} />
+                  <Route path="/dashboard/sales" element={<SaleDashboard />} />
+                  <Route path="/products" element={<Product />} />
+                  <Route path="/products/new" element={<CreateProduct />} />
+                  <Route path="/products/expired" element={<ExpiredProducts />} />
+                  <Route path="/products/low-stock" element={<LowStocks />} />
+                  <Route path="/categories" element={<Category />} />
+                  <Route path="/sub-categories" element={<SubCategory />} />
+                  <Route path="/brands" element={<Brand />} />
+                  <Route path="/units" element={<Units />} />
+                  <Route path="/warranties" element={<Warranties />} />
+                  <Route path="/print/barcode" element={<PrintBarcode />} />
+                  <Route path="/print/qr" element={<PrintQR />} />
+                  <Route path="/bulk-upload" element={<BulkUpload />} />
+                  <Route path="/stock/manage" element={<ManageStock />} />
+                  <Route path="/stock/adjustment" element={<StockAdjustment />} />
+                  <Route path="/stock/transfer" element={<StockTransfer />} />
+                  <Route path="/reports/stock-valuation" element={<StockValuationReport />} />
+                  <Route path="/reports/sales-report" element={<SaleReports />} />
+                  <Route path="/reports/purchases-report" element={<PurchaseReports />} />
+                  <Route path="/reports/inventory-report" element={<InventoryReports />} />
+                  <Route path="/reports/invoice-report" element={<InvoiceReports />} />
+                  <Route path="/reports/supplier-report" element={<SupplierReports />} />
+                  <Route path="/reports/customer-report" element={<CustomerReports />} />
+                  <Route path="/reports/product-report" element={<ProductReports />} />
+                  <Route path="/peoples/customers" element={<Customer />} />
+                  <Route path="/peoples/billers" element={<Billers />} />
+                  <Route path="/peoples/suppliers" element={<Suppliers />} />
+                  <Route path="/peoples/stores" element={<Stores />} />
+                  <Route path="/peoples/warehouses" element={<WareHouses />} />
+                  <Route path="/finance/expenses" element={<Expense />} />
+                  <Route path="/finance/income" element={<Income />} />
+                  <Route path="/hrm/employees" element={<Employee />} />
+                  <Route path="/hrm/attendance" element={<Attendance />} />
+                  <Route path="/hrm/employees/add" element={<AddEmployee />} />
+                  <Route path="/user/users" element={<Users />} />
+                  <Route path="/purchases/purchases" element={<Purchase />} />
+                  <Route path="/purchases/purchases-return" element={<PurchaseReturn />} />
+                  <Route path="/purchases/purchases-order" element={<PurchaseOrder />} />
+                  <Route path="/sales/pos/pos-1" element={<POS1 />} />
+                  <Route path="/sales/pos/pos-2" element={<POS2 />} />
+                  <Route path="/sales/pos/pos-3" element={<POS3 />} />
+                </Routes>
+              </div>
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </CartProvider>
   );
 }
 

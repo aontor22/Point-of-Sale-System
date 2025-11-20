@@ -22,16 +22,16 @@ import {
     Banknote,
     Calendar,
     UserPlus2,
+    Minus,
+    Plus,
 } from "lucide-react";
-import ButtonComponent from "../ChangeButton";
 import Cart from "@/assets/icons/cart.png";
 import cash from "@/assets/icons/cash.png";
 import points from "@/assets/icons/points.png";
 import card from "@/assets/icons/card.png";
 import deposit from "@/assets/icons/deposit.png";
 import cheque from "@/assets/icons/cheque.png";
-import { useCart } from "@/context/CartContext";
-import Pos3SidebarS1 from "./Pos3SidebarS1"
+import { useCart } from "@/context/CartContext1";
 import { Input } from "@/components/ui/input";
 
 export default function OrderSidebarShadcn(props) {
@@ -39,19 +39,22 @@ export default function OrderSidebarShadcn(props) {
 
     const [paymentMethod, setPaymentMethod] = useState("cash");
 
-    const { items, toggleItem } = useCart();
+    // now we also get qty handlers
+    const { items, incrementQty, decrementQty, removeItem } = useCart();
     const cartArray = Object.values(items);
+
     const productCount = cartArray.length;
     const subTotal = cartArray.reduce(
-        (sum, p) => sum + (Number(p.price) || 0),
+        (sum, p) => sum + (Number(p.price) || 0) * (p.qty ?? 1),
         0
     );
     const total = subTotal;
     const grandTotal = total;
 
     return (
-        <aside className="w-[360px] h-[1173px] p-5 bg-white dark:bg-slate-800 rounded-md border border-Transparent-Secondry-Transparent flex flex-col gap-5">
+        <aside className="w-[360px] h-auto p-5 bg-white dark:bg-slate-800 rounded-md border border-Transparent-Secondry-Transparent flex flex-col gap-5">
 
+            {/* top card: Order List */}
             <Card className="w-full p-0 rounded-md bg-slate-100 dark:bg-slate-700 shadow-none border-none">
                 <CardHeader className="flex flex-row items-center justify-between p-4">
                     <div>
@@ -72,6 +75,7 @@ export default function OrderSidebarShadcn(props) {
                 </CardHeader>
             </Card>
 
+            {/* date / ref / shop */}
             <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
                 <div className="flex flex-col gap-1">
                     <div className="relative">
@@ -106,6 +110,7 @@ export default function OrderSidebarShadcn(props) {
 
             <div className="flex-1 flex flex-col gap-5">
                 <section className="flex flex-col gap-6">
+                    {/* customer + add customer */}
                     <div className="flex items-center gap-2">
                         <Select defaultValue="walk-in">
                             <SelectTrigger className="flex-1 h-9 rounded-sm border-slate-300 text-sm dark:text-slate-300">
@@ -142,6 +147,7 @@ export default function OrderSidebarShadcn(props) {
                         </div>
                     </div>
 
+                    {/* ORDER DETAILS */}
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -149,7 +155,7 @@ export default function OrderSidebarShadcn(props) {
                                     Order Details
                                 </span>
                             </div>
-                            <span className="bg-slate-400 text-slate-800 p-1.5 rounded-sm">
+                            <span className="bg-slate-200 text-slate-800 p-1.5 rounded-sm">
                                 items :
                                 <Badge className="bg-orange-500 ml-2 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
                                     {productCount}
@@ -157,68 +163,111 @@ export default function OrderSidebarShadcn(props) {
                             </span>
                         </div>
 
-                        <div className="flex-1 min-h-[340px] bg-slate-100 dark:bg-slate-700 rounded-md flex flex-col items-center justify-center gap-2 text-slate-600 dark:text-slate-300">
+                        <div className="flex-1 min-h-[340px] bg-slate-100 dark:bg-slate-700 rounded-md flex flex-col gap-2 text-slate-600 dark:text-slate-300 p-3 overflow-y-auto">
                             {productCount === 0 ? (
-                                <>
+                                <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                                     <img src={Cart} alt="total items" className="w-70 h-50" />
                                     <p className="text-sm font-bold">No Products Selected</p>
-                                </>
+                                </div>
                             ) : (
-                                <div className="w-full h-full flex flex-col gap-2 p-3 overflow-y-auto">
+                                <>
+                                    <div className="grid grid-cols-[2.5fr_1fr_0.9fr_1.1fr_1.1fr_24px] text-[11px] font-semibold text-slate-500 mb-1 px-1">
+                                        <span>Product</span>
+                                        <span>Batch No</span>
+                                        <span>Price</span>
+                                        <span>QTY</span>
+                                        <span>Sub total</span>
+                                        <span></span>
+                                    </div>
+
                                     {cartArray.map((item) => (
                                         <div
                                             key={item.key}
-                                            className="flex items-center justify-between bg-white/80 dark:bg-slate-800 rounded-md px-3 py-2 text-xs"
+                                            className="grid grid-cols-[2.5fr_1fr_0.9fr_1.1fr_1.1fr_24px] items-center bg-white/90 dark:bg-slate-800 rounded-md px-2 py-2 text-xs gap-2"
                                         >
-                                            <div className="flex items-center gap-2">
-                                                {item.imageSrc && (
-                                                    <img
-                                                        src={item.imageSrc}
-                                                        alt={item.name}
-                                                        className="w-10 h-10 rounded object-cover"
-                                                    />
-                                                )}
-                                                <div className="flex flex-col">
-                                                    <span className="font-semibold text-slate-800 dark:text-slate-100">
-                                                        {item.name}
-                                                    </span>
-                                                    <span className="text-[11px] text-slate-500">
-                                                        {item.quantity}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-emerald-500 font-semibold">
-                                                    ${item.price}
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold text-slate-800 dark:text-slate-100">
+                                                    {item.name}
                                                 </span>
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    className="h-6 w-6 text-red-500 hover:text-red-600"
-                                                    onClick={() => toggleItem(item)}
-                                                >
-                                                    <Trash2 className="w-3 h-3" />
-                                                </Button>
+                                                <span className="text-[11px] text-slate-500">
+                                                    In Stock: {item.stock ?? item.quantityLabel ?? "--"}
+                                                </span>
                                             </div>
+
+                                            <Input
+                                                className="h-7 w-full rounded border border-slate-200 bg-white px-2 text-[11px] outline-none focus:ring-1 focus:ring-slate-300"
+                                                placeholder=""
+                                            />
+
+                                            <span className="text-slate-700 dark:text-slate-100 font-semibold">
+                                                ${Number(item.price).toFixed(2)}
+                                            </span>
+
+                                            <div className="flex items-center justify-center gap-1">
+                                                <button
+                                                    type="button"
+                                                    className="h-6 w-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100"
+                                                    onClick={() => decrementQty(item.key)}
+                                                >
+                                                    <Minus className="w-3 h-3" />
+                                                </button>
+                                                <span className="w-4 text-center text-slate-800 dark:text-slate-100">
+                                                    {item.qty}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    className="h-6 w-6 rounded-full border border-slate-300 flex items-center justify-center text-slate-700 hover:bg-slate-100"
+                                                    onClick={() => incrementQty(item.key)}
+                                                >
+                                                    <Plus className="w-3 h-3" />
+                                                </button>
+                                            </div>
+
+                                            <span className="text-slate-700 dark:text-slate-100 font-semibold">
+                                                ${(Number(item.price) * (item.qty ?? 1)).toFixed(2)}
+                                            </span>
+
+                                            <button
+                                                type="button"
+                                                className="h-6 w-6 flex items-center justify-center text-slate-400 hover:text-red-500"
+                                                onClick={() => removeItem(item.key)}
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                            </button>
                                         </div>
                                     ))}
-                                </div>
+                                </>
                             )}
                         </div>
                     </div>
-                    {/* ---------------------------------------- */}
                 </section>
 
-                {/* ======= THIS PART IS EXACTLY YOUR ORIGINAL DESIGN ======= */}
                 <section className="flex flex-col gap-5">
                     <div className="flex-1">
-                        <div className="flex justify-between w-full bg-slate-100 dark:text-slate-800 rounded-t-sm p-2">
+                        <div className="flex justify-between w-full bg-slate-100 dark:bg-slate-700 dark:text-slate-300 rounded-t-sm p-2">
                             <span className="text-Brand-Secondry text-base">Sub Total</span>
                             <span>${subTotal.toFixed(2)}</span>
                         </div>
-                        <div className="flex justify-between w-full bg-slate-50 dark:text-slate-800 rounded-b-sm p-2">
-                            <span className="text-Brand-Secondry text-base">Total</span>
+                        <div className="flex justify-between w-full bg-slate-50 dark:bg-slate-700/50 dark:text-slate-300 p-2">
+                            <span className="text-Brand-Secondry text-base">Shipping</span>
                             <span>${total.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between w-full bg-slate-100 dark:bg-slate-700 dark:text-slate-300 p-2">
+                            <span className="text-Brand-Secondry text-base">Tax</span>
+                            <span>${subTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between w-full bg-slate-50 dark:bg-slate-700/50 dark:text-slate-300 p-2">
+                            <span className="text-Brand-Secondry text-base">Coupon</span>
+                            <span>${total.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between w-full bg-slate-100 dark:bg-slate-700 dark:text-slate-300 p-2">
+                            <span className="text-Brand-Secondry text-base">Discount</span>
+                            <span>${subTotal.toFixed(2)}</span>
+                        </div>
+                        
+                        <div className="flex justify-between h-10 w-full bg-teal-500 dark:text-slate-800 rounded-b-sm p-2">
+                            <span className="text-Brand-Secondry text-base">Grand Total</span>
+                            <span>${grandTotal.toFixed(2)}</span>
                         </div>
                         <div className="grid grid-cols-3 pt-4 gap-1.5">
                             <Button className="bg-teal-700 text-[12px] hover:bg-cyan-700/90 text-white">
@@ -268,132 +317,152 @@ export default function OrderSidebarShadcn(props) {
                         </span>
 
                         <div className="grid grid-cols-3 gap-4">
+                            {/* Cash */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "cash"
-                                    ? "bg-orange-100 text-orange-600 border-orange-600"
-                                    : "bg-white dark:bg-slate-600 border-transparent"
-                                    }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${
+                                    paymentMethod === "cash"
+                                        ? "bg-orange-100 text-orange-600 border-orange-600"
+                                        : "bg-white dark:bg-slate-600 border-transparent"
+                                }`}
                                 onClick={() => setPaymentMethod("cash")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <div className="w-6 h-6 flex items-center justify-center mt-0.5">
                                         <img
                                             src={cash}
-                                            className={`w-6 h-6 ${paymentMethod === "cash"
-                                                ? "text-Brand-Primary"
-                                                : "text-Grey-Grey-600"
-                                                }`}
+                                            className={`w-6 h-6 ${
+                                                paymentMethod === "cash"
+                                                    ? "text-Brand-Primary"
+                                                    : "text-Grey-Grey-600"
+                                            }`}
                                         />
                                     </div>
                                     <span
-                                        className={`text-base leading-4 ${paymentMethod === "cash"
-                                            ? "text-Primary"
-                                            : "text-Secondry"
-                                            }`}
+                                        className={`text-base leading-4 ${
+                                            paymentMethod === "cash"
+                                                ? "text-Primary"
+                                                : "text-Secondry"
+                                        }`}
                                     >
                                         Cash
                                     </span>
                                 </CardContent>
                             </Card>
 
+                            {/* Card */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "card"
-                                    ? "bg-orange-100 text-orange-600 border-orange-600"
-                                    : "bg-white dark:bg-slate-600 border-transparent"
-                                    }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${
+                                    paymentMethod === "card"
+                                        ? "bg-orange-100 text-orange-600 border-orange-600"
+                                        : "bg-white dark:bg-slate-600 border-transparent"
+                                }`}
                                 onClick={() => setPaymentMethod("card")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={card}
-                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "card"
-                                            ? "text-Brand-Primary"
-                                            : "text-Grey-Grey-600"
-                                            }`}
+                                        className={`w-6 h-6 mt-0.5 ${
+                                            paymentMethod === "card"
+                                                ? "text-Brand-Primary"
+                                                : "text-Grey-Grey-600"
+                                        }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${paymentMethod === "card"
-                                            ? "text-Brand-Primary"
-                                            : "text-Brand-Secondry"
-                                            }`}
+                                        className={`text-base leading-4 ${
+                                            paymentMethod === "card"
+                                                ? "text-Brand-Primary"
+                                                : "text-Brand-Secondry"
+                                        }`}
                                     >
                                         Debit Card
                                     </span>
                                 </CardContent>
                             </Card>
 
+                            {/* Points */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "points"
-                                    ? "bg-orange-100 text-orange-600 border-orange-600"
-                                    : "bg-white dark:bg-slate-600 border-transparent"
-                                    }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${
+                                    paymentMethod === "points"
+                                        ? "bg-orange-100 text-orange-600 border-orange-600"
+                                        : "bg-white dark:bg-slate-600 border-transparent"
+                                }`}
                                 onClick={() => setPaymentMethod("points")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={points}
-                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "points"
-                                            ? "text-Brand-Primary"
-                                            : "text-Grey-Grey-600"
-                                            }`}
+                                        className={`w-6 h-6 mt-0.5 ${
+                                            paymentMethod === "points"
+                                                ? "text-Brand-Primary"
+                                                : "text-Grey-Grey-600"
+                                        }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${paymentMethod === "points"
-                                            ? "text-Brand-Primary"
-                                            : "text-Brand-Secondry"
-                                            }`}
+                                        className={`text-base leading-4 ${
+                                            paymentMethod === "points"
+                                                ? "text-Brand-Primary"
+                                                : "text-Brand-Secondry"
+                                        }`}
                                     >
                                         Points
                                     </span>
                                 </CardContent>
                             </Card>
 
+                            {/* Deposit */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "deposit"
-                                    ? "bg-orange-100 text-orange-600 border-orange-600"
-                                    : "bg-white dark:bg-slate-600 border-transparent"
-                                    }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${
+                                    paymentMethod === "deposit"
+                                        ? "bg-orange-100 text-orange-600 border-orange-600"
+                                        : "bg-white dark:bg-slate-600 border-transparent"
+                                }`}
                                 onClick={() => setPaymentMethod("deposit")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={deposit}
-                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "deposit"
-                                            ? "text-Brand-Primary"
-                                            : "text-Grey-Grey-600"
-                                            }`}
+                                        className={`w-6 h-6 mt-0.5 ${
+                                            paymentMethod === "deposit"
+                                                ? "text-Brand-Primary"
+                                                : "text-Grey-Grey-600"
+                                        }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${paymentMethod === "deposit"
-                                            ? "text-Brand-Primary"
-                                            : "text-Brand-Secondry"
-                                            }`}
+                                        className={`text-base leading-4 ${
+                                            paymentMethod === "deposit"
+                                                ? "text-Brand-Primary"
+                                                : "text-Brand-Secondry"
+                                        }`}
                                     >
                                         Deposit
                                     </span>
                                 </CardContent>
                             </Card>
 
+                            {/* Cheque */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "cheque"
-                                    ? "bg-orange-100 text-orange-600 border-orange-600"
-                                    : "bg-white dark:bg-slate-600 border-transparent"
-                                    }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${
+                                    paymentMethod === "cheque"
+                                        ? "bg-orange-100 text-orange-600 border-orange-600"
+                                        : "bg-white dark:bg-slate-600 border-transparent"
+                                }`}
                                 onClick={() => setPaymentMethod("cheque")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={cheque}
-                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "cheque"
-                                            ? "text-Brand-Primary"
-                                            : "text-Grey-Grey-600"
-                                            }`}
+                                        className={`w-6 h-6 mt-0.5 ${
+                                            paymentMethod === "cheque"
+                                                ? "text-Brand-Primary"
+                                                : "text-Grey-Grey-600"
+                                        }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${paymentMethod === "cheque"
-                                            ? "text-Brand-Primary"
-                                            : "text-Brand-Secondry"
-                                            }`}
+                                        className={`text-base leading-4 ${
+                                            paymentMethod === "cheque"
+                                                ? "text-Brand-Primary"
+                                                : "text-Brand-Secondry"
+                                        }`}
                                     >
                                         Cheque
                                     </span>
@@ -404,7 +473,7 @@ export default function OrderSidebarShadcn(props) {
                 </section>
 
                 <Button className="w-full h-12 rounded-md bg-blue-900 hover:bg-indigo-500/90 text-white text-sm font-bold">
-                    Grand Total : ${grandTotal.toFixed(2)}
+                    Pay : ${grandTotal.toFixed(2)}
                 </Button>
             </div>
         </aside>
