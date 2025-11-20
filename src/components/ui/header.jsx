@@ -66,6 +66,11 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
 
     const navigate = useNavigate();
 
+    const handleComingSoon = (e) => {
+        e.preventDefault();
+        navigate("/coming-soon");
+    };
+
     return (
         <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
             <div className="flex items-center justify-between">
@@ -121,7 +126,7 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
                         </span>
                     </button>
 
-                    <button title="Notification" className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <button onClick={handleComingSoon} title="Notification" className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                         <Bell className="w-5 h-5" />
                     </button>
 

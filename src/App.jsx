@@ -59,21 +59,23 @@ import POS3 from "./pages/sales/POS3";
 
 import { CartProvider } from "@/context/CartContext1";
 import UserLogin from "./pages/UserLogin";
+import ComingSoon from "./pages/ComingSoon";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
-  const isAuthPage =
-    location.pathname === "/login" || location.pathname === "/logout";
+  const SIMPLE_LAYOUT_PATHS = ["/login", "/logout", "/coming-soon"];
+  const isSimplePage = SIMPLE_LAYOUT_PATHS.includes(location.pathname);
 
   return (
     <CartProvider>
-      {isAuthPage ? (
+      {isSimplePage ? (
         <div className="h-screen bg-[#FBFBFB] dark:bg-slate-900 flex items-center justify-center">
           <Routes>
             <Route path="/login" element={<UserLogin />} />
             <Route path="/logout" element={<UserLogin />} />
+            <Route path="/coming-soon" element={<ComingSoon />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
@@ -220,6 +222,9 @@ function App() {
                     <Route path="/sales/pos/pos-1" element={<POS1 />} />
                     <Route path="/sales/pos/pos-2" element={<POS2 />} />
                     <Route path="/sales/pos/pos-3" element={<POS3 />} />
+
+
+                    <Route path="/coming-soon" element={<ComingSoon />} />
 
                     <Route
                       path="*"
