@@ -60,12 +60,13 @@ import POS3 from "./pages/sales/POS3";
 import { CartProvider } from "@/context/CartContext1";
 import UserLogin from "./pages/UserLogin";
 import ComingSoon from "./pages/ComingSoon";
+import MaintenancePage from "./pages/Maintenance";
 
 function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
-  const SIMPLE_LAYOUT_PATHS = ["/login", "/logout", "/coming-soon"];
+  const SIMPLE_LAYOUT_PATHS = ["/login", "/logout", "/coming-soon", "/maintenance"];
   const isSimplePage = SIMPLE_LAYOUT_PATHS.includes(location.pathname);
 
   return (
@@ -76,6 +77,7 @@ function App() {
             <Route path="/login" element={<UserLogin />} />
             <Route path="/logout" element={<UserLogin />} />
             <Route path="/coming-soon" element={<ComingSoon />} />
+            <Route path="/maintenance" element={<MaintenancePage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </div>
