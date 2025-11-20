@@ -10,7 +10,7 @@ import {
 } from "react-icons/ri";
 import { LiaPinterestP } from "react-icons/lia";
 import logo from "@/assets/image1.png";
-import tickSound from "@/assets/tick.mp3"; // make sure this file exists
+import tickSound from "@/assets/tick.mp3";
 
 const TARGET_DATE = new Date("2026-01-01T00:00:00");
 
@@ -38,19 +38,15 @@ export default function ComingSoon() {
 
     const audioRef = useRef(null);
 
-    // prepare audio and try autoplay immediately
     useEffect(() => {
         const audioEl = new Audio(tickSound);
         audioEl.volume = 0.4;
         audioRef.current = audioEl;
 
-        // best-effort autoplay
         audioEl.play().catch(() => {
-            // browser may still block autoplay; ignored
         });
     }, []);
 
-    // countdown logic
     useEffect(() => {
         const updateTime = () => {
             const now = new Date().getTime();
@@ -74,7 +70,6 @@ export default function ComingSoon() {
         return () => clearInterval(timerId);
     }, []);
 
-    // play tick sound every time seconds change (no click required)
     useEffect(() => {
         const audioEl = audioRef.current;
         if (!audioEl) return;
@@ -82,10 +77,8 @@ export default function ComingSoon() {
         try {
             audioEl.currentTime = 0;
             audioEl.play().catch(() => {
-                // if autoplay blocked, it just fails silently
             });
         } catch {
-            // ignore audio errors
         }
     }, [timeLeft.seconds]);
 
