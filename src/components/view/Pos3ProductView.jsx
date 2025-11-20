@@ -148,7 +148,7 @@ export default function ProductGridView({ isSidebarCollapsed }) {
     return (
         <div className="w-full pr-3">
             <div
-                className={`grid gap-3 sm:grid-cols-2 ${isSidebarCollapsed ? "lg:grid-cols-5" : "lg:grid-cols-4"
+                className={`grid gap-3 sm:grid-cols-2 ${isSidebarCollapsed ? "lg:grid-cols-5" : "lg:grid-cols-5"
                     }`}
             >
                 {products.map((item, index) => (

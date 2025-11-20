@@ -66,8 +66,15 @@ function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
+  // pages with completely simple layout (no header/sidebar)
   const SIMPLE_LAYOUT_PATHS = ["/login", "/logout", "/coming-soon", "/maintenance"];
   const isSimplePage = SIMPLE_LAYOUT_PATHS.includes(location.pathname);
+
+  // POS pages – hide only the sidebar, keep header
+  const POS_LAYOUT_PATHS = ["/sales/pos/pos-1", "/sales/pos/pos-2", "/sales/pos/pos-3"];
+  const isPosPage = POS_LAYOUT_PATHS.some((p) =>
+    location.pathname.startsWith(p)
+  );
 
   return (
     <CartProvider>
@@ -84,10 +91,13 @@ function App() {
       ) : (
         <div className="h-screen bg-[#FBFBFB] dark:bg-slate-900/80 dark:from-slate-900 dark:via-slate-800 transition-all duration-500">
           <div className="flex h-full overflow-hidden">
-            <Sidebar
-              collapsed={sidebarCollapsed}
-              onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-            />
+            {/* Sidebar hidden only on POS pages */}
+            {!isPosPage && (
+              <Sidebar
+                collapsed={sidebarCollapsed}
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+              />
+            )}
 
             <div className="flex-1 flex flex-col min-h-0">
               <Header
@@ -98,64 +108,38 @@ function App() {
               <main className="flex-1 overflow-y-auto no-scrollbar">
                 <div className="p-6">
                   <Routes>
+                    {/* redirect root to any default page you want */}
                     <Route
                       path="/"
-                      element={<Navigate to="/" replace />}
+                      element={<Navigate to="/dashboard/admin" replace />}
                     />
 
                     <Route path="/dashboard/admin" element={<Dashboard />} />
                     <Route path="/dashboard/admin2" element={<Dashboard2 />} />
-                    <Route
-                      path="/dashboard/sales"
-                      element={<SaleDashboard />}
-                    />
+                    <Route path="/dashboard/sales" element={<SaleDashboard />} />
 
                     <Route path="/products" element={<Product />} />
                     <Route path="/products/new" element={<CreateProduct />} />
-                    <Route
-                      path="/products/expired"
-                      element={<ExpiredProducts />}
-                    />
-                    <Route
-                      path="/products/low-stock"
-                      element={<LowStocks />}
-                    />
+                    <Route path="/products/expired" element={<ExpiredProducts />} />
+                    <Route path="/products/low-stock" element={<LowStocks />} />
                     <Route path="/categories" element={<Category />} />
-                    <Route
-                      path="/sub-categories"
-                      element={<SubCategory />}
-                    />
+                    <Route path="/sub-categories" element={<SubCategory />} />
                     <Route path="/brands" element={<Brand />} />
                     <Route path="/units" element={<Units />} />
-                    <Route
-                      path="/warranties"
-                      element={<Warranties />}
-                    />
-                    <Route
-                      path="/print/barcode"
-                      element={<PrintBarcode />}
-                    />
+                    <Route path="/warranties" element={<Warranties />} />
+                    <Route path="/print/barcode" element={<PrintBarcode />} />
                     <Route path="/print/qr" element={<PrintQR />} />
                     <Route path="/bulk-upload" element={<BulkUpload />} />
 
                     <Route path="/stock/manage" element={<ManageStock />} />
-                    <Route
-                      path="/stock/adjustment"
-                      element={<StockAdjustment />}
-                    />
-                    <Route
-                      path="/stock/transfer"
-                      element={<StockTransfer />}
-                    />
+                    <Route path="/stock/adjustment" element={<StockAdjustment />} />
+                    <Route path="/stock/transfer" element={<StockTransfer />} />
                     <Route
                       path="/reports/stock-valuation"
                       element={<StockValuationReport />}
                     />
 
-                    <Route
-                      path="/reports/sales-report"
-                      element={<SaleReports />}
-                    />
+                    <Route path="/reports/sales-report" element={<SaleReports />} />
                     <Route
                       path="/reports/purchases-report"
                       element={<PurchaseReports />}
@@ -185,33 +169,18 @@ function App() {
                     <Route path="/peoples/billers" element={<Billers />} />
                     <Route path="/peoples/suppliers" element={<Suppliers />} />
                     <Route path="/peoples/stores" element={<Stores />} />
-                    <Route
-                      path="/peoples/warehouses"
-                      element={<WareHouses />}
-                    />
+                    <Route path="/peoples/warehouses" element={<WareHouses />} />
 
-                    <Route
-                      path="/finance/expenses"
-                      element={<Expense />}
-                    />
+                    <Route path="/finance/expenses" element={<Expense />} />
                     <Route path="/finance/income" element={<Income />} />
 
                     <Route path="/hrm/employees" element={<Employee />} />
-                    <Route
-                      path="/hrm/attendance"
-                      element={<Attendance />}
-                    />
-                    <Route
-                      path="/hrm/employees/add"
-                      element={<AddEmployee />}
-                    />
+                    <Route path="/hrm/attendance" element={<Attendance />} />
+                    <Route path="/hrm/employees/add" element={<AddEmployee />} />
 
                     <Route path="/user/users" element={<Users />} />
 
-                    <Route
-                      path="/purchases/purchases"
-                      element={<Purchase />}
-                    />
+                    <Route path="/purchases/purchases" element={<Purchase />} />
                     <Route
                       path="/purchases/purchases-return"
                       element={<PurchaseReturn />}
@@ -221,17 +190,14 @@ function App() {
                       element={<PurchaseOrder />}
                     />
 
+                    {/* POS pages – header only, no sidebar */}
                     <Route path="/sales/pos/pos-1" element={<POS1 />} />
                     <Route path="/sales/pos/pos-2" element={<POS2 />} />
                     <Route path="/sales/pos/pos-3" element={<POS3 />} />
 
-
                     <Route path="/coming-soon" element={<ComingSoon />} />
 
-                    <Route
-                      path="*"
-                      element={<Navigate to="/" replace />}
-                    />
+                    <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </div>
               </main>
