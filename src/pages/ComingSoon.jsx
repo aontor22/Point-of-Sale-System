@@ -17,11 +17,11 @@ const TARGET_DATE = new Date("2026-01-01T00:00:00");
 function TimeBox({ value, label }) {
     const display = String(value).padStart(2, "0");
     return (
-        <div className="w-16 h-16 bg-white rounded-[5px] border border-slate-100 flex flex-col items-center justify-center gap-0.5">
-            <div className="text-xl font-bold text-slate-900 leading-none">
+        <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-sm border border-slate-100 flex flex-col items-center justify-center gap-0.5">
+            <div className="text-xl font-bold text-slate-900 dark:text-slate-300 leading-none">
                 {display}
             </div>
-            <div className="text-[10px] font-medium text-slate-500 tracking-[0.03em]">
+            <div className="text-[10px] font-medium text-slate-400 tracking-[0.03em]">
                 {label}
             </div>
         </div>

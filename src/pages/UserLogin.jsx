@@ -51,7 +51,7 @@ export default function LoginScreen() {
                                 />
                                 <AvatarFallback>UC</AvatarFallback>
                             </Avatar>
-                            <p className="text-lg font-bold text-slate-900">
+                            <p className="text-lg font-bold text-slate-900 dark:text-slate-300">
                                 Udoy Chowdhury
                             </p>
                         </div>

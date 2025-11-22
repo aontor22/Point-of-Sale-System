@@ -25,10 +25,10 @@ export default function MaintenancePage() {
                     </div>
 
                     <div className="flex flex-col items-center gap-2 text-center">
-                        <h2 className="text-Grey-Grey-900 text-2xl font-bold font-['Nunito_Sans'] leading-9">
+                        <h2 className="text-slate-900 text-2xl font-bold font-['Nunito_Sans'] leading-9">
                             We are Under Maintenance
                         </h2>
-                        <p className="text-Grey-Grey-600 text-base font-medium font-['Nunito_Sans'] leading-6">
+                        <p className="text-slate-600 text-base font-medium font-['Nunito_Sans'] leading-6">
                             Sorry for any inconvenience caused, we have almost done
                             <br />
                             Will get back soon!
