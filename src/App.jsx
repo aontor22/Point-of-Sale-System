@@ -108,10 +108,9 @@ function App() {
               <main className="flex-1 overflow-y-auto no-scrollbar">
                 <div className="p-6">
                   <Routes>
-                    {/* redirect root to any default page you want */}
                     <Route
                       path="/"
-                      element={<Navigate to="/dashboard/admin" replace />}
+                      element={<Navigate to="/" replace />}
                     />
 
                     <Route path="/dashboard/admin" element={<Dashboard />} />
@@ -190,7 +189,6 @@ function App() {
                       element={<PurchaseOrder />}
                     />
 
-                    {/* POS pages – header only, no sidebar */}
                     <Route path="/sales/pos/pos-1" element={<POS1 />} />
                     <Route path="/sales/pos/pos-2" element={<POS2 />} />
                     <Route path="/sales/pos/pos-3" element={<POS3 />} />
