@@ -73,20 +73,20 @@ export default function ProductsPage() {
             <InventoryCard inventoryValue={inventoryValue} date={currentDate} />
 
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-background p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8"
+                            className="pl-8 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
                     <div className="ml-auto gap-3 flex">
                         <Select value={warehouse} onValueChange={setWarehouse}>
-                            <SelectTrigger className="w-42.5">
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -105,7 +105,7 @@ export default function ProductsPage() {
                         </Select>
 
                         <Select value={warehouse} onValueChange={setWarehouse}>
-                            <SelectTrigger className="w-42.5">
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -132,7 +132,7 @@ export default function ProductsPage() {
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-slate-200">
+                        <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>
