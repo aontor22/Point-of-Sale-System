@@ -39,7 +39,6 @@ export default function OrderSidebarShadcn(props) {
 
     const [paymentMethod, setPaymentMethod] = useState("cash");
 
-    // now we also get qty handlers
     const { items, incrementQty, decrementQty, removeItem } = useCart();
     const cartArray = Object.values(items);
 
@@ -52,16 +51,15 @@ export default function OrderSidebarShadcn(props) {
     const grandTotal = total;
 
     return (
-        <aside className="w-[360px] h-auto p-5 bg-white dark:bg-slate-800 rounded-md border border-Transparent-Secondry-Transparent flex flex-col gap-5">
+        <aside className="w-[460px] h-auto p-5 bg-white dark:bg-slate-800 rounded-md border border-Transparent-Secondry-Transparent flex flex-col gap-5">
 
-            {/* top card: Order List */}
             <Card className="w-full p-0 rounded-md bg-slate-100 dark:bg-slate-700 shadow-none border-none">
                 <CardHeader className="flex flex-row items-center justify-between p-4">
                     <div>
-                        <CardTitle className="text-slate-800 dark:text-slate-300 text-lg font-bold leading-5">
+                        <CardTitle className="text-slate-800 dark:text-slate-200 text-lg font-bold leading-5">
                             Order List
                         </CardTitle>
-                        <CardDescription className="text-slate-600 text-sm">
+                        <CardDescription className="text-slate-700 dark:text-slate-400 text-sm">
                             Transaction id : {orderId}
                         </CardDescription>
                     </div>
@@ -75,7 +73,6 @@ export default function OrderSidebarShadcn(props) {
                 </CardHeader>
             </Card>
 
-            {/* date / ref / shop */}
             <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
                 <div className="flex flex-col gap-1">
                     <div className="relative">
@@ -96,7 +93,7 @@ export default function OrderSidebarShadcn(props) {
 
                 <div className="flex flex-col gap-1">
                     <Select>
-                        <SelectTrigger className="h-9 w-25 text-[12px] rounded-[5px] border-Transparent-Secondry-Transparent bg-Brand-White text-sm text-Grey-Grey-900">
+                        <SelectTrigger className="h-9 w-25 text-[12px] rounded-sm border-Transparent-Secondry-Transparent bg-Brand-White text-sm text-Grey-Grey-900">
                             <SelectValue placeholder="Select Shop" />
                         </SelectTrigger>
                         <SelectContent>
@@ -110,10 +107,9 @@ export default function OrderSidebarShadcn(props) {
 
             <div className="flex-1 flex flex-col gap-5">
                 <section className="flex flex-col gap-6">
-                    {/* customer + add customer */}
                     <div className="flex items-center gap-2">
                         <Select defaultValue="walk-in">
-                            <SelectTrigger className="flex-1 h-9 rounded-sm border-slate-300 text-sm dark:text-slate-300">
+                            <SelectTrigger className="flex-1 h-9 rounded-sm border-Transparent-Secondry-Transparent text-sm dark:text-slate-300">
                                 <SelectValue placeholder="Walk In Customer" />
                             </SelectTrigger>
                             <SelectContent>
@@ -129,7 +125,7 @@ export default function OrderSidebarShadcn(props) {
 
                     <div className="flex items-center justify-between gap-2">
                         <Select defaultValue="USD">
-                            <SelectTrigger className="flex-1 h-9 rounded-sm border-slate-300 text-sm dark:text-slate-300">
+                            <SelectTrigger className="flex-1 h-9 rounded-sm border-Transparent-Secondry-Transparent text-sm dark:text-slate-300">
                                 <SelectValue placeholder="USD" />
                             </SelectTrigger>
                             <SelectContent>
@@ -147,7 +143,6 @@ export default function OrderSidebarShadcn(props) {
                         </div>
                     </div>
 
-                    {/* ORDER DETAILS */}
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -171,12 +166,12 @@ export default function OrderSidebarShadcn(props) {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="grid grid-cols-[2.5fr_1fr_0.9fr_1.1fr_1.1fr_24px] text-[11px] font-semibold text-slate-500 mb-1 px-1">
-                                        <span>Product</span>
-                                        <span>Batch No</span>
-                                        <span>Price</span>
-                                        <span>QTY</span>
-                                        <span>Sub total</span>
+                                    <div className="grid grid-cols-[2.5fr_1fr_0.9fr_1.1fr_1.1fr_24px] items-center text-[11px] font-semibold text-slate-500 mb-1 px-2 gap-2">
+                                        <span className="text-left dark:text-slate-300/50">Product</span>
+                                        <span className="text-left -ml-3 dark:text-slate-300/50">Batch No</span>
+                                        <span className="text-center -ml-10 dark:text-slate-300/50">Price</span>
+                                        <span className="text-center mr-3 dark:text-slate-300/50">QTY</span>
+                                        <span className="text-right dark:text-slate-300/50">Sub total</span>
                                         <span></span>
                                     </div>
 
@@ -185,8 +180,9 @@ export default function OrderSidebarShadcn(props) {
                                             key={item.key}
                                             className="grid grid-cols-[2.5fr_1fr_0.9fr_1.1fr_1.1fr_24px] items-center bg-white/90 dark:bg-slate-800 rounded-md px-2 py-2 text-xs gap-2"
                                         >
-                                            <div className="flex flex-col">
-                                                <span className="font-semibold text-slate-800 dark:text-slate-100">
+                                            <div className="flex flex-col min-w-0">
+                                                <span
+                                                    className="font-semibold text-slate-800 dark:text-slate-100 whitespace-normal break-words leading-tight text-[12px]">
                                                     {item.name}
                                                 </span>
                                                 <span className="text-[11px] text-slate-500">
@@ -199,7 +195,7 @@ export default function OrderSidebarShadcn(props) {
                                                 placeholder=""
                                             />
 
-                                            <span className="text-slate-700 dark:text-slate-100 font-semibold">
+                                            <span className="text-center text-slate-700 dark:text-slate-100 font-semibold">
                                                 ${Number(item.price).toFixed(2)}
                                             </span>
 
@@ -223,7 +219,7 @@ export default function OrderSidebarShadcn(props) {
                                                 </button>
                                             </div>
 
-                                            <span className="text-slate-700 dark:text-slate-100 font-semibold">
+                                            <span className="text-right text-slate-700 dark:text-slate-100 font-semibold">
                                                 ${(Number(item.price) * (item.qty ?? 1)).toFixed(2)}
                                             </span>
 
@@ -236,6 +232,7 @@ export default function OrderSidebarShadcn(props) {
                                             </button>
                                         </div>
                                     ))}
+
                                 </>
                             )}
                         </div>
@@ -264,7 +261,7 @@ export default function OrderSidebarShadcn(props) {
                             <span className="text-Brand-Secondry text-base">Discount</span>
                             <span>${subTotal.toFixed(2)}</span>
                         </div>
-                        
+
                         <div className="flex justify-between h-10 w-full bg-teal-500 dark:text-slate-800 rounded-b-sm p-2">
                             <span className="text-Brand-Secondry text-base">Grand Total</span>
                             <span>${grandTotal.toFixed(2)}</span>
@@ -319,30 +316,27 @@ export default function OrderSidebarShadcn(props) {
                         <div className="grid grid-cols-3 gap-4">
                             {/* Cash */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${
-                                    paymentMethod === "cash"
-                                        ? "bg-orange-100 text-orange-600 border-orange-600"
-                                        : "bg-white dark:bg-slate-600 border-transparent"
-                                }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "cash"
+                                    ? "bg-orange-100 text-orange-600 border-orange-600"
+                                    : "bg-white dark:bg-slate-600 border-transparent"
+                                    }`}
                                 onClick={() => setPaymentMethod("cash")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <div className="w-6 h-6 flex items-center justify-center mt-0.5">
                                         <img
                                             src={cash}
-                                            className={`w-6 h-6 ${
-                                                paymentMethod === "cash"
-                                                    ? "text-Brand-Primary"
-                                                    : "text-Grey-Grey-600"
-                                            }`}
+                                            className={`w-6 h-6 ${paymentMethod === "cash"
+                                                ? "text-Brand-Primary"
+                                                : "text-Grey-Grey-600"
+                                                }`}
                                         />
                                     </div>
                                     <span
-                                        className={`text-base leading-4 ${
-                                            paymentMethod === "cash"
-                                                ? "text-Primary"
-                                                : "text-Secondry"
-                                        }`}
+                                        className={`text-base leading-4 ${paymentMethod === "cash"
+                                            ? "text-Primary"
+                                            : "text-Secondry"
+                                            }`}
                                     >
                                         Cash
                                     </span>
@@ -351,28 +345,25 @@ export default function OrderSidebarShadcn(props) {
 
                             {/* Card */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${
-                                    paymentMethod === "card"
-                                        ? "bg-orange-100 text-orange-600 border-orange-600"
-                                        : "bg-white dark:bg-slate-600 border-transparent"
-                                }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "card"
+                                    ? "bg-orange-100 text-orange-600 border-orange-600"
+                                    : "bg-white dark:bg-slate-600 border-transparent"
+                                    }`}
                                 onClick={() => setPaymentMethod("card")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={card}
-                                        className={`w-6 h-6 mt-0.5 ${
-                                            paymentMethod === "card"
-                                                ? "text-Brand-Primary"
-                                                : "text-Grey-Grey-600"
-                                        }`}
+                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "card"
+                                            ? "text-Brand-Primary"
+                                            : "text-Grey-Grey-600"
+                                            }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${
-                                            paymentMethod === "card"
-                                                ? "text-Brand-Primary"
-                                                : "text-Brand-Secondry"
-                                        }`}
+                                        className={`text-base leading-4 ${paymentMethod === "card"
+                                            ? "text-Brand-Primary"
+                                            : "text-Brand-Secondry"
+                                            }`}
                                     >
                                         Debit Card
                                     </span>
@@ -381,28 +372,25 @@ export default function OrderSidebarShadcn(props) {
 
                             {/* Points */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${
-                                    paymentMethod === "points"
-                                        ? "bg-orange-100 text-orange-600 border-orange-600"
-                                        : "bg-white dark:bg-slate-600 border-transparent"
-                                }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "points"
+                                    ? "bg-orange-100 text-orange-600 border-orange-600"
+                                    : "bg-white dark:bg-slate-600 border-transparent"
+                                    }`}
                                 onClick={() => setPaymentMethod("points")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={points}
-                                        className={`w-6 h-6 mt-0.5 ${
-                                            paymentMethod === "points"
-                                                ? "text-Brand-Primary"
-                                                : "text-Grey-Grey-600"
-                                        }`}
+                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "points"
+                                            ? "text-Brand-Primary"
+                                            : "text-Grey-Grey-600"
+                                            }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${
-                                            paymentMethod === "points"
-                                                ? "text-Brand-Primary"
-                                                : "text-Brand-Secondry"
-                                        }`}
+                                        className={`text-base leading-4 ${paymentMethod === "points"
+                                            ? "text-Brand-Primary"
+                                            : "text-Brand-Secondry"
+                                            }`}
                                     >
                                         Points
                                     </span>
@@ -411,28 +399,25 @@ export default function OrderSidebarShadcn(props) {
 
                             {/* Deposit */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${
-                                    paymentMethod === "deposit"
-                                        ? "bg-orange-100 text-orange-600 border-orange-600"
-                                        : "bg-white dark:bg-slate-600 border-transparent"
-                                }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "deposit"
+                                    ? "bg-orange-100 text-orange-600 border-orange-600"
+                                    : "bg-white dark:bg-slate-600 border-transparent"
+                                    }`}
                                 onClick={() => setPaymentMethod("deposit")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={deposit}
-                                        className={`w-6 h-6 mt-0.5 ${
-                                            paymentMethod === "deposit"
-                                                ? "text-Brand-Primary"
-                                                : "text-Grey-Grey-600"
-                                        }`}
+                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "deposit"
+                                            ? "text-Brand-Primary"
+                                            : "text-Grey-Grey-600"
+                                            }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${
-                                            paymentMethod === "deposit"
-                                                ? "text-Brand-Primary"
-                                                : "text-Brand-Secondry"
-                                        }`}
+                                        className={`text-base leading-4 ${paymentMethod === "deposit"
+                                            ? "text-Brand-Primary"
+                                            : "text-Brand-Secondry"
+                                            }`}
                                     >
                                         Deposit
                                     </span>
@@ -441,28 +426,25 @@ export default function OrderSidebarShadcn(props) {
 
                             {/* Cheque */}
                             <Card
-                                className={`cursor-pointer text-center py-2.5 rounded-md ${
-                                    paymentMethod === "cheque"
-                                        ? "bg-orange-100 text-orange-600 border-orange-600"
-                                        : "bg-white dark:bg-slate-600 border-transparent"
-                                }`}
+                                className={`cursor-pointer text-center py-2.5 rounded-md ${paymentMethod === "cheque"
+                                    ? "bg-orange-100 text-orange-600 border-orange-600"
+                                    : "bg-white dark:bg-slate-600 border-transparent"
+                                    }`}
                                 onClick={() => setPaymentMethod("cheque")}
                             >
                                 <CardContent className="p-0 flex flex-col items-center gap-1.5">
                                     <img
                                         src={cheque}
-                                        className={`w-6 h-6 mt-0.5 ${
-                                            paymentMethod === "cheque"
-                                                ? "text-Brand-Primary"
-                                                : "text-Grey-Grey-600"
-                                        }`}
+                                        className={`w-6 h-6 mt-0.5 ${paymentMethod === "cheque"
+                                            ? "text-Brand-Primary"
+                                            : "text-Grey-Grey-600"
+                                            }`}
                                     />
                                     <span
-                                        className={`text-base leading-4 ${
-                                            paymentMethod === "cheque"
-                                                ? "text-Brand-Primary"
-                                                : "text-Brand-Secondry"
-                                        }`}
+                                        className={`text-base leading-4 ${paymentMethod === "cheque"
+                                            ? "text-Brand-Primary"
+                                            : "text-Brand-Secondry"
+                                            }`}
                                     >
                                         Cheque
                                     </span>

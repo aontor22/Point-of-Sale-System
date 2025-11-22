@@ -30,7 +30,7 @@ const ProductCard = ({
     return (
         <Card
             className={cn(
-                "relative w-42.5 h-47.5 rounded-xl p-0",
+                "relative w-40.5 h-47.5 rounded-xl p-0",
                 "bg-white dark:bg-slate-800 shadow-[0_12px_40px_rgba(0,0,0,0.10)] dark:shadow-none overflow-hidden",
                 isAdded ? "border-2 border-[#F5A623]" : "border border-transparent",
                 className

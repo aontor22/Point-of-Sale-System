@@ -74,7 +74,7 @@ export default function POS1() {
                     </div>
                 </div>
 
-                <div className="w-[340px] xl:w-[360px] shrink-0">
+                <div className="w-[460px] xl:w-[420px] shrink-0">
                     <Pos3Sidebar orderId="#0" />
                 </div>
             </div>
