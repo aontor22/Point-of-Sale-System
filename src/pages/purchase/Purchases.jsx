@@ -233,11 +233,11 @@ export default function SaleReports() {
                                             {r.poTotalAmount}
                                         </TableCell>
 
-                                        <TableCell className="whitespace-normal break-words">
+                                        <TableCell className="whitespace-normal wrap-break-word">
                                             <div
                                                 className={`
                                                     inline-flex items-center justify-center
-                                                    px-3 py-1 min-w-[80px] h-7
+                                                    px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
                                                     ${r.poPaymentStatus === "Paid"
                                                         ? "bg-emerald-600 text-white"
