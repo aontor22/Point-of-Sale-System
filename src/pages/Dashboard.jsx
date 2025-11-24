@@ -57,7 +57,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <div className="w-full">
-        <AdminHeader />
+        <AdminHeader name="Admin" order="200+" />
         <AlertBar
           product="Apple iPhone 17"
           stockNote="is running Low, already below 5 Pcs."

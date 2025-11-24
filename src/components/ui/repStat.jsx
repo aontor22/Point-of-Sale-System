@@ -24,9 +24,10 @@ export default function StatCard({
         <Card className="h-full rounded-lg shadow-md p-0">
             <CardContent className="">
                 <div className="flex justify-between pt-5">
-                    <div className={cn("h-5.5 w-5.5 place-items-center rounded-sm", iconBg)}>
+                    <div className={cn("flex h-5.5 w-5.5 items-center justify-center rounded-sm", iconBg)}>
                         {icon}
                     </div>
+
                     <span>{title}</span>
                     <div className="">{badgeIcon}</div>
                 </div>

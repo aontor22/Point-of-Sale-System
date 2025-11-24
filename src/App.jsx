@@ -8,6 +8,10 @@ import Dashboard from "./pages/Dashboard";
 import SaleDashboard from "./pages/SaleDashboard";
 import Dashboard2 from "./pages/Dashboard-2";
 
+import DashBoard from "./pages/superadmin/DashBoard";
+import Companies from "./pages/superadmin/Companies";
+import Subscriptions from "./pages/superadmin/Subscriptions";
+
 import Product from "./pages/inventory/Product";
 import CreateProduct from "./pages/inventory/CreateProduct";
 import ExpiredProducts from "./pages/inventory/ExpiredProducts";
@@ -116,6 +120,10 @@ function App() {
                     <Route path="/dashboard/admin" element={<Dashboard />} />
                     <Route path="/dashboard/admin2" element={<Dashboard2 />} />
                     <Route path="/dashboard/sales" element={<SaleDashboard />} />
+
+                    <Route path="/super-admin/dashboard" element={<DashBoard />} />
+                    <Route path="/super-admin/companies" element={<Companies />} />
+                    <Route path="/super-admin/subscriptions" element={<Subscriptions />} />
 
                     <Route path="/products" element={<Product />} />
                     <Route path="/products/new" element={<CreateProduct />} />
