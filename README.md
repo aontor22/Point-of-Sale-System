@@ -1,4 +1,4 @@
-#Live Preview - (https://point-of-sale-system-hazel.vercel.app/)
+# Live Preview - (https://point-of-sale-system-hazel.vercel.app/)
 
 
 # React + Vite
