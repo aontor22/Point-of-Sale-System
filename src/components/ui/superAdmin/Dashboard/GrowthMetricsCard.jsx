@@ -20,13 +20,13 @@ import {
 import { GitCommitHorizontal } from "lucide-react";
 
 const growthData = [
-    { month: "Jan", companies: 220, subscriptions: 720 },
-    { month: "Feb", companies: 230, subscriptions: 740 },
-    { month: "Mar", companies: 240, subscriptions: 760 },
-    { month: "Apr", companies: 250, subscriptions: 780 },
-    { month: "May", companies: 260, subscriptions: 800 },
-    { month: "Jun", companies: 270, subscriptions: 830 },
-    { month: "Jul", companies: 280, subscriptions: 860 },
+    { month: "Jan", companies: 200, subscriptions: 710 },
+    { month: "Feb", companies: 215, subscriptions: 755 },
+    { month: "Mar", companies: 220, subscriptions: 745 },
+    { month: "Apr", companies: 230, subscriptions: 790 },
+    { month: "May", companies: 225, subscriptions: 770 },
+    { month: "Jun", companies: 235, subscriptions: 830 },
+    { month: "Jul", companies: 240, subscriptions: 880 },
 ];
 
 export function GrowthMetricsCard() {

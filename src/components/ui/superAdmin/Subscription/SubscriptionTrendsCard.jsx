@@ -16,12 +16,12 @@ import {
 } from "recharts";
 
 const trendsData = [
-    { month: "Jan", business: 680, premium: 420, standard: 820 },
+    { month: "Jan", business: 660, premium: 400, standard: 800 },
     { month: "Feb", business: 700, premium: 430, standard: 835 },
-    { month: "Mar", business: 720, premium: 440, standard: 850 },
-    { month: "Apr", business: 735, premium: 450, standard: 865 },
+    { month: "Mar", business: 725, premium: 445, standard: 855 },
+    { month: "Apr", business: 735, premium: 455, standard: 875 },
     { month: "May", business: 745, premium: 460, standard: 880 },
-    { month: "Jun", business: 750, premium: 470, standard: 890 },
+    { month: "Jun", business: 770, premium: 470, standard: 900 },
 ];
 
 export function SubscriptionTrendsCard() {
