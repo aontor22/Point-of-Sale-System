@@ -21,6 +21,7 @@ import {
     Trash2,
     Plus,
     Building2,
+    CreditCard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -278,7 +279,7 @@ const DashBoard = () => {
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="size-11 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl shadow-[0px_2.1207828521728516px_4.241565704345703px_-2.1207828521728516px_rgba(0,0,0,0.10)] inline-flex justify-center items-center">
-                                                <Building2 className="h-5 w-5 text-white" />
+                                                <CreditCard className="h-5 w-5 text-white" />
                                             </div>
                                             <div className="flex flex-col">
                                                 <span className="font-medium">{r.company}</span>
