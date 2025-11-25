@@ -1,6 +1,6 @@
 import { Building2 } from "lucide-react";
 
-const companiesData = [
+const baseCompanies = [
     {
         id: 1,
         company: "TechCorp Inc.",
@@ -12,6 +12,10 @@ const companiesData = [
         status: "Active",
         users: 45,
         revenue: "$2,890",
+        price: "$100",
+        billing: "Monthly",
+        paymentMethod: "Credit Card",
+        autoRenew: "Enabled",
         registered: "2024-01-15",
         expiry: "2025-01-15",
         icon: Building2,
@@ -27,6 +31,10 @@ const companiesData = [
         status: "Active",
         users: 28,
         revenue: "$1,590",
+        price: "$75",
+        billing: "Monthly",
+        paymentMethod: "PayPal",
+        autoRenew: "Enabled",
         registered: "2024-02-20",
         expiry: "2025-02-20",
         icon: Building2,
@@ -42,23 +50,31 @@ const companiesData = [
         status: "Active",
         users: 31,
         revenue: "$1,850",
-        registered: "2024-03-10",
-        expiry: "2025-03-10",
+        price: "$100",
+        billing: "Monthly",
+        paymentMethod: "Credit Card",
+        autoRenew: "Enabled",
+        registered: "2023-11-10",
+        expiry: "2024-11-10",
         icon: Building2,
     },
     {
         id: 4,
         company: "Food Mart Express",
         owner: "Emma Davis",
-        email: "sales@foodmartexpress.com",
+        email: "admin@foodmart.com",
         location: "Austin, USA",
         domain: "foodmart.app",
         subscription: "Standard",
-        status: "Pending",
+        status: "Expiring",
         users: 24,
         revenue: "$980",
-        registered: "2024-04-05",
-        expiry: "2025-04-05",
+        price: "$50",
+        billing: "Monthly",
+        paymentMethod: "Bank Transfer",
+        autoRenew: "Disabled",
+        registered: "2024-11-20",
+        expiry: "2024-12-20",
         icon: Building2,
     },
     {
@@ -72,23 +88,31 @@ const companiesData = [
         status: "Active",
         users: 36,
         revenue: "$3,250",
-        registered: "2024-05-12",
-        expiry: "2025-05-12",
+        price: "$75",
+        billing: "Yearly",
+        paymentMethod: "Credit Card",
+        autoRenew: "Enabled",
+        registered: "2024-03-05",
+        expiry: "2025-03-05",
         icon: Building2,
     },
     {
         id: 6,
         company: "ElectroStore Plus",
         owner: "Liam Anderson",
-        email: "hello@electrostore.com",
+        email: "admin@electrostore.com",
         location: "Berlin, Germany",
         domain: "electrostore.app",
         subscription: "Premium",
         status: "Suspended",
         users: 29,
         revenue: "$1,760",
-        registered: "2024-06-08",
-        expiry: "2025-06-08",
+        price: "$100",
+        billing: "Monthly",
+        paymentMethod: "Credit Card",
+        autoRenew: "Disabled",
+        registered: "2024-01-30",
+        expiry: "2024-10-30",
         icon: Building2,
     },
     {
@@ -102,38 +126,50 @@ const companiesData = [
         status: "Active",
         users: 18,
         revenue: "$640",
-        registered: "2024-07-03",
-        expiry: "2025-07-03",
+        price: "$50",
+        billing: "Monthly",
+        paymentMethod: "PayPal",
+        autoRenew: "Enabled",
+        registered: "2024-06-12",
+        expiry: "2025-06-12",
         icon: Building2,
     },
     {
         id: 8,
         company: "Home Decor Studio",
         owner: "Jennifer Taylor",
-        email: "contact@homedecorstudio.com",
+        email: "contact@homedecor.com",
         location: "Sydney, Australia",
         domain: "homedecor.app",
         subscription: "Business",
         status: "Active",
         users: 27,
         revenue: "$1,420",
-        registered: "2024-08-18",
-        expiry: "2025-08-18",
+        price: "$75",
+        billing: "Yearly",
+        paymentMethod: "Credit Card",
+        autoRenew: "Enabled",
+        registered: "2024-04-18",
+        expiry: "2025-04-18",
         icon: Building2,
     },
     {
         id: 9,
         company: "Sports Gear World",
         owner: "Kevin Brown",
-        email: "support@sportgear.com",
+        email: "admin@sportsgear.com",
         location: "Toronto, Canada",
         domain: "sportgear.app",
         subscription: "Premium",
         status: "Active",
         users: 21,
         revenue: "$890",
-        registered: "2024-09-21",
-        expiry: "2025-09-21",
+        price: "$100",
+        billing: "Monthly",
+        paymentMethod: "Bank Transfer",
+        autoRenew: "Enabled",
+        registered: "2024-02-08",
+        expiry: "2025-02-08",
         icon: Building2,
     },
     {
@@ -144,13 +180,60 @@ const companiesData = [
         location: "Melbourne, AU",
         domain: "petcare.app",
         subscription: "Standard",
-        status: "Pending",
+        status: "Expiring",
         users: 19,
         revenue: "$690",
-        registered: "2024-10-11",
-        expiry: "2025-10-11",
+        price: "$50",
+        billing: "Monthly",
+        paymentMethod: "PayPal",
+        autoRenew: "Disabled",
+        registered: "2024-11-15",
+        expiry: "2024-12-25",
         icon: Building2,
     },
 ];
+
+const subscriptionPlans = ["Standard", "Business", "Premium"];
+const statuses = ["Active", "Pending", "Suspended", "Expiring"];
+const billings = ["Monthly", "Yearly"];
+const paymentMethods = ["Credit Card", "PayPal", "Bank Transfer"];
+
+const demoCompanies = Array.from({ length: 200 }, (_, idx) => {
+    const id = idx + 11;
+    const plan = subscriptionPlans[idx % subscriptionPlans.length];
+    const status = statuses[idx % statuses.length];
+    const billing = billings[idx % billings.length];
+    const paymentMethod = paymentMethods[idx % paymentMethods.length];
+
+    const price =
+        plan === "Standard" ? "$50" : plan === "Business" ? "$75" : "$100";
+
+    const month = String((idx % 12) + 1).padStart(2, "0");
+    const day = String((idx % 28) + 1).padStart(2, "0");
+    const registered = `2024-${month}-${day}`;
+    const expiry = `2025-${month}-${day}`;
+
+    return {
+        id,
+        company: `Demo Company ${id}`,
+        owner: `Owner ${id}`,
+        email: `demo${id}@example.com`,
+        location: "Demo City, Demo Country",
+        domain: `demo${id}.app`,
+        subscription: plan,
+        status,
+        users: 10 + (idx % 50),
+        revenue: `$${500 + idx * 10}`,
+        price,
+        billing,
+        paymentMethod,
+        autoRenew: idx % 3 === 0 ? "Disabled" : "Enabled",
+        registered,
+        expiry,
+        icon: Building2,
+    };
+});
+
+const companiesData = [...baseCompanies, ...demoCompanies];
 
 export default companiesData;
