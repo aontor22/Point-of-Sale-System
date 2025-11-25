@@ -39,11 +39,11 @@ const services = [
 function statusClasses(tone) {
     if (tone === "warn") {
         return {
-            pill: "bg-amber-100 text-amber-700",
+            pill: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
         };
     }
     return {
-        pill: "bg-emerald-100 text-emerald-700",
+        pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300",
     };
 }
 
@@ -59,17 +59,24 @@ export function SystemStatusCard({ onViewReport }) {
     };
 
     return (
-        <Card className="h-full p-0 rounded-2xl shadow-md border border-slate-100">
+        <Card
+            className="
+        h-full rounded-2xl border p-0 shadow-md
+        border-slate-100 bg-white
+        dark:border-slate-700 dark:bg-slate-900/95
+        dark:shadow-[0_18px_40px_rgba(0,0,0,0.6)]
+      "
+        >
             <CardHeader className="px-7 pt-7 pb-4">
-                <CardTitle className="text-lg font-normal text-slate-900">
+                <CardTitle className="text-lg font-normal text-slate-900 dark:text-slate-50">
                     System Status
                 </CardTitle>
-                <CardDescription className="text-base text-slate-500">
+                <CardDescription className="text-base text-slate-500 dark:text-slate-400">
                     Service health monitoring
                 </CardDescription>
             </CardHeader>
 
-            <CardContent className="px-7 pb-7 flex flex-col gap-5">
+            <CardContent className="flex flex-col gap-5 px-7 pb-7">
                 {/* status list */}
                 <div className="flex flex-col gap-4">
                     {services.map((svc) => {
@@ -77,10 +84,16 @@ export function SystemStatusCard({ onViewReport }) {
                         return (
                             <div
                                 key={svc.name}
-                                className="flex flex-col gap-2 rounded-2xl border border-slate-100 px-5 pt-5 pb-1.5"
+                                className="
+                                    flex flex-col gap-2 rounded-2xl border p-3
+                                    border-slate-100 bg-slate-50
+                                    dark:border-slate-700 dark:bg-slate-800/30
+                                    "
                             >
                                 <div className="flex items-center justify-between">
-                                    <span className="text-base text-slate-900">{svc.name}</span>
+                                    <span className="text-base text-slate-900 dark:text-slate-50">
+                                        {svc.name}
+                                    </span>
                                     <span
                                         className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-sm font-medium ${pill}`}
                                     >
@@ -89,8 +102,12 @@ export function SystemStatusCard({ onViewReport }) {
                                 </div>
 
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-slate-500">Uptime</span>
-                                    <span className="text-slate-900">{svc.uptime}</span>
+                                    <span className="text-slate-500 dark:text-slate-400">
+                                        Uptime
+                                    </span>
+                                    <span className="text-slate-900 dark:text-slate-50">
+                                        {svc.uptime}
+                                    </span>
                                 </div>
                             </div>
                         );
@@ -99,7 +116,12 @@ export function SystemStatusCard({ onViewReport }) {
 
                 {/* CTA button */}
                 <Button
-                    className="mt-2 h-10 w-full rounded-lg bg-blue-600 hover:bg-blue-700 text-base font-medium"
+                    className="
+                        mt-2 h-10 w-full rounded-lg text-base font-medium
+                        bg-blue-600 hover:bg-blue-700
+                        text-white
+                        dark:bg-blue-500 dark:hover:bg-blue-600
+                        "
                     type="button"
                     onClick={handleViewReport}
                 >

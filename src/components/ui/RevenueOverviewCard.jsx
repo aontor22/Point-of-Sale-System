@@ -46,34 +46,41 @@ export function RevenueOverviewCard() {
 
     const filteredData = React.useMemo(() => {
         if (range === "7m") {
-            return revenueData.slice(-7); // last 7 months
+            return revenueData.slice(-7);
         }
         if (range === "12m") {
-            return revenueData.slice(-12); // last 12 months
+            return revenueData.slice(-12);
         }
         if (range === "year") {
-            return revenueData; // full year
+            return revenueData;
         }
         return revenueData;
     }, [range]);
 
     return (
-        <Card className="h-full p-0 rounded-2xl shadow-md border border-slate-100">
+        <Card
+            className="
+        h-full rounded-2xl border p-0 shadow-md
+        border-slate-100 bg-white
+        dark:border-slate-700 dark:bg-slate-900/95
+        dark:shadow-[0_18px_40px_rgba(0,0,0,0.6)]
+      "
+        >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 px-6 pt-6 pb-4">
                 <div>
-                    <CardTitle className="text-lg font-normal text-slate-900">
+                    <CardTitle className="text-lg font-normal text-slate-900 dark:text-slate-50">
                         Revenue Overview
                     </CardTitle>
-                    <CardDescription className="text-base text-slate-500">
+                    <CardDescription className="text-base text-slate-500 dark:text-slate-400">
                         Monthly revenue and growth metrics
                     </CardDescription>
                 </div>
 
                 <Select value={range} onValueChange={setRange}>
-                    <SelectTrigger className="h-11 w-44 rounded-xl border-slate-200 text-sm font-medium">
+                    <SelectTrigger className="h-11 w-44 rounded-xl border-slate-200 text-sm font-medium dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100">
                         <SelectValue placeholder="Last 7 months" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-900">
                         <SelectItem value="7m">Last 7 months</SelectItem>
                         <SelectItem value="12m">Last 12 months</SelectItem>
                         <SelectItem value="year">This year</SelectItem>
@@ -84,7 +91,10 @@ export function RevenueOverviewCard() {
             <CardContent className="px-6 pb-6">
                 <div className="h-80 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={filteredData} margin={{ left: -20, right: 10 }}>
+                        <ComposedChart
+                            data={filteredData}
+                            margin={{ left: -20, right: 10 }}
+                        >
                             <defs>
                                 <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.35} />
@@ -97,6 +107,7 @@ export function RevenueOverviewCard() {
                                 strokeDasharray="0"
                                 vertical={true}
                                 horizontal={true}
+                                className="dark:stroke-slate-700"
                             />
 
                             <XAxis
@@ -118,6 +129,7 @@ export function RevenueOverviewCard() {
                                     borderRadius: 12,
                                     borderColor: "#E5E7EB",
                                     boxShadow: "0 8px 20px rgba(15, 23, 42, 0.12)",
+                                    backgroundColor: "rgba(255,255,255,0.98)",
                                 }}
                             />
 

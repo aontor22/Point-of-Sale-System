@@ -19,7 +19,7 @@ const DashBoard = () => {
             </div>
 
             <div className="flex-1">
-                <h1 className="text-xl font-semibold text-slate-800">Super Admin Dashboard</h1>
+                <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-300">Super Admin Dashboard</h1>
                 <span className="text-slate-500">Monitor and control all system operations </span>
             </div>
 

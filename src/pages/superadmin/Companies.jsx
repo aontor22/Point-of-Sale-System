@@ -45,7 +45,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import ButtonComponent from "@/components/ui/ChangeButton";
 
@@ -80,7 +79,7 @@ const DashBoard = () => {
             </div>
 
             <div className="flex-1">
-                <h1 className="text-xl font-semibold text-slate-800">
+                <h1 className="text-xl font-semibold dark:text-slate-300 text-slate-800">
                     Companies Management
                 </h1>
                 <span className="text-slate-500">
@@ -133,7 +132,7 @@ const DashBoard = () => {
                 <div className="flex items-center gap-2">
                     <Button size="sm" variant="outline" className="gap-2 dark:bg-slate-900">
                         <Filter className="h-4 w-4" />
-                        Filters
+                        More Filters
                     </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

@@ -48,55 +48,77 @@ const activities = [
 
 export function RecentActivityCard() {
     return (
-        <Card className="h-full p-0 rounded-2xl shadow-md border border-slate-100">
+        <Card
+            className="
+        h-full rounded-2xl border p-0 shadow-md
+        border-slate-100 bg-white
+        dark:border-slate-700 dark:bg-slate-900/95
+        dark:shadow-[0_18px_40px_rgba(0,0,0,0.6)]
+      "
+        >
             <CardHeader className="flex flex-row items-center justify-between px-7 pt-7 pb-4">
                 <div>
-                    <CardTitle className="text-lg font-normal text-slate-900">
+                    <CardTitle className="text-lg font-normal text-slate-900 dark:text-slate-50">
                         Recent Activity
                     </CardTitle>
-                    <CardDescription className="text-base text-slate-500">
+                    <CardDescription className="text-base text-slate-500 dark:text-slate-400">
                         Latest system activities
                     </CardDescription>
                 </div>
 
                 <Button
                     variant="outline"
-                    className="h-9 px-3.5 rounded-lg border-black/10 text-sm font-medium"
+                    className="
+                        h-9 rounded-lg px-3.5 text-sm font-medium
+                        border-black/10 text-slate-700
+                        hover:bg-slate-100
+                        dark:border-slate-600 dark:text-slate-100
+                        dark:hover:bg-slate-800
+          "
                 >
                     View All
                 </Button>
             </CardHeader>
 
-            <CardContent className="px-7 pb-7 space-y-4">
-                {activities.map((item) => (
-                    <div
-                        key={item.id}
-                        className="flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4"
-                    >
-                        <div className="flex items-center gap-5">
-                            {/* colored icon square */}
-                            <div
-                                className={`flex h-11 w-11 items-center justify-center rounded-xl ${item.badgeClass.replace(
-                                    "text-",
-                                    ""
-                                )}`}
-                            >
-                                <span className={`text-base font-semibold ${item.badgeClass.split(" ")[1]}`}>
-                                    {item.company.charAt(0)}
-                                </span>
+            <CardContent className="space-y-4 px-7 pb-7">
+                {activities.map((item) => {
+                    const [bgClass, textClass] = item.badgeClass.split(" ");
+
+                    return (
+                        <div
+                            key={item.id}
+                            className="
+                                flex items-center justify-between rounded-2xl px-5 py-4
+                                bg-slate-50
+                                dark:bg-slate-800/30 dark:border dark:border-slate-800
+                            "
+                        >
+                            <div className="flex items-center gap-5">
+                                {/* colored icon square */}
+                                <div
+                                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${bgClass} dark:bg-slate-700`}
+                                >
+                                    <span className={`text-base font-semibold ${textClass}`}>
+                                        {item.company.charAt(0)}
+                                    </span>
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <span className="text-base text-slate-900 dark:text-slate-50">
+                                        {item.company}
+                                    </span>
+                                    <span className="text-sm text-slate-500 dark:text-slate-400">
+                                        {item.action}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="flex flex-col">
-                                <span className="text-base text-slate-900">{item.company}</span>
-                                <span className="text-sm text-slate-500">{item.action}</span>
-                            </div>
+                            <span className="whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                {item.time}
+                            </span>
                         </div>
-
-                        <span className="text-sm text-slate-500 whitespace-nowrap">
-                            {item.time}
-                        </span>
-                    </div>
-                ))}
+                    );
+                })}
             </CardContent>
         </Card>
     );
