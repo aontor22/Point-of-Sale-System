@@ -44,19 +44,13 @@ const SidebarView = () => {
                     onClick={() => toggle(key)}
                   />
                   <ul
-                    className={`pl-2 ${
-                      isOpen ? "max-h-96" : "max-h-0"
-                    } overflow-hidden transition-[max-height] duration-300 ease-in-out`}
+                    className={`pl-2 ${isOpen ? "max-h-96" : "max-h-0"} overflow-hidden transition-[max-height] duration-300 ease-in-out`}
                   >
                     {item.subItems.map((sub) => {
-                      const subKey =
-                        typeof sub === "string" ? sub : sub.name;
-                      const subText =
-                        typeof sub === "string" ? sub : sub.name;
-                      const subActive =
-                        typeof sub === "object" && sub.active;
-                      const subPath =
-                        typeof sub === "object" ? sub.path : undefined;
+                      const subKey = typeof sub === "string" ? sub : sub.name;
+                      const subText = typeof sub === "string" ? sub : sub.name;
+                      const subActive = typeof sub === "object" && sub.active;
+                      const subPath = typeof sub === "object" ? sub.path : undefined;
 
                       return (
                         <SidebarItem

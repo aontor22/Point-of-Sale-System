@@ -109,7 +109,7 @@ function App() {
                 onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
               />
 
-              <main className="flex-1 overflow-y-auto no-scrollbar">
+              <main className="flex-1 overflow-y-auto no-scrollbar relative z-0 overflow-visible">
                 <div className="p-6">
                   <Routes>
                     <Route
