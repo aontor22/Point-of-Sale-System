@@ -155,7 +155,7 @@ export function SidebarItem({
       <span
         className={`
           transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis
-          ${expanded ? "ml-3 min-w-0 opacity-100" : "w-0 max-w-0 opacity-0"}
+          ${expanded ? " flex-1 text-left ml-3 min-w-0 opacity-100" : "w-0 max-w-0 opacity-0"}
         `}
       >
         {text}
