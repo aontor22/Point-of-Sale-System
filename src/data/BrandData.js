@@ -9,7 +9,7 @@ import lava from "../assets/Inventory/lava.png"
 import nikamal from "../assets/Inventory/nilkamal.png"
 import theNorthFace from "../assets/Inventory/thenorthface.png"
 
-const BRAND_ROWS = [
+const baseBrands = [
     {
         name: "Lenovo",
         image: lenovo,
@@ -72,4 +72,36 @@ const BRAND_ROWS = [
     },
 ];
 
+const brandImages = [
+    lenovo,
+    beats,
+    nike,
+    apple,
+    amazon,
+    woodmart,
+    dior,
+    lava,
+    nikamal,
+    theNorthFace,
+];
+
+function randomDate() {
+    const start = new Date(2023, 0, 1);
+    const end = new Date(2025, 11, 31);
+    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return date.toDateString().slice(4);
+}
+
+const demoBrands = Array.from({ length: 200 }, (_, i) => {
+    const id = i + baseBrands.length + 1;
+
+    return {
+        name: `Brand ${id}`,
+        image: brandImages[Math.floor(Math.random() * brandImages.length)],
+        createdDate: randomDate(),
+        status: "Active",
+    };
+});
+
+const BRAND_ROWS = [...baseBrands, ...demoBrands];
 export default BRAND_ROWS;

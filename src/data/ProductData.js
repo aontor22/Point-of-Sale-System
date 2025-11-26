@@ -20,7 +20,7 @@ import p8 from "../assets/person/p8.png";
 import p9 from "../assets/person/p9.png";
 import p10 from "../assets/person/p10.png";
 
-const CATALOG_ROWS = [
+const BASE_ROWS = [
     {
         sku: "PT001",
         invID: "INV001",
@@ -383,4 +383,135 @@ const CATALOG_ROWS = [
     },
 ];
 
+// ---------------- Random Data Pools -----------------
+const productImages = [pst1, pst2, pst3, pst4, pst5, pst6, pst7, pst8, pst9, pst10];
+const personImages = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
+
+const persons = [
+    "Flores, Juanita",
+    "Nguyen, Shane",
+    "Miles, Esther",
+    "Henry, Arthur",
+    "Black, Marvin",
+    "Cooper, Kristin",
+];
+
+const categories = [
+    { name: "Computers", code: "CT001", slug: "computers", subs: ["Laptop", "Desktop"] },
+    { name: "Electronics", code: "CT002", slug: "electronics", subs: ["Watch", "Speakers", "Wearables"] },
+    { name: "Shoe", code: "CT003", slug: "shoe", subs: ["Sneakers", "Sports", "Exclusive"] },
+    { name: "Furniture", code: "CT004", slug: "furniture", subs: ["Chair", "Sofa", "Table"] },
+    { name: "Bags", code: "CT005", slug: "bags", subs: ["Travel", "Handbags"] },
+    { name: "Phone", code: "CT006", slug: "phone", subs: ["Smartphone"] },
+    { name: "Apparel", code: "CT007", slug: "apparel", subs: ["Shirt", "Hoodie", "Jacket"] },
+];
+
+const brands = [
+    "Lenovo", "Beats", "Nike", "Apple", "Amazon", "Modern Wave",
+    "Berry", "Anime", "The North Face", "Samsung"
+];
+
+const warehouses = [
+    "Lavish Warehouse",
+    "North Zone Warehouse",
+    "Overflow Warehouse",
+    "Nova Storage Hub",
+    "Traditional Warehouse",
+    "Retail Supply Hub",
+    "Cool Warehouse",
+    "Fulfillment Hub",
+];
+
+const stores = [
+    "Electro Mart",
+    "Prime Bazaar",
+    "Quantum Gadgets",
+    "Urban Mart",
+    "Volt Vault",
+    "Travel Mart",
+    "NeoTech Store",
+];
+
+const units = ["Pc", "Kg", "Box", "Set"];
+
+const descriptions = [
+    "Efficient Productivity",
+    "Seamless Connectivity",
+    "Dynamic Grip",
+    "Stylish Time",
+    "Reliable Sound",
+    "Cozy Comfort",
+    "Compact Carry",
+    "Modern Style",
+    "Travel Ready",
+    "Premium Build",
+];
+
+// ---------------- Helper Functions -----------------
+const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const randNum = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+// ---------------- Generate 200 Demo Products -----------------
+const demoProductData = Array.from({ length: 200 }, (_, idx) => {
+    const id = idx + 11;
+    const category = rand(categories);
+    const subCategory = rand(category.subs);
+
+    const qty = randNum(20, 500);
+    const soldQty = randNum(1, 30);
+    const purchaseQty = randNum(1, 20);
+
+    const costPrice = parseFloat((randNum(10, 1500) + Math.random()).toFixed(2));
+    const price = parseFloat((costPrice + randNum(10, 200)).toFixed(2));
+
+    return {
+        id,
+        sku: `DEMO${String(id).padStart(3, "0")}`,
+        invID: `INV${String(id).padStart(4, "0")}`,
+        name: `Demo Product ${id}`,
+        image: rand(productImages),
+
+        person: rand(persons),
+        personImg: rand(personImages),
+
+        category: category.name,
+        categoryCode: category.code,
+        categorySlug: category.slug,
+        subCategory: subCategory,
+
+        brand: rand(brands),
+
+        price,
+        unit: rand(units),
+        qty,
+        soldQty,
+        soldAmount: `$${soldQty * price}`,
+        instockQty: randNum(100, 900),
+        purchaseQty,
+        purchaseAmount: `$${purchaseQty * costPrice}`,
+
+        costPrice,
+        get totalPrice() {
+            return this.qty * this.costPrice;
+        },
+
+        user: { name: rand(persons), avatar: "" },
+
+        warehouse: rand(warehouses),
+        toWareHouse: rand(warehouses),
+
+        refNumber: `#${randNum(100000, 999999)}`,
+        store: rand(stores),
+        locationQty: randNum(5, 70),
+        qtyAlert: randNum(5, 40),
+
+        manufacturedDate: `${randNum(1, 28)} Feb 2024`,
+        expiredDate: `20 Dec 2026`,
+        status: "Active",
+        description: rand(descriptions),
+    };
+});
+
+// ---------------- Final Export -----------------
+const CATALOG_ROWS = [...BASE_ROWS, ...demoProductData];
 export default CATALOG_ROWS;

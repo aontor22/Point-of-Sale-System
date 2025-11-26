@@ -1,6 +1,4 @@
-// src/data/IncomeData.jsx
-
-const incomes = [
+const baseIncomes = [
   {
     inID: 1,
     inDate: "Nov 4, 2025",
@@ -123,4 +121,49 @@ const incomes = [
   },
 ];
 
+// src/data/IncomeData.js
+
+const incomeCategories = [
+  "Sales Revenue",
+  "Service Revenue",
+  "Recurring Revenue",
+  "Commission",
+  "Licensing Revenue",
+  "Rental Income",
+  "Investment Income",
+];
+
+const paymentMethods = [
+  "Credit Card",
+  "Bank Transfer",
+  "Paypal",
+  "Wire Transfer",
+  "Cash",
+  "Check",
+  "Auto Payment",
+];
+
+function randomDate() {
+  const start = new Date(2024, 0, 1);
+  const end = new Date(2025, 11, 31);
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return date.toDateString().slice(4);
+}
+
+const demoIncomes = Array.from({ length: 200 }, (_, i) => {
+  const id = i + baseIncomes.length + 1;
+  const category = incomeCategories[Math.floor(Math.random() * incomeCategories.length)];
+  return {
+    inID: id,
+    inDate: randomDate(),
+    inSource: `${category} Source ${id}`,
+    inAmount: Number((Math.random() * 20000 + 500).toFixed(2)),
+    inCategory: category,
+    inPaymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+    inInvoice: `INV-${2025}-${id}`,
+    inStatus: ["Received", "Pending", "Processing"][Math.floor(Math.random() * 3)],
+  };
+});
+
+const incomes = [...baseIncomes, ...demoIncomes];
 export default incomes;

@@ -1,6 +1,4 @@
-// src/data/ExpenseData.js
-
-const expenses = [
+const baseExpenses = [
     {
         exID: 1,
         exDate: "Nov 4, 2025",
@@ -103,4 +101,55 @@ const expenses = [
     },
 ];
 
+// src/data/ExpenseData.js
+
+const expenseCategories = [
+    "Office Supplies",
+    "Utilities",
+    "Marketing",
+    "Transportation",
+    "Equipment Maintenance",
+    "Rent",
+    "Travel",
+    "Software Subscription",
+    "Employee Benefits",
+];
+
+const vendors = [
+    "Office Depot",
+    "Tech Service Inc.",
+    "Power Company",
+    "Meta Ads",
+    "Amazon Business",
+    "Shell Gas Station",
+    "QuickBooks",
+    "Airline Co.",
+];
+
+const payMethods = ["Credit Card", "Bank Transfer", "Cash", "Check", "Corporate Card"];
+
+function randomDate() {
+    const start = new Date(2024, 0, 1);
+    const end = new Date(2025, 11, 31);
+    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return date.toDateString().slice(4);
+}
+
+const demoExpenses = Array.from({ length: 200 }, (_, i) => {
+    const id = i + baseExpenses.length + 1;
+    const category = expenseCategories[Math.floor(Math.random() * expenseCategories.length)];
+
+    return {
+        exID: id,
+        exDate: randomDate(),
+        exCategory: category,
+        exAmount: Number((Math.random() * 5000 + 200).toFixed(2)),
+        exDescription: `${category} expense description ${id}`,
+        exPaymentMethod: payMethods[Math.floor(Math.random() * payMethods.length)],
+        exVendor: vendors[Math.floor(Math.random() * vendors.length)],
+        exStatus: ["Paid", "Approved", "Pending"][Math.floor(Math.random() * 3)],
+    };
+});
+
+const expenses = [...baseExpenses, ...demoExpenses];
 export default expenses;

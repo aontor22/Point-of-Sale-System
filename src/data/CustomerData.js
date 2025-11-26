@@ -9,7 +9,7 @@ import c8 from "../assets/customer/cu8.png";
 import c9 from "../assets/customer/cu9.png";
 import c10 from "../assets/customer/cu10.png";
 
-const orders = [
+const baseOrders = [
     {
         id: 1,
         reference: "INV2025",
@@ -202,4 +202,39 @@ const orders = [
     },
 ];
 
+const customerImages = [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10];
+const countries = ["USA", "Canada", "France", "Germany", "Greece", "Japan", "China", "Italy"];
+
+function randomDate() {
+    const start = new Date(2024, 0, 1);
+    const end = new Date(2025, 11, 31);
+    const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return date.toDateString().slice(4);
+}
+
+const demoOrders = Array.from({ length: 200 }, (_, i) => {
+    const id = i + baseOrders.length + 1;
+
+    return {
+        id,
+        reference: `INV${2000 + id}`,
+        invoiceNumber: `INV${String(id).padStart(3, "0")}`,
+        code: `CU${String(id).padStart(3, "0")}`,
+        customer: `Customer ${id}`,
+        dueDate: randomDate(),
+        amount: `$${Math.floor(Math.random() * 5000 + 100)}`,
+        paid: `$${Math.floor(Math.random() * 5000 + 100)}`,
+        amountDue: `$${Math.floor(Math.random() * 5000 + 100)}`,
+        paymentMethod: ["Cash", "Stripe", "Paypal", "Credit Card"][Math.floor(Math.random() * 4)],
+        status: "Completed",
+        trxStatus: ["Paid", "Unpaid"][Math.floor(Math.random() * 2)],
+        customerImg: customerImages[Math.floor(Math.random() * customerImages.length)],
+        email: `customer${id}@mail.com`,
+        phone: `+1${Math.floor(1000000000 + Math.random() * 9000000000)}`,
+        country: countries[Math.floor(Math.random() * countries.length)],
+        custStatus: "Active",
+    };
+});
+
+const orders = [...baseOrders, ...demoOrders];
 export default orders;

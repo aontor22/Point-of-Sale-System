@@ -1,5 +1,5 @@
 // src/pages/inventory/Product.jsx
-import React from "react";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,8 @@ export default function ProductsPage() {
     const [category, setCategory] = React.useState("all");
     const [brand, setBrand] = React.useState("all");
     const [loading] = React.useState(false);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [page, setPage] = useState(1);
 
     const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
@@ -62,6 +64,38 @@ export default function ProductsPage() {
         const matchBrand = brand === "all" || r.brand === brand;
         return matchSearch && matchCat && matchBrand;
     });
+
+    // pagination logic remains correct
+    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
+    const currentPage = Math.min(page, totalPages);
+
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    
+    // This is the array that holds only the items for the current page
+    const paginatedRows = filtered.slice(startIndex, endIndex);
+
+    const makePageList = () => {
+        const pages = [];
+
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
+        } else {
+            pages.push(1);
+            let start = Math.max(2, currentPage - 1);
+            let end = Math.min(totalPages - 1, currentPage + 1);
+
+            if (start > 2) pages.push("ellipsis-start");
+            for (let i = start; i <= end; i += 1) pages.push(i);
+            if (end < totalPages - 1) pages.push("ellipsis-end");
+
+            pages.push(totalPages);
+        }
+
+        return pages;
+    };
+
+    const pageItems = makePageList();
 
     return (
         <div className="space-y-4">
@@ -80,7 +114,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border dark:bg-slate-800 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex min-w-[260px] flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -186,7 +220,8 @@ export default function ProductsPage() {
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            filtered.map((r) => (
+                            // FIX: Changed filtered.map to use paginatedRows.map
+                            paginatedRows.map((r) => ( 
                                 <TableRow key={r.sku}>
                                     <TableCell>
                                         <Checkbox aria-label={`Select ${r.name}`} />
@@ -223,16 +258,19 @@ export default function ProductsPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-6 w-6">
-                                                <AvatarImage src={r.user.avatar} alt={r.user.name} />
+                                                {/* Optional chaining added in previous step is preserved */}
+                                                <AvatarImage src={r.user?.avatar} alt={r.user?.name} />
                                                 <AvatarFallback>
-                                                    {r.user.name
-                                                        .split(" ")
-                                                        .map((w) => w[0])
-                                                        .join("")
-                                                        .slice(0, 2)}
+                                                    {r.user?.name // Check if r.user exists before accessing name
+                                                        ? r.user.name
+                                                                .split(" ")
+                                                                .map((w) => w[0])
+                                                                .join("")
+                                                                .slice(0, 2)
+                                                        : "UN"}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            <span className="text-sm">{r.user.name}</span>
+                                            <span className="text-sm">{r.user?.name}</span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -266,11 +304,18 @@ export default function ProductsPage() {
                 </Table>
             </div>
 
-            {/* ===== PAGINATION ===== */}
+            {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="text-sm text-muted-foreground">
-                    Row per page:
-                    <Select defaultValue="10">
+                <div className="flex items-center text-sm text-muted-foreground">
+                    <span>Row per page:</span>
+                    <Select
+                        value={String(rowsPerPage)}
+                        onValueChange={(value) => {
+                            const num = Number(value);
+                            setRowsPerPage(num);
+                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                        }}
+                    >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
                             <SelectValue />
                         </SelectTrigger>
@@ -282,21 +327,45 @@ export default function ProductsPage() {
                         </SelectContent>
                     </Select>
                 </div>
+
                 <div className="flex items-center gap-1">
-                    <Button variant="outline" size="sm">
-                        1
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={currentPage === 1}
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    >
+                        Prev
                     </Button>
-                    <Button variant="ghost" size="sm">
-                        2
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                        3
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                        …
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                        10
+
+                    {pageItems.map((item, idx) =>
+                        typeof item === "number" ? (
+                            <Button
+                                key={idx}
+                                // FIX: Ensure both dark and light mode styling work for the active button
+                                className={item === currentPage 
+                                    ? "bg-blue-600 text-white hover:bg-blue-700" 
+                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                }
+                                size="sm"
+                                onClick={() => setPage(item)}
+                            >
+                                {item}
+                            </Button>
+                        ) : (
+                            <Button key={idx} variant="ghost" size="sm" disabled>
+                                …
+                            </Button>
+                        )
+                    )}
+
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={currentPage === totalPages}
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    >
+                        Next
                     </Button>
                 </div>
             </div>

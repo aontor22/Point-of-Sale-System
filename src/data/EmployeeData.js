@@ -1,6 +1,3 @@
-// src/data/EmployeeData.js
-
-// employee images
 import e1 from "../assets/employee/e1.jpg";
 import e2 from "../assets/employee/e2.jpg";
 import e3 from "../assets/employee/e3.jpg";
@@ -14,7 +11,7 @@ import e10 from "../assets/employee/e10.jpg";
 import e11 from "../assets/employee/e11.jpg";
 import e12 from "../assets/employee/e12.jpg";
 
-const employees = [
+const baseEmployees = [
   {
     empID: 1,
     empCode: "EMP-001",
@@ -233,4 +230,59 @@ const employees = [
   },
 ];
 
+const employeeImages = [e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12];
+
+const departments = [
+  "Sales",
+  "POS Operations",
+  "Inventory",
+  "Customer Service",
+  "Finance",
+  "Store Operations",
+];
+
+const roles = [
+  "Manager",
+  "Supervisor",
+  "Cashier",
+  "Team Lead",
+  "Operator",
+  "Clerk",
+  "Assistant"
+];
+
+function randomDate() {
+  const start = new Date(2018, 0, 1);
+  const end = new Date(2024, 11, 31);
+  const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return date.toDateString().slice(4);
+}
+
+const demoEmployees = Array.from({ length: 200 }, (_, i) => {
+  const id = i + baseEmployees.length + 1;
+
+  return {
+    empID: id,
+    empCode: `EMP-${String(id).padStart(3, "0")}`,
+    empName: `Demo Employee ${id}`,
+    empEmail: `employee${id}@company.com`,
+    empDepartment: departments[Math.floor(Math.random() * departments.length)],
+    empRole: roles[Math.floor(Math.random() * roles.length)],
+    empPhone: `+1 (555) ${Math.floor(100 + Math.random() * 900)}-${Math.floor(
+      1000 + Math.random() * 9000
+    )}`,
+    empHireDate: randomDate(),
+    empStatus: ["Active", "Inactive", "On Leave"][Math.floor(Math.random() * 3)],
+    empImage: employeeImages[Math.floor(Math.random() * employeeImages.length)],
+
+    empCheckIn: "-",
+    empCheckOut: "-",
+    empWorkHours: "-",
+    empLocation: "Main Store",
+    empAttendanceStatus: ["Present", "Absent", "Late", "Half Day"][Math.floor(Math.random() * 4)],
+  };
+});
+
+const employees = [...baseEmployees, ...demoEmployees];
 export default employees;
+
