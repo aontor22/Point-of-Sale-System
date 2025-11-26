@@ -114,7 +114,7 @@ const DashBoard = () => {
         <div>
             {loading ? (
                 <div className="flex justify-center items-center h-screen">
-                    <PacmanLoader loading={loading} pageName="Companies" color="#2b62e3" />
+                    {/* <PacmanLoader loading={loading} pageName="Companies" color="#2b62e3" /> */}
                 </div>
             ) : (
                 <>

@@ -23,7 +23,7 @@ const DashBoard = () => {
         <div className="space-y-6">
             {loading && (
                 <div className="flex justify-center items-center h-screen">
-                    <PacmanLoader loading={loading} pageName="Super Admin Dashboard" color="#2b62e3" />
+                    {/* <PacmanLoader loading={loading} pageName="Super Admin Dashboard" color="#2b62e3" /> */}
                 </div>
             )}
             {!loading && (
