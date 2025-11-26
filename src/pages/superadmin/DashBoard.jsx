@@ -8,7 +8,7 @@ import { RecentActivityCard } from '@/components/ui/superAdmin/Dashboard/RecentA
 import { SystemStatusCard } from '@/components/ui/superAdmin/Dashboard/SystemStatusCard'
 import { TransactionTrendsCard } from '@/components/ui/superAdmin/Dashboard/TransactionTrendsCard'
 import StatView from '@/components/view/superStatView'
-import PacmanLoader from '@/components/ui/PacmanLoader'
+// import PacmanLoader from '@/components/ui/PacmanLoader'
 import React, { useState, useEffect } from 'react'
 
 const DashBoard = () => {

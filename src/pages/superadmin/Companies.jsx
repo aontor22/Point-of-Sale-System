@@ -46,7 +46,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import ButtonComponent from "@/components/ui/ChangeButton";
-import PacmanLoader from "@/components/ui/PacmanLoader";
+// import PacmanLoader from "@/components/ui/PacmanLoader";
 
 const DashBoard = () => {
     const [search, setSearch] = useState("");
