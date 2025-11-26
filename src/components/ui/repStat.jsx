@@ -21,7 +21,7 @@ export default function StatCard({
     }[badgeTone];
 
     return (
-        <Card className="h-full rounded-lg shadow-md p-0">
+        <Card className="h-full rounded-lg dark:bg-slate-800 dark:border-slate-400 dark:shadow-2xl dark:shadow-gray-900 shadow-md p-0">
             <CardContent className="">
                 <div className="flex justify-between pt-5">
                     <div className={cn("flex h-5.5 w-5.5 items-center justify-center rounded-sm", iconBg)}>

@@ -16,7 +16,7 @@ export default function StatCard({
     }[badgeTone];
 
     return (
-        <Card className={`h-full rounded-lg shadow-md p-0 ${border}`}>
+        <Card className={`h-full rounded-lg dark:bg-slate-800 shadow-md p-0 ${border}`}>
             <CardContent className="">
                 <div className="flex items-center gap-3 py-5">
                     <div className={`h-12 w-12 flex items-center justify-center rounded-md ${iconBg}`}>
@@ -24,7 +24,7 @@ export default function StatCard({
                     </div>
 
                     <div className="flex flex-col">
-                        <span className="text-sm text-gray-500">{title}</span>
+                        <span className="text-sm text-gray-500 dark:text-slate-300">{title}</span>
                         <span className="text-xl font-bold">{value}</span>
                     </div>
                 </div>
