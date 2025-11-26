@@ -215,12 +215,12 @@ export default function SaleReports() {
                                     </TableCell>
                                     <TableCell>{r.amount}</TableCell>
                                     <TableCell>{r.paymentMethod}</TableCell>
-                                    <TableCell><div className="bg-green-600 h-5.5 w-22 items-center rounded-lg text-white text-center h-5">{r.status}</div></TableCell>
+                                    <TableCell><div className="bg-green-600 h-5.5 w-22 items-center rounded-lg text-white text-center">{r.status}</div></TableCell>
                                 </TableRow>
                             ))
                         )}
                     </TableBody>
-                    <TableFooter className="bg-slate-200">
+                    <TableFooter className="bg-slate-200 dark:bg-slate-800">
                         <TableRow>
                             <TableCell colSpan={4} className="font-semibold">
                                 Total

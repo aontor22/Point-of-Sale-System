@@ -125,13 +125,13 @@ export default function SaleReports() {
                 </div>
             </div>
 
-            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
-                <div className="flex w-full flex-1 items-center p-3 gap-2">
+            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background dark:bg-slate-900">
+                <div className="flex w-full flex-1 items-center p-3 dark:bg-slate-800 gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8"
+                            className="pl-8 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -139,7 +139,7 @@ export default function SaleReports() {
 
                     <div className="ml-auto gap-3 flex">
                         <Select value={status} onValueChange={setStatus}>
-                            <SelectTrigger className="w-42.5">
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Brand" />
                             </SelectTrigger>
                             <SelectContent>
@@ -162,7 +162,7 @@ export default function SaleReports() {
                 <div className="overflow-hidden">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-slate-200">
+                            <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
                                     <Checkbox aria-label="Select all" />
                                 </TableHead>

@@ -229,7 +229,7 @@ export default function SaleReports() {
                             ))
                         )}
                     </TableBody>
-                    <TableFooter className="bg-slate-200">
+                    <TableFooter className="bg-slate-200 dark:bg-slate-800">
                         <TableRow>
                             <TableCell colSpan={4} className="font-semibold">
                                 Total
