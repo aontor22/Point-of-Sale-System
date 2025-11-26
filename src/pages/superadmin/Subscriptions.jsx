@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import ButtonComponent from "@/components/ui/ChangeButton";
-// import PacmanLoader from "@/components/ui/PacmanLoader";
+import PacmanLoader from "@/components/ui/PacmanLoader";
 
 const DashBoard = () => {
     const [search, setSearch] = useState("");
@@ -113,11 +113,11 @@ const DashBoard = () => {
 
     return (
         <div>
-            {loading ? (
+            {/* {loading ? (
                 <div className="flex justify-center items-center h-screen">
-                    {/* <PacmanLoader loading={loading} pageName="Subscriptions" color="#2b62e3" /> */}
+                    <PacmanLoader loading={loading} pageName="Subscriptions" color="#2b62e3" />
                 </div>
-            ) : (
+            ) : ( */}
                 <>
                     <div className="space-y-6">
                         <div className="w-full">
@@ -348,7 +348,7 @@ const DashBoard = () => {
                         <Footer />
                     </div>
                 </>
-            )}
+            {/* )} */}
         </div>
     );
 };

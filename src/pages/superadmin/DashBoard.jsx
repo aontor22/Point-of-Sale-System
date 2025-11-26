@@ -21,12 +21,12 @@ const DashBoard = () => {
 
     return (
         <div className="space-y-6">
-            {loading && (
+            {/* {loading && (
                 <div className="flex justify-center items-center h-screen">
                     {/* <PacmanLoader loading={loading} pageName="Super Admin Dashboard" color="#2b62e3" /> */}
-                </div>
-            )}
-            {!loading && (
+                {/* </div> */}
+            {/* // )} */}
+            {/* // {!loading && ( */}
                 <>
                     <div className="w-full">
                         <ProductsDate />
@@ -59,7 +59,7 @@ const DashBoard = () => {
 
                     <Footer />
                 </>
-            )}
+            {/* )} */}
         </div>
     )
 }
