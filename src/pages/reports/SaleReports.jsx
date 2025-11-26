@@ -75,7 +75,7 @@ export default function SaleReports() {
                 <SalesCat />
             </div>
 
-            <div className="flex-1 items-center justify-between gap-3 overflow-hidden rounded-md border bg-background p-5">
+            <div className="flex-1 items-center justify-between gap-3 overflow-hidden rounded-md border bg-background dark:bg-slate-900 p-5">
                 <div className="flex items-center gap-2 pb-4 w-full">
                     <h3 className="text-lg font-semibold">Sales Report</h3>
                     <div className="ml-auto flex items-center gap-2">
@@ -84,7 +84,7 @@ export default function SaleReports() {
                 </div>
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-slate-200">
+                        <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
                                 <Checkbox aria-label="Select all" />
                             </TableHead>

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Button } from './button';
-import DatePicker from 'react-datepicker'; // Correct import
-import "react-datepicker/dist/react-datepicker.css"; // Don't forget to import styles
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select'; // Assuming you have custom Select components from Shadcn
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select';
 import { Calendar } from 'lucide-react';
 
 const ReportFilter = () => {
@@ -12,12 +12,12 @@ const ReportFilter = () => {
     const [product, setProduct] = useState('All');
 
     return (
-        <div className="flex items-center justify-between space-x-4 p-4 border bg-white rounded-md">
+        <div className="flex items-center justify-between space-x-4 p-4 border bg-white dark:bg-slate-800 rounded-md">
             <div className="flex-1 items-center space-x-2">
                 <label htmlFor="date-range" className="text-sm font-medium">
                     Choose Date
                 </label>
-                <div className="w-full flex gap-1.5 items-center border rounded-md mt-1 p-1 px-2">
+                <div className="w-full flex gap-1.5 items-center border dark:bg-slate-900 rounded-md mt-1 p-1 px-2">
                     <Calendar size={18} />
                     <DatePicker
                         id="date-range"
@@ -39,7 +39,7 @@ const ReportFilter = () => {
                     Store
                 </label>
                 <Select value={store} onValueChange={setStore}>
-                    <SelectTrigger className="w-full mt-1">
+                    <SelectTrigger className="w-full mt-1 dark:bg-slate-900">
                         <SelectValue placeholder="Store" />
                     </SelectTrigger>
                     <SelectContent>
@@ -56,7 +56,7 @@ const ReportFilter = () => {
                     Products
                 </label>
                 <Select value={product} onValueChange={setProduct}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full mt-1 dark:bg-slate-900">
                         <SelectValue placeholder="Products" />
                     </SelectTrigger>
                     <SelectContent>

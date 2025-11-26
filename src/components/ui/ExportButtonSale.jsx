@@ -12,7 +12,7 @@ const ExportsButtons = (
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-md border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+                    className="h-10 w-10 rounded-md border-slate-200 bg-white dark:bg-slate-700 shadow-sm hover:bg-slate-50"
                     onClick={onExportPdf}
                     title="Export PDF"
                 >
@@ -21,20 +21,20 @@ const ExportsButtons = (
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-md border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+                    className="h-10 w-10 rounded-md border-slate-200 bg-white dark:bg-slate-700 shadow-sm hover:bg-slate-50"
                     onClick={onExportXls}
                     title="Export XLS"
                 >
-                    <FileSpreadsheet className="h-5 w-5 text-green-700" />
+                    <FileSpreadsheet className="h-5 w-5 text-green-600" />
                 </Button>
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-md border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+                    className="h-10 w-10 rounded-md border-slate-200 bg-white dark:bg-slate-700 shadow-sm hover:bg-slate-50"
                     onClick={onRefresh}
                     title="Refresh"
                 >
-                    <Printer className="h-5 w-5 text-slate-700" />
+                    <Printer className="h-5 w-5 text-slate-700 dark:text-slate-300" />
                 </Button>
             </div>
         </div>

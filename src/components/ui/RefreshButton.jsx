@@ -10,19 +10,19 @@ const ExportsButtons = (
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-md border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+                    className="h-10 w-10 rounded-md border-slate-200 bg-white dark:bg-slate-700 shadow-sm hover:bg-slate-50"
                     onClick={onRefresh}
                     title="Refresh"
                 >
-                    <RefreshCw className="h-5 w-5 text-slate-700" />
+                    <RefreshCw className="h-5 w-5 text-slate-700 dark:text-slate-300" />
                 </Button>
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-10 w-10 rounded-md border-slate-200 bg-white shadow-sm hover:bg-slate-50"
+                    className="h-10 w-10 rounded-md border-slate-200 bg-white dark:bg-slate-700 shadow-sm hover:bg-slate-50"
                     title="Collapse"
                 >
-                    <ChevronUp className="h-5 w-5 text-slate-700" />
+                    <ChevronUp className="h-5 w-5 text-slate-700 dark:text-slate-300" />
                 </Button>
             </div>
         </div>

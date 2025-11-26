@@ -127,7 +127,7 @@ export default function ProductsPage() {
                     </div>
 
                     <Select value={category} onValueChange={setCategory}>
-                        <SelectTrigger className="w-[170px] dark:bg-slate-900">
+                        <SelectTrigger className="w-42.5 dark:bg-slate-900">
                             <SelectValue placeholder="Category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -142,7 +142,7 @@ export default function ProductsPage() {
                     </Select>
 
                     <Select value={brand} onValueChange={setBrand}>
-                        <SelectTrigger className="w-[170px] dark:bg-slate-900">
+                        <SelectTrigger className="w-42.5 dark:bg-slate-900">
                             <SelectValue placeholder="Brand" />
                         </SelectTrigger>
                         <SelectContent>
@@ -196,7 +196,7 @@ export default function ProductsPage() {
                             <TableHead>Unit</TableHead>
                             <TableHead className="text-right">Qty</TableHead>
                             <TableHead>Created By</TableHead>
-                            <TableHead className="w-[60px] text-right">Actions</TableHead>
+                            <TableHead className="w-15 text-right">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
 
