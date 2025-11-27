@@ -261,11 +261,11 @@ export default function SaleReports() {
                                         </TableCell>
 
                                         <TableCell className="whitespace-normal wrap-break-words">
-                                            {r.poUnitPrice}
+                                            ${r.poUnitPrice}
                                         </TableCell>
 
                                         <TableCell className="whitespace-normal wrap-break-words">
-                                            {r.poTotalAmount}
+                                            ${r.poTotalAmount}
                                         </TableCell>
 
                                         <TableCell className="whitespace-normal wrap-break-word">

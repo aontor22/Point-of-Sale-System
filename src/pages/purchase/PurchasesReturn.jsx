@@ -43,7 +43,7 @@ import {
     MoreHorizontal,
 } from "lucide-react";
 
-import purchaseReturns from "@/data/PurchaseReturnData";
+import purchaseReturns from "@/data/PurchaseOrderData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ButtonComponent from '@/components/ui/ChangeButton'
@@ -59,9 +59,9 @@ export default function SaleReports() {
     const filtered = purchaseReturns.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.prSupplier.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.prSupplier === category;
-        const matchBrand = status === "all" || r.prStatus === status;
+            r.supplier.toLowerCase().includes(s);
+        const matchCat = category === "all" || r.supplier === category;
+        const matchBrand = status === "all" || r.status === status;
         return matchSearch && matchCat && matchBrand;
     });
 
@@ -182,7 +182,6 @@ export default function SaleReports() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <ProductsDate />
                     <ButtonComponent
                         title="Export"
                         isVisible={isInventoryReportVisible}
@@ -207,15 +206,15 @@ export default function SaleReports() {
                                 <TableHead className="w-10">
                                     <Checkbox aria-label="Select all" />
                                 </TableHead>
-                                <TableHead>Order ID</TableHead>
+                                <TableHead>Return ID</TableHead>
+                                <TableHead>Purchase Order</TableHead>
                                 <TableHead>Supplier</TableHead>
-                                <TableHead>Order Date</TableHead>
-                                <TableHead>Expected Delivery</TableHead>
-                                <TableHead>Total Items</TableHead>
-                                <TableHead>Total Amount</TableHead>
-                                <TableHead>Priority</TableHead>
+                                <TableHead>Return Date</TableHead>
+                                <TableHead>Product</TableHead>
+                                <TableHead>Qty Returned</TableHead>
+                                <TableHead>Refund Amount</TableHead>
+                                <TableHead>Reason</TableHead>
                                 <TableHead>Status</TableHead>
-                                <TableHead>Created By</TableHead>
                                 <TableHead>Action</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -241,27 +240,32 @@ export default function SaleReports() {
                                 </TableRow>
                             ) : (
                                 paginatedRows.map((r) => (
-                                    <TableRow key={r.prID}>
+                                    <TableRow key={r.returnID}>
                                         <TableCell>
-                                            <Checkbox aria-label={`Select ${r.prID}`} />
+                                            <Checkbox aria-label={`Select ${r.returnID}`} />
                                         </TableCell>
 
-                                        <TableCell>{r.prCode}</TableCell>
+                                        <TableCell>{r.returnCode}</TableCell>
 
                                         <TableCell className="whitespace-nowrap">
-                                            {r.prSupplier}
+                                            {r.purchaseOrderCode}
                                         </TableCell>
 
-                                        <TableCell className="whitespace-normal wrap-break-words">{r.prOrderDate}</TableCell>
+                                        <TableCell className="whitespace-normal wrap-break-words">{r.supplier}</TableCell>
 
-                                        <TableCell>{r.prExpectedDelivery}</TableCell>
+                                        <TableCell>{r.returnDate}</TableCell>
 
                                         <TableCell className="whitespace-normal wrap-break-words">
-                                            {r.prTotalItems}
+                                            {r.product}
                                         </TableCell>
 
                                         <TableCell className="whitespace-normal wrap-break-words">
-                                            {r.prTotalAmount}
+                                            {r.qtyReturned}
+                                        </TableCell>
+
+
+                                        <TableCell className="whitespace-normal wrap-break-words">
+                                            ${r.refundAmount}
                                         </TableCell>
 
                                         <TableCell>
@@ -270,17 +274,23 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.prPriority === "Low"
+                                                    ${r.reason === "Excess Stock"
                                                         ? "bg-blue-100 text-blue-600"
-                                                        : r.prPriority === "Medium"
-                                                            ? "bg-amber-100 text-amber-600"
-                                                            : r.prPriority === "High"
+                                                        : r.reason === "Wrong Specifications"
+                                                            ? "bg-purple-100 text-purple-600"
+                                                            : r.reason === "Defective Units"
                                                                 ? "bg-red-100 text-red-600"
-                                                                : "bg-slate-200 text-slate-600"
+                                                                : r.reason === "Wrong Model"
+                                                                    ? "bg-purple-100 text-purple-600"
+                                                                    : r.reason === "Damaged in Transit"
+                                                                        ? "bg-orange-100 text-orange-600"
+                                                                        : r.reason === "Quality Issues"
+                                                                            ? "bg-pink-100 text-pink-600"
+                                                                            : "bg-slate-200 text-slate-600"
                                                     }
             `}
                                             >
-                                                {r.prPriority}
+                                                {r.reason}
                                             </div>
                                         </TableCell>
 
@@ -290,26 +300,22 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.prStatus === "Approved"
+                                                    ${r.status === "Approved"
                                                         ? "bg-blue-600 text-white"
-                                                        : r.prStatus === "Pending Approval"
+                                                        : r.status === "Pending"
                                                             ? "bg-amber-500 text-white"
-                                                            : r.prStatus === "Completed"
+                                                            : r.status === "Completed"
                                                                 ? "bg-green-600 text-white"
-                                                                : r.prStatus === "Draft"
-                                                                    ? "bg-slate-500 text-white"
-                                                                    : r.prStatus === "Canceled"
-                                                                        ? "bg-red-300 text-red-600"
+                                                                : r.status === "Processing"
+                                                                    ? "bg-orange-600 text-white"
+                                                                    : r.status === "Rejected"
+                                                                        ? "bg-red-600 text-white"
                                                                         : "bg-slate-200 text-slate-600"
                                                     }
             `}
                                             >
-                                                {r.prStatus}
+                                                {r.status}
                                             </div>
-                                        </TableCell>
-
-                                        <TableCell className="whitespace-nowrap">
-                                            {r.prCreatedBy}
                                         </TableCell>
 
                                         <TableCell>
