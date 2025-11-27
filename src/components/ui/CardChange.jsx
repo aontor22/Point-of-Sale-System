@@ -68,7 +68,7 @@ function StatExpenseCard({
     return (
         <Card
             className={cn(
-                " p-0 w-full h-full rounded-xl relative bg-white",
+                " p-0 w-full h-full rounded-xl relative bg-white dark:bg-slate-800/40",
                 styles.card,
                 className
             )}
@@ -84,7 +84,7 @@ function StatExpenseCard({
                 </div>
 
                 <div className="mt-6 space-y-1">
-                    <p className="text-gray-500 text-sm font-normal leading-5">
+                    <p className="text-gray-500 dark:text-slate-300 text-sm font-normal leading-5">
                         {title}
                     </p>
                     <p

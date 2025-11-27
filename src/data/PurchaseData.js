@@ -1,126 +1,61 @@
-// src/data/PurchaseData.js
-
-const purchases = [
-    {
-        poID: 1,
-        poCode: "PO-2025-001",
-        poSupplier: "Tech Supplies Co.",
-        poDate: "Nov 1, 2025",
-        poProduct: "Samsung Galaxy S24",
-        poQuantity: 100,
-        poUnitPrice: 899.99,
-        poTotalAmount: 89999.0,
-        poPaymentStatus: "Paid",
-        poDeliveryStatus: "Delivered",
-    },
-    {
-        poID: 2,
-        poCode: "PO-2025-002",
-        poSupplier: "Apple Distributors Inc.",
-        poDate: "Nov 2, 2025",
-        poProduct: 'MacBook Pro 16"',
-        poQuantity: 25,
-        poUnitPrice: 2499.0,
-        poTotalAmount: 62475.0,
-        poPaymentStatus: "Paid",
-        poDeliveryStatus: "Delivered",
-    },
-    {
-        poID: 3,
-        poCode: "PO-2025-003",
-        poSupplier: "Audio Excellence Ltd.",
-        poDate: "Nov 3, 2025",
-        poProduct: "Sony WH-1000XM5",
-        poQuantity: 50,
-        poUnitPrice: 399.99,
-        poTotalAmount: 19999.5,
-        poPaymentStatus: "Pending",
-        poDeliveryStatus: "In Transit",
-    },
-    {
-        poID: 4,
-        poCode: "PO-2025-004",
-        poSupplier: "Apple Distributors Inc.",
-        poDate: "Oct 28, 2025",
-        poProduct: "iPad Air 5th Gen",
-        poQuantity: 30,
-        poUnitPrice: 599.0,
-        poTotalAmount: 17970.0,
-        poPaymentStatus: "Partial",
-        poDeliveryStatus: "Delivered",
-    },
-    {
-        poID: 5,
-        poCode: "PO-2025-005",
-        poSupplier: "Dell Technologies",
-        poDate: "Nov 4, 2025",
-        poProduct: "Dell XPS 13",
-        poQuantity: 40,
-        poUnitPrice: 1299.99,
-        poTotalAmount: 51999.6,
-        poPaymentStatus: "Paid",
-        poDeliveryStatus: "Processing",
-    },
-    {
-        poID: 6,
-        poCode: "PO-2025-006",
-        poSupplier: "Logitech International",
-        poDate: "Oct 25, 2025",
-        poProduct: "Logitech MX Master 3",
-        poQuantity: 75,
-        poUnitPrice: 99.99,
-        poTotalAmount: 7499.25,
-        poPaymentStatus: "Overdue",
-        poDeliveryStatus: "Delivered",
-    },
-    {
-        poID: 7,
-        poCode: "PO-2025-007",
-        poSupplier: "LG Electronics",
-        poDate: "Oct 30, 2025",
-        poProduct: 'LG 27" Monitor',
-        poQuantity: 60,
-        poUnitPrice: 349.99,
-        poTotalAmount: 20999.4,
-        poPaymentStatus: "Paid",
-        poDeliveryStatus: "Delivered",
-    },
-    {
-        poID: 8,
-        poCode: "PO-2025-008",
-        poSupplier: "Apple Distributors Inc.",
-        poDate: "Nov 3, 2025",
-        poProduct: "Apple Watch Series 9",
-        poQuantity: 35,
-        poUnitPrice: 429.0,
-        poTotalAmount: 15015.0,
-        poPaymentStatus: "Pending",
-        poDeliveryStatus: "In Transit",
-    },
-    {
-        poID: 9,
-        poCode: "PO-2025-009",
-        poSupplier: "Canon Inc.",
-        poDate: "Oct 29, 2025",
-        poProduct: "Canon EOS R6",
-        poQuantity: 15,
-        poUnitPrice: 2499.0,
-        poTotalAmount: 37485.0,
-        poPaymentStatus: "Paid",
-        poDeliveryStatus: "Delivered",
-    },
-    {
-        poID: 10,
-        poCode: "PO-2025-010",
-        poSupplier: "Audio Excellence Ltd.",
-        poDate: "Nov 1, 2025",
-        poProduct: "Bose SoundLink",
-        poQuantity: 80,
-        poUnitPrice: 129.99,
-        poTotalAmount: 10399.2,
-        poPaymentStatus: "Partial",
-        poDeliveryStatus: "Delivered",
-    },
+const suppliers = [
+    "Tech Supplies Co.",
+    "Apple Distributors Inc.",
+    "Audio Excellence Ltd.",
+    "Dell Technologies",
+    "Logitech International",
+    "LG Electronics",
+    "Canon Inc.",
+    "Gadget World Wholesale",
 ];
+
+const products = [
+    "Samsung Galaxy S24",
+    'MacBook Pro 16"',
+    "Sony WH-1000XM5",
+    "iPad Air 5th Gen",
+    "Dell XPS 13",
+    "Logitech MX Master 3",
+    'LG 27" Monitor',
+    "Apple Watch Series 9",
+    "Canon EOS R6",
+    "Bose SoundLink",
+];
+
+const paymentStatuses = ["Paid", "Pending", "Partial", "Overdue"];
+const deliveryStatuses = ["Delivered", "Processing", "In Transit", "Delayed"];
+
+const monthLabels = ["Oct", "Nov", "Dec"];
+
+// Generate 100 demo purchase orders
+const purchases = Array.from({ length: 100 }, (_, index) => {
+    const poID = index + 1;
+    const supplier = suppliers[index % suppliers.length];
+    const product = products[index % products.length];
+
+    const month = monthLabels[Math.floor(index / 30) % monthLabels.length];
+    const day = (index % 28) + 1;
+    const poDate = `${month} ${day}, 2025`;
+
+    const poQuantity = 10 + (index % 90);
+    const poUnitPrice = 99.99 + (index % 20) * 25;
+    const poTotalAmount = Number((poQuantity * poUnitPrice).toFixed(2));
+
+    const poPaymentStatus = paymentStatuses[index % paymentStatuses.length];
+    const poDeliveryStatus = deliveryStatuses[index % deliveryStatuses.length];
+
+    return {
+        poID,
+        poCode: `PO-2025-${String(poID).padStart(3, "0")}`,
+        poSupplier: supplier,
+        poDate,
+        poProduct: product,
+        poQuantity,
+        poUnitPrice,
+        poTotalAmount,
+        poPaymentStatus,
+        poDeliveryStatus,
+    };
+});
 
 export default purchases;

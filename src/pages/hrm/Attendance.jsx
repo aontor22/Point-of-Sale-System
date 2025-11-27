@@ -1,5 +1,5 @@
-import EmployeeView from '@/components/view/AttendanceView'
-import React, { useState } from 'react'
+import EmployeeView from "@/components/view/AttendanceView";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,8 +50,8 @@ import {
 import employee from "@/data/EmployeeData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
-import ButtonComponent from '@/components/ui/ChangeButton'
-import { AttendanceHeader } from '@/components/ui/AttendanceHeader';
+import ButtonComponent from "@/components/ui/ChangeButton";
+import { AttendanceHeader } from "@/components/ui/AttendanceHeader";
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
@@ -61,8 +61,7 @@ export default function SaleReports() {
 
     const filtered = employee.filter((r) => {
         const s = search.toLowerCase();
-        const matchSearch =
-            r.empName.toLowerCase().includes(s);
+        const matchSearch = r.empName.toLowerCase().includes(s);
         const matchCat = category === "all" || r.empDepartment === category;
         const matchBrand = status === "all" || r.empStatus === status;
         return matchSearch && matchCat && matchBrand;
@@ -103,14 +102,13 @@ export default function SaleReports() {
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <div className="flex-1">
-                <div>
-                    <AttendanceHeader attendanceRate={0.6} />
-                </div>
+
+            <div className="w-full">
+                <AttendanceHeader attendanceRate={0.6} />
                 <EmployeeView />
             </div>
 
-            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
+            <div className="w-full flex flex-col flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-900">
                 <div className="flex w-full items-center p-3 gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -129,11 +127,17 @@ export default function SaleReports() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Department</SelectItem>
-                                <SelectItem value="Store Operations">Store Operations</SelectItem>
-                                <SelectItem value="POS Operations">POS Operations</SelectItem>
+                                <SelectItem value="Store Operations">
+                                    Store Operations
+                                </SelectItem>
+                                <SelectItem value="POS Operations">
+                                    POS Operations
+                                </SelectItem>
                                 <SelectItem value="Inventory">Inventory</SelectItem>
                                 <SelectItem value="Sales">Sales</SelectItem>
-                                <SelectItem value="Customer Service">Customer Service</SelectItem>
+                                <SelectItem value="Customer Service">
+                                    Customer Service
+                                </SelectItem>
                                 <SelectItem value="Finance">Finance</SelectItem>
                             </SelectContent>
                         </Select>
@@ -149,26 +153,28 @@ export default function SaleReports() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <ProductsDate />
+
                     <ButtonComponent
                         title="Export"
                         isVisible={isInventoryReportVisible}
-                        // onClick={handleInventoryReportClick}
                         className="bg-green-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Download size={16} />}
-                    ><PlusCircle size={20} /></ButtonComponent>
+                    >
+                        <PlusCircle size={20} />
+                    </ButtonComponent>
 
                     <ButtonComponent
                         title="Mark Attendance"
                         isVisible={isInventoryReportVisible}
-                        // onClick={handleInventoryReportClick}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Clock size={16} />}
-                    ><PlusCircle size={20} /></ButtonComponent>
+                    >
+                        <PlusCircle size={20} />
+                    </ButtonComponent>
                 </div>
 
-                <div className="overflow-hidden">
-                    <Table>
+                <div className="w-full overflow-x-auto">
+                    <Table className="min-w-full">
                         <TableHeader>
                             <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
@@ -223,27 +229,37 @@ export default function SaleReports() {
                                                     />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium">{r.empName}</span>
+                                                    <span className="font-medium">
+                                                        {r.empName}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </TableCell>
                                         <TableCell>{r.empCode}</TableCell>
                                         <TableCell>
-                                            <div className={`
+                                            <div
+                                                className={`
                                                 inline-flex items-center justify-center
                                                 px-3 py-1 min-w-[120px] h-7
                                                 rounded-full text-xs font-medium
-                                                ${categoryColors[r.empDepartment || r.empDepartment] || "bg-slate-100 text-slate-700"}
-                                                `}>
+                                                ${categoryColors[
+                                                    r.empDepartment || r.empDepartment
+                                                    ] ||
+                                                    "bg-slate-100 text-slate-700"
+                                                    }
+                                                `}
+                                            >
                                                 {r.empDepartment || r.empDepartment}
                                             </div>
-
                                         </TableCell>
                                         <TableCell>{r.empRole}</TableCell>
                                         <TableCell>
                                             {r.empCheckIn && r.empCheckIn !== "-" ? (
                                                 <div className="flex items-center gap-1">
-                                                    <Clock className="text-green-500" size={14} />
+                                                    <Clock
+                                                        className="text-green-500"
+                                                        size={14}
+                                                    />
                                                     {r.empCheckIn}
                                                 </div>
                                             ) : (
@@ -254,7 +270,10 @@ export default function SaleReports() {
                                         <TableCell>
                                             {r.empCheckOut && r.empCheckOut !== "-" ? (
                                                 <div className="flex items-center gap-1">
-                                                    <Clock className="text-red-500" size={14} />
+                                                    <Clock
+                                                        className="text-red-500"
+                                                        size={14}
+                                                    />
                                                     {r.empCheckOut}
                                                 </div>
                                             ) : (
@@ -266,7 +285,10 @@ export default function SaleReports() {
                                         <TableCell>
                                             {r.empLocation && r.empLocation !== "-" ? (
                                                 <div className="flex items-center gap-1">
-                                                    <MapPin className="text-gray-500" size={14} />
+                                                    <MapPin
+                                                        className="text-gray-500"
+                                                        size={14}
+                                                    />
                                                     {r.empLocation}
                                                 </div>
                                             ) : (
@@ -277,21 +299,24 @@ export default function SaleReports() {
                                             <div
                                                 className={`
                                                     inline-flex items-center justify-center
-                                                    px-3 py-1 min-w-[80px] h-7
+                                                    px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
                                                     ${r.empAttendanceStatus === "Present"
                                                         ? "bg-emerald-500 text-white"
                                                         : r.empAttendanceStatus === "Late"
                                                             ? "bg-orange-500 text-white"
-                                                            : r.empAttendanceStatus === "On Leave"
+                                                            : r.empAttendanceStatus ===
+                                                                "On Leave"
                                                                 ? "bg-blue-400 text-white"
-                                                                : r.empAttendanceStatus === "Half Day"
+                                                                : r.empAttendanceStatus ===
+                                                                    "Half Day"
                                                                     ? "bg-purple-600 text-white"
-                                                                    : r.empAttendanceStatus === "Absent"
+                                                                    : r.empAttendanceStatus ===
+                                                                        "Absent"
                                                                         ? "bg-red-600 text-white"
                                                                         : ""
                                                     }
-    `}
+                                                `}
                                             >
                                                 {r.empAttendanceStatus}
                                             </div>
@@ -320,7 +345,6 @@ export default function SaleReports() {
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
-
                                     </TableRow>
                                 ))
                             )}
@@ -328,10 +352,10 @@ export default function SaleReports() {
                     </Table>
                 </div>
 
-                {/* ===== PAGINATION ===== */}
-                <div className="flex flex-wrap items-center justify-between border-t gap-3 p-3">
-                    <div className="text-sm text-muted-foreground">
-                        Row per page:
+                {/* pagination */}
+                <div className="flex w-full flex-wrap items-center justify-between border-t gap-3 p-3">
+                    <div className="text-sm text-muted-foreground flex items-center">
+                        <span>Row per page:</span>
                         <Select defaultValue="10">
                             <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
                                 <SelectValue />
@@ -363,7 +387,8 @@ export default function SaleReports() {
                     </div>
                 </div>
             </div>
+
             <Footer />
         </div>
-    )
+    );
 }

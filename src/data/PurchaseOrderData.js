@@ -1,124 +1,73 @@
-const purchaseOrders = [
-    {
-        returnID: 1,
-        returnCode: "PR-2025-001",
-        purchaseOrderCode: "PO-2025-001",
-        supplier: "Tech Supplies Co.",
-        returnDate: "Nov 3, 2025",
-        product: "Samsung Galaxy S24",
-        qtyReturned: 5,
-        refundAmount: 4499.95,
-        reason: "Defective Units",
-        status: "Approved",
-    },
-    {
-        returnID: 2,
-        returnCode: "PR-2025-002",
-        purchaseOrderCode: "PO-2025-002",
-        supplier: "Apple Distributors Inc.",
-        returnDate: "Nov 4, 2025",
-        product: 'MacBook Pro 16"',
-        qtyReturned: 2,
-        refundAmount: 4998.0,
-        reason: "Wrong Model",
-        status: "Pending",
-    },
-    {
-        returnID: 3,
-        returnCode: "PR-2025-003",
-        purchaseOrderCode: "PO-2025-003",
-        supplier: "Audio Excellence Ltd.",
-        returnDate: "Nov 2, 2025",
-        product: "Sony WH-1000XM5",
-        qtyReturned: 8,
-        refundAmount: 3199.92,
-        reason: "Damaged in Transit",
-        status: "Completed",
-    },
-    {
-        returnID: 4,
-        returnCode: "PR-2025-004",
-        purchaseOrderCode: "PO-2025-004",
-        supplier: "Apple Distributors Inc.",
-        returnDate: "Nov 1, 2025",
-        product: "iPad Air 5th Gen",
-        qtyReturned: 3,
-        refundAmount: 1797.0,
-        reason: "Customer Order Cancelled",
-        status: "Processing",
-    },
-    {
-        returnID: 5,
-        returnCode: "PR-2025-005",
-        purchaseOrderCode: "PO-2025-005",
-        supplier: "Dell Technologies",
-        returnDate: "Oct 30, 2025",
-        product: "Dell XPS 13",
-        qtyReturned: 1,
-        refundAmount: 1299.99,
-        reason: "Defective Units",
-        status: "Rejected",
-    },
-    {
-        returnID: 6,
-        returnCode: "PR-2025-006",
-        purchaseOrderCode: "PO-2025-006",
-        supplier: "Logitech International",
-        returnDate: "Nov 3, 2025",
-        product: "Logitech MX Master 3",
-        qtyReturned: 12,
-        refundAmount: 1199.88,
-        reason: "Excess Stock",
-        status: "Pending",
-    },
-    {
-        returnID: 7,
-        returnCode: "PR-2025-007",
-        purchaseOrderCode: "PO-2025-007",
-        supplier: "LG Electronics",
-        returnDate: "Oct 31, 2025",
-        product: 'LG 27" Monitor',
-        qtyReturned: 4,
-        refundAmount: 1399.96,
-        reason: "Wrong Specifications",
-        status: "Completed",
-    },
-    {
-        returnID: 8,
-        returnCode: "PR-2025-008",
-        purchaseOrderCode: "PO-2025-008",
-        supplier: "Apple Distributors Inc.",
-        returnDate: "Nov 4, 2025",
-        product: "Apple Watch Series 9",
-        qtyReturned: 6,
-        refundAmount: 2574.0,
-        reason: "Damaged in Transit",
-        status: "Approved",
-    },
-    {
-        returnID: 9,
-        returnCode: "PR-2025-009",
-        purchaseOrderCode: "PO-2025-009",
-        supplier: "Canon Inc.",
-        returnDate: "Oct 29, 2025",
-        product: "Canon EOS R6",
-        qtyReturned: 1,
-        refundAmount: 2499.0,
-        reason: "Defective Units",
-        status: "Completed",
-    },
-    {
-        returnID: 10,
-        returnCode: "PR-2025-010",
-        purchaseOrderCode: "PO-2025-010",
-        supplier: "Audio Excellence Ltd.",
-        returnDate: "Nov 2, 2025",
-        product: "Bose SoundLink",
-        qtyReturned: 10,
-        refundAmount: 1299.9,
-        reason: "Quality Issues",
-        status: "Processing",
-    },
+const returnReasons = [
+    "Defective Units",
+    "Wrong Model",
+    "Damaged in Transit",
+    "Customer Order Cancelled",
+    "Excess Stock",
+    "Wrong Specifications",
+    "Quality Issues",
 ];
+
+const returnStatuses = ["Approved", "Pending", "Completed", "Processing", "Rejected"];
+
+const suppliers = [
+    "Tech Supplies Co.",
+    "Apple Distributors Inc.",
+    "Audio Excellence Ltd.",
+    "Dell Technologies",
+    "Logitech International",
+    "LG Electronics",
+    "Canon Inc.",
+];
+
+const products = [
+    "Samsung Galaxy S24",
+    'MacBook Pro 16"',
+    "Sony WH-1000XM5",
+    "iPad Air 5th Gen",
+    "Dell XPS 13",
+    "Logitech MX Master 3",
+    'LG 27" Monitor',
+    "Apple Watch Series 9",
+    "Canon EOS R6",
+    "Bose SoundLink",
+];
+
+const monthLabels = ["Oct", "Nov", "Dec"];
+
+const purchaseOrders = Array.from({ length: 100 }, (_, index) => {
+    const returnID = index + 1;
+    const purchaseOrderCode = `PO-2025-${String(((index % 100) + 1)).padStart(
+        3,
+        "0"
+    )}`;
+
+    const supplier = suppliers[index % suppliers.length];
+    const product = products[index % products.length];
+
+    const month = monthLabels[Math.floor(index / 30) % monthLabels.length];
+    const day = (index % 28) + 1;
+    const returnDate = `${month} ${day}, 2025`;
+
+    const qtyReturned = (index % 15) + 1;
+    const baseUnitPrice = 199.99 + (index % 15) * 30;
+    const refundAmount = Number((qtyReturned * baseUnitPrice).toFixed(2));
+
+    const reason = returnReasons[index % returnReasons.length];
+    const status = returnStatuses[index % returnStatuses.length];
+
+    return {
+        returnID,
+        returnCode: `PR-2025-${String(returnID).padStart(3, "0")}`,
+        purchaseOrderCode,
+        supplier,
+        returnDate,
+        product,
+        qtyReturned,
+        refundAmount,
+        reason,
+        status,
+    };
+});
 
 export default purchaseOrders;

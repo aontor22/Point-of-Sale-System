@@ -116,7 +116,7 @@ export default function SaleReports() {
             <ProductsDate />
             <ExpenseView />
 
-            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
+            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-900 shadow-sm">
                 <div className="flex w-full items-center p-3 gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -180,7 +180,7 @@ export default function SaleReports() {
                 <div className="overflow-hidden">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-slate-200">
+                            <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
                                     <Checkbox aria-label="Select all" />
                                 </TableHead>
@@ -272,7 +272,7 @@ export default function SaleReports() {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between pb-2 gap-3">
                     <div className="flex items-center text-sm text-muted-foreground">
                         <span className='p-4'>Row per page:</span>
                         <Select

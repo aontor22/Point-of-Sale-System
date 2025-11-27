@@ -1,126 +1,64 @@
-// src/data/PurchaseReturnData.js
-
-const purchaseReturns = [
-    {
-        prID: 1,
-        prCode: "PO-2025-101",
-        prSupplier: "Tech Supplies Co.",
-        prOrderDate: "Nov 4, 2025",
-        prExpectedDelivery: "Nov 15, 2025",
-        prTotalItems: 5,
-        prTotalAmount: 125750.0,
-        prPriority: "High",
-        prStatus: "Pending Approval",
-        prCreatedBy: "John Smith",
-    },
-    {
-        prID: 2,
-        prCode: "PO-2025-102",
-        prSupplier: "Apple Distributors Inc.",
-        prOrderDate: "Nov 3, 2025",
-        prExpectedDelivery: "Nov 12, 2025",
-        prTotalItems: 3,
-        prTotalAmount: 87500.0,
-        prPriority: "High",
-        prStatus: "Approved",
-        prCreatedBy: "Sarah Johnson",
-    },
-    {
-        prID: 3,
-        prCode: "PO-2025-103",
-        prSupplier: "Audio Excellence Ltd.",
-        prOrderDate: "Nov 4, 2025",
-        prExpectedDelivery: "Nov 18, 2025",
-        prTotalItems: 8,
-        prTotalAmount: 42300.0,
-        prPriority: "Medium",
-        prStatus: "Draft",
-        prCreatedBy: "Mike Davis",
-    },
-    {
-        prID: 4,
-        prCode: "PO-2025-104",
-        prSupplier: "Dell Technologies",
-        prOrderDate: "Oct 28, 2025",
-        prExpectedDelivery: "Nov 8, 2025",
-        prTotalItems: 4,
-        prTotalAmount: 65200.0,
-        prPriority: "Medium",
-        prStatus: "Completed",
-        prCreatedBy: "Emily Brown",
-    },
-    {
-        prID: 5,
-        prCode: "PO-2025-105",
-        prSupplier: "Logitech International",
-        prOrderDate: "Nov 2, 2025",
-        prExpectedDelivery: "Nov 14, 2025",
-        prTotalItems: 12,
-        prTotalAmount: 18500.0,
-        prPriority: "Low",
-        prStatus: "Approved",
-        prCreatedBy: "John Smith",
-    },
-    {
-        prID: 6,
-        prCode: "PO-2025-106",
-        prSupplier: "LG Electronics",
-        prOrderDate: "Nov 1, 2025",
-        prExpectedDelivery: "Nov 10, 2025",
-        prTotalItems: 6,
-        prTotalAmount: 31200.0,
-        prPriority: "Medium",
-        prStatus: "Completed",
-        prCreatedBy: "Sarah Johnson",
-    },
-    {
-        prID: 7,
-        prCode: "PO-2025-107",
-        prSupplier: "Canon Inc.",
-        prOrderDate: "Nov 4, 2025",
-        prExpectedDelivery: "Nov 20, 2025",
-        prTotalItems: 2,
-        prTotalAmount: 54980.0,
-        prPriority: "High",
-        prStatus: "Pending Approval",
-        prCreatedBy: "Mike Davis",
-    },
-    {
-        prID: 8,
-        prCode: "PO-2025-108",
-        prSupplier: "Audio Excellence Ltd.",
-        prOrderDate: "Oct 30, 2025",
-        prExpectedDelivery: "Nov 9, 2025",
-        prTotalItems: 10,
-        prTotalAmount: 25600.0,
-        prPriority: "Medium",
-        prStatus: "Approved",
-        prCreatedBy: "Emily Brown",
-    },
-    {
-        prID: 9,
-        prCode: "PO-2025-109",
-        prSupplier: "Tech Supplies Co.",
-        prOrderDate: "Oct 25, 2025",
-        prExpectedDelivery: "Nov 5, 2025",
-        prTotalItems: 7,
-        prTotalAmount: 92800.0,
-        prPriority: "Low",
-        prStatus: "Cancelled",
-        prCreatedBy: "John Smith",
-    },
-    {
-        prID: 10,
-        prCode: "PO-2025-110",
-        prSupplier: "Apple Distributors Inc.",
-        prOrderDate: "Nov 3, 2025",
-        prExpectedDelivery: "Nov 16, 2025",
-        prTotalItems: 4,
-        prTotalAmount: 71400.0,
-        prPriority: "Medium",
-        prStatus: "Draft",
-        prCreatedBy: "Sarah Johnson",
-    },
+const suppliers = [
+    "Tech Supplies Co.",
+    "Apple Distributors Inc.",
+    "Audio Excellence Ltd.",
+    "Dell Technologies",
+    "Logitech International",
+    "LG Electronics",
+    "Canon Inc.",
 ];
+
+const creators = ["John Smith", "Sarah Johnson", "Mike Davis", "Emily Brown"];
+
+const priorities = ["High", "Medium", "Low"];
+
+const requestStatuses = [
+    "Pending Approval",
+    "Approved",
+    "Draft",
+    "Completed",
+    "Cancelled",
+];
+
+const monthLabels = ["Oct", "Nov", "Dec"];
+
+const purchaseReturns = Array.from({ length: 100 }, (_, index) => {
+    const prID = index + 1;
+
+    const prCode = `PO-2025-${String(100 + prID).padStart(3, "0")}`;
+
+    const prSupplier = suppliers[index % suppliers.length];
+    const prCreatedBy = creators[index % creators.length];
+
+    const orderMonth = monthLabels[Math.floor(index / 30) % monthLabels.length];
+    const deliveryMonth =
+        monthLabels[(Math.floor(index / 30) + 1) % monthLabels.length];
+
+    const orderDay = (index % 25) + 1;
+    const deliveryDay = ((index + 7) % 25) + 1;
+
+    const prOrderDate = `${orderMonth} ${orderDay}, 2025`;
+    const prExpectedDelivery = `${deliveryMonth} ${deliveryDay}, 2025`;
+
+    const prTotalItems = (index % 12) + 1;
+    const baseValue = 1500 + (index % 20) * 750;
+    const prTotalAmount = Number((prTotalItems * baseValue).toFixed(2));
+
+    const prPriority = priorities[index % priorities.length];
+    const prStatus = requestStatuses[index % requestStatuses.length];
+
+    return {
+        prID,
+        prCode,
+        prSupplier,
+        prOrderDate,
+        prExpectedDelivery,
+        prTotalItems,
+        prTotalAmount,
+        prPriority,
+        prStatus,
+        prCreatedBy,
+    };
+});
 
 export default purchaseReturns;

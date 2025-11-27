@@ -43,7 +43,7 @@ function AttendanceView() {
 
     return (
         <div className="flex-1 min-w-0 pb-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 2xl:grid-cols-5 gap-4">
                 {stats.map((s) => (
                     <StatExpenseCard
                         key={s.title}

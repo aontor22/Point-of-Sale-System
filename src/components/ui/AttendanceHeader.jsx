@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { format } from "date-fns";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
@@ -31,12 +29,13 @@ export function AttendanceHeader({ attendanceRate = 0.6 }) {
     };
 
     const inputValue = date.toISOString().split("T")[0];
+    const formattedDate = format(date, "EEEE, MMMM d, yyyy");
 
     return (
         <div className="w-full mb-6">
-            <Card className="rounded-2xl shadow-md border border-slate-100">
+            <Card className="rounded-2xl shadow-md border border-slate-100 bg-white dark:bg-slate-800">
                 <CardContent className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between py-4 px-6">
-
+                    {/* Left section */}
                     <div className="flex items-center gap-3">
                         <Button
                             variant="outline"
@@ -47,17 +46,22 @@ export function AttendanceHeader({ attendanceRate = 0.6 }) {
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
 
-                        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border bg-white shadow-sm">
+                        {/* Date pill with custom formatted text over real input */}
+                        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border bg-white shadow-sm relative">
                             <CalendarIcon className="h-4 w-4 text-slate-500" />
-                            <input
-                                type="date"
-                                value={inputValue}
-                                onChange={handleChange}
-                                className="border-none bg-transparent text-sm focus:outline-none focus:ring-0"
-                            />
-                            <span className="hidden md:inline text-xs text-slate-500">
-                                {format(date, "EEEE, MMMM d, yyyy")}
-                            </span>
+                            <div className="relative">
+                                <input
+                                    type="date"
+                                    value={inputValue}
+                                    onChange={handleChange}
+                                    className="absolute inset-0 opacity-0 cursor-pointer"
+                                />
+
+                                {/* Visible formatted text */}
+                                <span className="text-sm text-slate-700 pointer-events-none whitespace-nowrap">
+                                    {formattedDate}
+                                </span>
+                            </div>
                         </div>
 
                         <Button
@@ -75,7 +79,6 @@ export function AttendanceHeader({ attendanceRate = 0.6 }) {
                         >
                             Today
                         </Button>
-
                     </div>
 
                     {/* Right section */}

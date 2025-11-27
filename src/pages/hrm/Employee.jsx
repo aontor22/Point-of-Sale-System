@@ -139,7 +139,7 @@ export default function SaleReports() {
             <ProductsDate />
             <EmployeeView />
 
-            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-background">
+            <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-900">
                 <div className="flex w-full items-center p-3 gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
