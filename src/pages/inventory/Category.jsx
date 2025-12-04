@@ -2,6 +2,10 @@ import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+import { useEntityModals } from "@/hooks/useEntityModals";
+
 import {
     Select,
     SelectContent,
@@ -42,11 +46,11 @@ import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
 export default function Category() {
-    const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
-    const [store, setStore] = React.useState("all");
-    const [warehouse, setWarehouse] = React.useState("all");
-    const [loading] = React.useState(false);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("all");
+    const [store, setStore] = useState("all");
+    const [warehouse, setWarehouse] = useState("all");
+    const [loading] = useState(false);
 
     const filtered = CATALOG_ROWS.filter((r) => {
         const s = search.toLowerCase();
@@ -70,7 +74,6 @@ export default function Category() {
 
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
-    // NEW: selection state
     const [selectedSkus, setSelectedSkus] = useState([]);
 
     const allSelectedOnPage =
@@ -80,6 +83,39 @@ export default function Category() {
     const someSelectedOnPage =
         paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
         !allSelectedOnPage;
+
+    const {
+        selectedItem: selectedCategory,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        openView,
+        openEdit,
+    } = useEntityModals();
+
+    const viewFields = [
+        { key: "category", label: "Category" },
+        { key: "categorySlug", label: "Category Slug" },
+        { key: "manufacturedDate", label: "Created On" },
+        { key: "status", label: "Status" },
+    ];
+
+    const formFields = [
+        { name: "category", label: "Category", type: "text", required: true },
+        {
+            name: "categorySlug",
+            label: "Category Slug",
+            type: "text",
+            required: true,
+        },
+        { name: "manufacturedDate", label: "Created On", type: "text" },
+        { name: "status", label: "Status", type: "text" },
+    ];
+
+    const handleEditSave = (updated) => {
+        console.log("Updated category", updated);
+    };
 
     const makePageList = () => {
         const pages = [];
@@ -114,6 +150,7 @@ export default function Category() {
                 ]}
             />
 
+            {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
@@ -129,22 +166,19 @@ export default function Category() {
                     <div className="ml-auto">
                         <Select value={category} onValueChange={setCategory}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Category" />
+                                <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Status</SelectItem>
                                 <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Electronics">Electronics</SelectItem>
-                                <SelectItem value="Shoe">Shoe</SelectItem>
-                                <SelectItem value="Furniture">Furniture</SelectItem>
-                                <SelectItem value="Bags">Bags</SelectItem>
-                                <SelectItem value="Phone">Phone</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                 </div>
             </div>
 
+            {/* Table */}
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
@@ -166,7 +200,9 @@ export default function Category() {
                                                 Array.from(new Set([...prev, ...pageSkus]))
                                             );
                                         } else {
-                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            const pageSet = new Set(
+                                                paginatedRows.map((r) => r.sku)
+                                            );
                                             setSelectedSkus((prev) =>
                                                 prev.filter((sku) => !pageSet.has(sku))
                                             );
@@ -245,10 +281,16 @@ export default function Category() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => openView(r)}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => openEdit(r)}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-destructive">
@@ -329,6 +371,27 @@ export default function Category() {
                     </Button>
                 </div>
             </div>
+
+            {/* Modals */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Category details"
+                description="Quick view of the category information."
+                data={selectedCategory}
+                fields={viewFields}
+            />
+
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit category"
+                description="Update the category information."
+                initialData={selectedCategory || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
             <Footer />
         </div>
     );

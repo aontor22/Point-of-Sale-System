@@ -20,6 +20,9 @@ import p8 from "../assets/person/p8.png";
 import p9 from "../assets/person/p9.png";
 import p10 from "../assets/person/p10.png";
 
+const productImages = [pst1, pst2, pst3, pst4, pst5, pst6, pst7, pst8, pst9, pst10];
+const personImages = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
+
 const BASE_ROWS = [
     {
         sku: "PT001",
@@ -383,10 +386,6 @@ const BASE_ROWS = [
     },
 ];
 
-// ---------------- Random Data Pools -----------------
-const productImages = [pst1, pst2, pst3, pst4, pst5, pst6, pst7, pst8, pst9, pst10];
-const personImages = [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10];
-
 const persons = [
     "Flores, Juanita",
     "Nguyen, Shane",
@@ -432,7 +431,18 @@ const stores = [
     "NeoTech Store",
 ];
 
-const units = ["Pc", "Kg", "Box", "Set"];
+const unitOptions = [
+    { name: "Kilograms", shortName: "kg" },
+    { name: "Liters", shortName: "l" },
+    { name: "Dozen", shortName: "dz" },
+    { name: "Pieces", shortName: "pcs" },
+    { name: "Boxes", shortName: "bx" },
+    { name: "Tons", shortName: "t" },
+    { name: "Bundles", shortName: "bn" },
+    { name: "Grams", shortName: "g" },
+    { name: "Meters", shortName: "m" },
+    { name: "Centimeters", shortName: "cm" },
+];
 
 const descriptions = [
     "Efficient Productivity",
@@ -456,6 +466,7 @@ const demoProductData = Array.from({ length: 200 }, (_, idx) => {
     const id = idx + 11;
     const category = rand(categories);
     const subCategory = rand(category.subs);
+    const unit = rand(unitOptions);
 
     const qty = randNum(20, 500);
     const soldQty = randNum(1, 30);
@@ -482,7 +493,10 @@ const demoProductData = Array.from({ length: 200 }, (_, idx) => {
         brand: rand(brands),
 
         price,
-        unit: rand(units),
+        unit: unit.shortName,
+        unitName: unit.name,
+        unitShortName: unit.shortName,
+
         qty,
         soldQty,
         soldAmount: `$${soldQty * price}`,

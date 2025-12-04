@@ -2,6 +2,10 @@ import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+import { useEntityModals } from "@/hooks/useEntityModals";
+
 import {
     Select,
     SelectContent,
@@ -41,11 +45,11 @@ import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
 export default function ProductsPage() {
-    const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
-    const [store, setStore] = React.useState("all");
-    const [warehouse, setWarehouse] = React.useState("all");
-    const [loading] = React.useState(false);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("all");
+    const [store, setStore] = useState("all");
+    const [warehouse, setWarehouse] = useState("all");
+    const [loading] = useState(false);
 
     const filtered = CATALOG_ROWS.filter((r) => {
         const s = search.toLowerCase();
@@ -59,7 +63,6 @@ export default function ProductsPage() {
         return matchSearch && matchCat && matchBrand && matchWarehouse;
     });
 
-    // pagination logic
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -70,7 +73,6 @@ export default function ProductsPage() {
 
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
-    // selection state (per product, keyed by sku)
     const [selectedSkus, setSelectedSkus] = useState([]);
 
     const allSelectedOnPage =
@@ -80,6 +82,40 @@ export default function ProductsPage() {
     const someSelectedOnPage =
         paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
         !allSelectedOnPage;
+
+    const {
+        selectedItem: selectedProduct,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        openView,
+        openEdit,
+    } = useEntityModals();
+
+    const viewFields = [
+        { key: "warehouse", label: "Warehouse" },
+        { key: "store", label: "Store" },
+        { key: "name", label: "Product Name" },
+        { key: "category", label: "Category" },
+        { key: "sku", label: "SKU" },
+        { key: "qty", label: "Quantity" },
+        { key: "qtyAlert", label: "Qty Alert" },
+    ];
+
+    const formFields = [
+        { name: "warehouse", label: "Warehouse", type: "text" },
+        { name: "store", label: "Store", type: "text" },
+        { name: "name", label: "Product Name", type: "text", required: true },
+        { name: "category", label: "Category", type: "text" },
+        { name: "sku", label: "SKU", type: "text", required: true },
+        { name: "qty", label: "Quantity", type: "number" },
+        { name: "qtyAlert", label: "Qty Alert", type: "number" },
+    ];
+
+    const handleEditSave = (updated) => {
+        console.log("Updated low stock product", updated);
+    };
 
     const makePageList = () => {
         const pages = [];
@@ -114,6 +150,7 @@ export default function ProductsPage() {
                 ]}
             />
 
+            {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
@@ -129,7 +166,7 @@ export default function ProductsPage() {
                     <div className="ml-auto gap-3 flex">
                         <Select value={warehouse} onValueChange={setWarehouse}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Category" />
+                                <SelectValue placeholder="Warehouse" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Warehouse</SelectItem>
@@ -142,7 +179,9 @@ export default function ProductsPage() {
                                 <SelectItem value="Overflow Warehouse">
                                     Overflow Warehouse
                                 </SelectItem>
-                                <SelectItem value="Nova Storage Hub">Nova Storage Hub</SelectItem>
+                                <SelectItem value="Nova Storage Hub">
+                                    Nova Storage Hub
+                                </SelectItem>
                                 <SelectItem value="Retail Supply Hub">
                                     Retail Supply Hub
                                 </SelectItem>
@@ -152,13 +191,15 @@ export default function ProductsPage() {
                                 <SelectItem value="North Zone Warehouse">
                                     North Zone Warehouse
                                 </SelectItem>
-                                <SelectItem value="Fulfillment Hub">Fulfillment Hub</SelectItem>
+                                <SelectItem value="Fulfillment Hub">
+                                    Fulfillment Hub
+                                </SelectItem>
                             </SelectContent>
                         </Select>
 
                         <Select value={store} onValueChange={setStore}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Brand" />
+                                <SelectValue placeholder="Store" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Store</SelectItem>
@@ -192,6 +233,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
+            {/* Table */}
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
@@ -213,7 +255,9 @@ export default function ProductsPage() {
                                                 Array.from(new Set([...prev, ...pageSkus]))
                                             );
                                         } else {
-                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            const pageSet = new Set(
+                                                paginatedRows.map((r) => r.sku)
+                                            );
                                             setSelectedSkus((prev) =>
                                                 prev.filter((sku) => !pageSet.has(sku))
                                             );
@@ -309,10 +353,16 @@ export default function ProductsPage() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => openView(r)}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => openEdit(r)}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-destructive">
@@ -393,6 +443,29 @@ export default function ProductsPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* Modals */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Product details"
+                description="Quick view of the product information."
+                data={selectedProduct}
+                fields={viewFields}
+                imageSrc={selectedProduct?.image}
+                imageAlt={selectedProduct?.name}
+            />
+
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit product"
+                description="Update the product information."
+                initialData={selectedProduct || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
             <Footer />
         </div>
     );

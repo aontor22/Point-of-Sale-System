@@ -1,3 +1,4 @@
+// src/pages/inventory/Units.jsx
 import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -41,9 +42,12 @@ import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
+// dynamic modals (same pattern as Product.jsx)
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
 export default function Units() {
     const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
     const [store, setStore] = React.useState("all");
     const [loading] = React.useState(false);
 
@@ -53,9 +57,8 @@ export default function Units() {
             r.sku.toLowerCase().includes(s) ||
             r.name.toLowerCase().includes(s) ||
             r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
         const matchBrand = store === "all" || r.store === store;
-        return matchSearch && matchCat && matchBrand;
+        return matchSearch && matchBrand;
     });
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -65,10 +68,9 @@ export default function Units() {
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
-    // NEW: selection state
+    // selection state
     const [selectedSkus, setSelectedSkus] = useState([]);
 
     const allSelectedOnPage =
@@ -78,6 +80,31 @@ export default function Units() {
     const someSelectedOnPage =
         paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
         !allSelectedOnPage;
+
+    // modal state (like product page)
+    const [selectedUnit, setSelectedUnit] = useState(null);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+
+    const viewFields = [
+        { key: "unitName", label: "Unit" },
+        { key: "unitShortName", label: "Short Name" },
+        { key: "qty", label: "Number of Products" },
+        { key: "manufacturedDate", label: "Created Date" },
+        { key: "status", label: "Status" },
+    ];
+
+    const formFields = [
+        { name: "unitName", label: "Unit Name", type: "text", required: true },
+        { name: "unitShortName", label: "Unit Short Name", type: "text", required: true },
+        { name: "qty", label: "Number of Products", type: "number" },
+        { name: "manufacturedDate", label: "Created Date", type: "text" },
+        { name: "status", label: "Status", type: "text" },
+    ];
+
+    const handleEditSave = (updated) => {
+        console.log("Updated unit", updated);
+    };
 
     const makePageList = () => {
         const pages = [];
@@ -127,10 +154,10 @@ export default function Units() {
                     <div className="ml-auto gap-3 flex">
                         <Select value={store} onValueChange={setStore}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Brand" />
+                                <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Status</SelectItem>
+                                <SelectItem value="all">All Status</SelectItem>
                                 <SelectItem value="Electro Mart">Electro Mart</SelectItem>
                                 <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
                                 <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
@@ -168,7 +195,9 @@ export default function Units() {
                                                 Array.from(new Set([...prev, ...pageSkus]))
                                             );
                                         } else {
-                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            const pageSet = new Set(
+                                                paginatedRows.map((r) => r.sku)
+                                            );
                                             setSelectedSkus((prev) =>
                                                 prev.filter((sku) => !pageSet.has(sku))
                                             );
@@ -194,7 +223,7 @@ export default function Units() {
                                 <TableCell colSpan={10} className="h-24 text-center">
                                     <div className="inline-flex items-center gap-2 text-muted-foreground">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Loading products…
+                                        Loading units…
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -204,7 +233,7 @@ export default function Units() {
                                     colSpan={10}
                                     className="h-24 text-center text-muted-foreground"
                                 >
-                                    No products found
+                                    No units found
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -225,8 +254,8 @@ export default function Units() {
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell className="font-medium">{r.unit}</TableCell>
-                                    <TableCell>{r.manufacturedDate}</TableCell>
+                                    <TableCell className="font-medium">{r.unitName}</TableCell>
+                                    <TableCell>{r.unit || r.unitShortName}</TableCell>
                                     <TableCell>{r.qty}</TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
                                     <TableCell>
@@ -246,10 +275,22 @@ export default function Units() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedUnit(r);
+                                                        setViewOpen(true);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedUnit(r);
+                                                        setEditOpen(true);
+                                                    }}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-destructive">
@@ -330,6 +371,27 @@ export default function Units() {
                     </Button>
                 </div>
             </div>
+
+            {/* dynamic modals */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Unit details"
+                description="Quick view of the unit information."
+                data={selectedUnit}
+                fields={viewFields}
+            />
+
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit unit"
+                description="Update the unit information."
+                initialData={selectedUnit || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
             <Footer />
         </div>
     );

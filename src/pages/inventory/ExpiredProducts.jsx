@@ -2,6 +2,10 @@ import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+import { useEntityModals } from "@/hooks/useEntityModals";
+
 import {
     Select,
     SelectContent,
@@ -63,6 +67,36 @@ export default function ExpiredProducts() {
     const endIndex = startIndex + rowsPerPage;
 
     const paginatedRows = filtered.slice(startIndex, endIndex);
+
+
+    const {
+        selectedItem: selectedProduct,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        openView,
+        openEdit,
+    } = useEntityModals();
+
+    // 2) page-specific field configs
+    const viewFields = [
+        { key: "sku", label: "SKU" },
+        { key: "name", label: "Product Name" },
+        { key: "manufacturedDate", label: "Manufactured Date" },
+        { key: "expiredDate", label: "Expired Date" },
+    ];
+
+    const formFields = [
+        { name: "name", label: "Product Name", type: "text", required: true },
+        { name: "sku", label: "SKU", type: "text", required: true },
+        { name: "manufacturedDate", label: "Manufactured Date", type: "text" },
+        { name: "expiredDate", label: "Expired Date", type: "text" },
+    ];
+
+    const handleEditSave = (updated) => {
+        console.log("Updated product", updated);
+    };
 
     // NEW: selection state
     const [selectedSkus, setSelectedSkus] = useState([]);
@@ -235,10 +269,22 @@ export default function ExpiredProducts() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        openView(r);
+                                                        setViewOpen(true);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        openEdit(r);
+                                                        setEditOpen(true);
+                                                    }}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-destructive">
@@ -319,6 +365,29 @@ export default function ExpiredProducts() {
                     </Button>
                 </div>
             </div>
+
+            {/* view modal */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Product details"
+                description="Quick view of the product information."
+                data={selectedProduct}
+                fields={viewFields}
+                imageSrc={selectedProduct?.image}
+                imageAlt={selectedProduct?.name}
+            />
+
+            {/* edit modal */}
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit product"
+                description="Update the product information."
+                initialData={selectedProduct || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
             <Footer />
         </div>
     );

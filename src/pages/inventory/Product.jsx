@@ -66,7 +66,6 @@ export default function ProductsPage() {
     const [viewOpen, setViewOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
 
-    // which fields to show in the view modal
     const viewFields = [
         { key: "sku", label: "SKU" },
         { key: "name", label: "Product Name" },
@@ -82,7 +81,6 @@ export default function ProductsPage() {
         },
     ];
 
-    // which fields to show in the edit modal
     const formFields = [
         { name: "name", label: "Product Name", type: "text", required: true },
         { name: "sku", label: "SKU", type: "text", required: true },
@@ -95,7 +93,6 @@ export default function ProductsPage() {
 
     // handle save from edit modal
     const handleEditSave = (updated) => {
-        // here you can call API or update local PRODUCT_ROWS state
         console.log("Updated product", updated);
     };
 

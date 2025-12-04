@@ -1,3 +1,4 @@
+// src/pages/inventory/Brand.jsx
 import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,10 @@ import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
+// dynamic modals (same pattern as Product.jsx)
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
 export default function Brand() {
     const [search, setSearch] = React.useState("");
     const [store, setStore] = React.useState("all");
@@ -55,8 +60,6 @@ export default function Brand() {
         return matchSearch && matchBrand;
     });
 
-    // pagination logic remains correct
-
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -64,20 +67,39 @@ export default function Brand() {
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
-    // NEW: selection state
-    const [selectedSkus, setSelectedSkus] = useState([]);
+    // selection state
+    const [selectedNames, setSelectedNames] = useState([]);
 
     const allSelectedOnPage =
         paginatedRows.length > 0 &&
-        paginatedRows.every((r) => selectedSkus.includes(r.name));
+        paginatedRows.every((r) => selectedNames.includes(r.name));
 
     const someSelectedOnPage =
-        paginatedRows.some((r) => selectedSkus.includes(r.name)) &&
+        paginatedRows.some((r) => selectedNames.includes(r.name)) &&
         !allSelectedOnPage;
+
+    // modal state
+    const [selectedBrand, setSelectedBrand] = useState(null);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+
+    const viewFields = [
+        { key: "name", label: "Brand Name" },
+        { key: "createdDate", label: "Created Date" },
+        { key: "status", label: "Status" },
+    ];
+
+    const formFields = [
+        { name: "name", label: "Brand Name", type: "text", required: true },
+        { name: "createdDate", label: "Created Date", type: "text" },
+        { name: "status", label: "Status", type: "text" },
+    ];
+
+    const handleEditSave = (updated) => {
+        console.log("Updated brand", updated);
+    };
 
     const makePageList = () => {
         const pages = [];
@@ -117,7 +139,7 @@ export default function Brand() {
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Search product, SKU, brand"
+                            placeholder="Search brand, status"
                             className="pl-8 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -127,20 +149,12 @@ export default function Brand() {
                     <div className="ml-auto gap-3 flex">
                         <Select value={store} onValueChange={setStore}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Brand" />
+                                <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Status</SelectItem>
-                                <SelectItem value="Electro Mart">Electro Mart</SelectItem>
-                                <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
-                                <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
-                                <SelectItem value="Gadget World">Gadget World</SelectItem>
-                                <SelectItem value="Volt Vault">Volt Vault</SelectItem>
-                                <SelectItem value="Elite Retail">Elite Retail</SelectItem>
-                                <SelectItem value="Prime Mart">Prime Mart</SelectItem>
-                                <SelectItem value="Neo Tech">Neo Tech</SelectItem>
-                                <SelectItem value="Urban Mart">Urban Mart</SelectItem>
-                                <SelectItem value="Travel Mart">Travel Mart</SelectItem>
+                                <SelectItem value="all">All Status</SelectItem>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -163,14 +177,16 @@ export default function Brand() {
                                     }
                                     onCheckedChange={(checked) => {
                                         if (checked) {
-                                            const pageSkus = paginatedRows.map((r) => r.name);
-                                            setSelectedSkus((prev) =>
-                                                Array.from(new Set([...prev, ...pageSkus]))
+                                            const pageNames = paginatedRows.map((r) => r.name);
+                                            setSelectedNames((prev) =>
+                                                Array.from(new Set([...prev, ...pageNames]))
                                             );
                                         } else {
-                                            const pageSet = new Set(paginatedRows.map((r) => r.name));
-                                            setSelectedSkus((prev) =>
-                                                prev.filter((sku) => !pageSet.has(sku))
+                                            const pageSet = new Set(
+                                                paginatedRows.map((r) => r.name)
+                                            );
+                                            setSelectedNames((prev) =>
+                                                prev.filter((name) => !pageSet.has(name))
                                             );
                                         }
                                     }}
@@ -178,7 +194,10 @@ export default function Brand() {
                             </TableHead>
                             <TableHead>Brand</TableHead>
                             <TableHead>Image</TableHead>
-                            <TableHead className="inline-flex justify-center items-center gap-1 ">Created Date<ArrowUpDown size={14} /></TableHead>
+                            <TableHead className="inline-flex justify-center items-center gap-1 ">
+                                Created Date
+                                <ArrowUpDown size={14} />
+                            </TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -190,7 +209,7 @@ export default function Brand() {
                                 <TableCell colSpan={10} className="h-24 text-center">
                                     <div className="inline-flex items-center gap-2 text-muted-foreground">
                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                        Loading products…
+                                        Loading brands…
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -200,7 +219,7 @@ export default function Brand() {
                                     colSpan={10}
                                     className="h-24 text-center text-muted-foreground"
                                 >
-                                    No products found
+                                    No brands found
                                 </TableCell>
                             </TableRow>
                         ) : (
@@ -209,14 +228,16 @@ export default function Brand() {
                                     <TableCell>
                                         <Checkbox
                                             aria-label={`Select ${r.name}`}
-                                            checked={selectedSkus.includes(r.name)}
+                                            checked={selectedNames.includes(r.name)}
                                             onCheckedChange={(checked) => {
-                                                setSelectedSkus((prev) => {
+                                                setSelectedNames((prev) => {
                                                     if (checked) {
                                                         if (prev.includes(r.name)) return prev;
                                                         return [...prev, r.name];
                                                     }
-                                                    return prev.filter((sku) => sku !== r.name);
+                                                    return prev.filter(
+                                                        (name) => name !== r.name
+                                                    );
                                                 });
                                             }}
                                         />
@@ -233,8 +254,14 @@ export default function Brand() {
                                         </div>
                                     </TableCell>
 
-                                    <TableCell className="text-slate-600 dark:text-slate-300">{r.createdDate}</TableCell>
-                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40} /> {r.status}</div></TableCell>
+                                    <TableCell className="text-slate-600 dark:text-slate-300">
+                                        {r.createdDate}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5">
+                                            <Dot className="-mr-3 -ml-2" size={40} /> {r.status}
+                                        </div>
+                                    </TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -247,10 +274,22 @@ export default function Brand() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedBrand(r);
+                                                        setViewOpen(true);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedBrand(r);
+                                                        setEditOpen(true);
+                                                    }}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-destructive">
@@ -269,13 +308,13 @@ export default function Brand() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center text-sm text-muted-foreground">
-                    <span className='p-4'>Row per page:</span>
+                    <span className="p-4">Row per page:</span>
                     <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
                             const num = Number(value);
                             setRowsPerPage(num);
-                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                            setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -304,10 +343,10 @@ export default function Brand() {
                         typeof item === "number" ? (
                             <Button
                                 key={idx}
-                                // FIX: Ensure both dark and light mode styling work for the active button
-                                className={item === currentPage
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                className={
+                                    item === currentPage
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                 }
                                 size="sm"
                                 onClick={() => setPage(item)}
@@ -331,6 +370,29 @@ export default function Brand() {
                     </Button>
                 </div>
             </div>
+
+            {/* dynamic modals */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Brand details"
+                description="Quick view of the brand information."
+                data={selectedBrand}
+                fields={viewFields}
+                imageSrc={selectedBrand?.image}
+                imageAlt={selectedBrand?.name}
+            />
+
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit brand"
+                description="Update the brand information."
+                initialData={selectedBrand || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
             <Footer />
         </div>
     );
