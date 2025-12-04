@@ -101,8 +101,6 @@ const baseExpenses = [
     },
 ];
 
-// src/data/ExpenseData.js
-
 const expenseCategories = [
     "Office Supplies",
     "Utilities",

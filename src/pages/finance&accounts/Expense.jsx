@@ -216,7 +216,7 @@ export default function SaleReports() {
                                 </TableRow>
                             ) : (
                                 paginatedRows.map((r) => (
-                                    <TableRow key={r.exStatus}>
+                                    <TableRow key={r.exID}>
                                         <TableCell>
                                             <Checkbox aria-label={`Select ${r.exStatus}`} />
                                         </TableCell>
