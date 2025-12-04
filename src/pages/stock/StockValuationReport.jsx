@@ -32,7 +32,6 @@ import {
     Edit,
     Eye,
     Trash2,
-    ArrowUpDown,
 } from "lucide-react";
 
 import CATALOG_ROWS from "@/data/ProductData";
@@ -42,11 +41,11 @@ import AddImport from "@/components/ui/AddImport";
 import InventoryCard from "@/components/ui/stockValuationHeader";
 
 export default function ProductsPage() {
-    const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
-    const [store, setStore] = React.useState("all");
-    const [warehouse, setWarehouse] = React.useState("all");
-    const [loading] = React.useState(false);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("all");
+    const [store, setStore] = useState("all");
+    const [warehouse, setWarehouse] = useState("all");
+    const [loading] = useState(false);
 
     const filtered = CATALOG_ROWS.filter((r) => {
         const s = search.toLowerCase();
@@ -60,15 +59,18 @@ export default function ProductsPage() {
         return matchSearch && matchCat && matchBrand && matchWarehouse;
     });
 
-    const inventoryValue = CATALOG_ROWS.reduce((sum, product) => sum + product.totalPrice, 0).toFixed(2);
+    const inventoryValue = CATALOG_ROWS.reduce(
+        (sum, product) => sum + product.totalPrice,
+        0
+    ).toFixed(2);
+
     const currentDate = new Date().toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
     });
 
-    // pagination logic remains correct
-
+    // pagination
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -77,7 +79,6 @@ export default function ProductsPage() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
     const makePageList = () => {
@@ -102,11 +103,43 @@ export default function ProductsPage() {
 
     const pageItems = makePageList();
 
+    // selection (using sku as unique id)
+    const [selectedIds, setSelectedIds] = useState([]);
+    const currentPageIds = paginatedRows.map((r) => r.sku);
+
+    const allSelectedOnPage =
+        currentPageIds.length > 0 &&
+        currentPageIds.every((id) => selectedIds.includes(id));
+
+    const someSelectedOnPage =
+        currentPageIds.some((id) => selectedIds.includes(id)) &&
+        !allSelectedOnPage;
+
+    const handleToggleAllOnPage = (checked) => {
+        if (checked) {
+            setSelectedIds((prev) =>
+                Array.from(new Set([...prev, ...currentPageIds]))
+            );
+        } else {
+            const pageSet = new Set(currentPageIds);
+            setSelectedIds((prev) => prev.filter((id) => !pageSet.has(id)));
+        }
+    };
+
+    const handleToggleRow = (id, checked) => {
+        setSelectedIds((prev) => {
+            if (checked) {
+                if (prev.includes(id)) return prev;
+                return [...prev, id];
+            }
+            return prev.filter((item) => item !== id);
+        });
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate />
             <InventoryCard inventoryValue={inventoryValue} date={currentDate} />
-
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
@@ -119,45 +152,57 @@ export default function ProductsPage() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
+
                     <div className="ml-auto gap-3 flex">
                         <Select value={warehouse} onValueChange={setWarehouse}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Category" />
+                                <SelectValue placeholder="Warehouse" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All categories</SelectItem>
-                                <SelectItem value="Lavish Warehouse">Lavish Warehouse</SelectItem>
-                                <SelectItem value="Quaint Warehouse">Quaint Warehouse</SelectItem>
-                                <SelectItem value="Traditional Warehouse">Traditional Warehouse</SelectItem>
+                                <SelectItem value="all">All Warehouses</SelectItem>
+                                <SelectItem value="Lavish Warehouse">
+                                    Lavish Warehouse
+                                </SelectItem>
+                                <SelectItem value="Quaint Warehouse">
+                                    Quaint Warehouse
+                                </SelectItem>
+                                <SelectItem value="Traditional Warehouse">
+                                    Traditional Warehouse
+                                </SelectItem>
                                 <SelectItem value="Cool Warehouse">Cool Warehouse</SelectItem>
-                                <SelectItem value="Overflow Warehouse">Overflow Warehouse</SelectItem>
+                                <SelectItem value="Overflow Warehouse">
+                                    Overflow Warehouse
+                                </SelectItem>
                                 <SelectItem value="Nova Storage Hub">Nova Storage Hub</SelectItem>
-                                <SelectItem value="Retail Supply Hub">Retail Supply Hub</SelectItem>
-                                <SelectItem value="EdgeWare Solutions">EdgeWare Solutions</SelectItem>
-                                <SelectItem value="North Zone Warehouse">North Zone Warehouse</SelectItem>
+                                <SelectItem value="Retail Supply Hub">
+                                    Retail Supply Hub
+                                </SelectItem>
+                                <SelectItem value="EdgeWare Solutions">
+                                    EdgeWare Solutions
+                                </SelectItem>
+                                <SelectItem value="North Zone Warehouse">
+                                    North Zone Warehouse
+                                </SelectItem>
                                 <SelectItem value="Fulfillment Hub">Fulfillment Hub</SelectItem>
                             </SelectContent>
                         </Select>
 
-                        <Select value={warehouse} onValueChange={setWarehouse}>
+                        <Select value={category} onValueChange={setCategory}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="Lavish Warehouse">Lavish Warehouse</SelectItem>
-                                <SelectItem value="Quaint Warehouse">Quaint Warehouse</SelectItem>
-                                <SelectItem value="Traditional Warehouse">Traditional Warehouse</SelectItem>
-                                <SelectItem value="Cool Warehouse">Cool Warehouse</SelectItem>
-                                <SelectItem value="Overflow Warehouse">Overflow Warehouse</SelectItem>
-                                <SelectItem value="Nova Storage Hub">Nova Storage Hub</SelectItem>
-                                <SelectItem value="Retail Supply Hub">Retail Supply Hub</SelectItem>
-                                <SelectItem value="EdgeWare Solutions">EdgeWare Solutions</SelectItem>
-                                <SelectItem value="North Zone Warehouse">North Zone Warehouse</SelectItem>
-                                <SelectItem value="Fulfillment Hub">Fulfillment Hub</SelectItem>
+                                <SelectItem value="all">All Categories</SelectItem>
+                                <SelectItem value="Computers">Computers</SelectItem>
+                                <SelectItem value="Electronics">Electronics</SelectItem>
+                                <SelectItem value="Shoe">Shoe</SelectItem>
+                                <SelectItem value="Furniture">Furniture</SelectItem>
+                                <SelectItem value="Bags">Bags</SelectItem>
+                                <SelectItem value="Phone">Phone</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
+
                     <div className="flex gap-2">
                         <AddImport />
                     </div>
@@ -169,7 +214,17 @@ export default function ProductsPage() {
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
+                                <Checkbox
+                                    aria-label="Select all"
+                                    checked={
+                                        allSelectedOnPage
+                                            ? true
+                                            : someSelectedOnPage
+                                                ? "indeterminate"
+                                                : false
+                                    }
+                                    onCheckedChange={handleToggleAllOnPage}
+                                />
                             </TableHead>
                             <TableHead>Product Name</TableHead>
                             <TableHead>SKU</TableHead>
@@ -205,7 +260,13 @@ export default function ProductsPage() {
                             paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
+                                        <Checkbox
+                                            aria-label={`Select ${r.sku}`}
+                                            checked={selectedIds.includes(r.sku)}
+                                            onCheckedChange={(checked) =>
+                                                handleToggleRow(r.sku, checked)
+                                            }
+                                        />
                                     </TableCell>
                                     <TableCell>{r.name}</TableCell>
                                     <TableCell>{r.sku}</TableCell>
@@ -248,13 +309,13 @@ export default function ProductsPage() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center text-sm text-muted-foreground">
-                    <span className='p-4'>Row per page:</span>
+                    <span className="p-4">Row per page:</span>
                     <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
                             const num = Number(value);
                             setRowsPerPage(num);
-                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                            setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -283,10 +344,10 @@ export default function ProductsPage() {
                         typeof item === "number" ? (
                             <Button
                                 key={idx}
-                                // FIX: Ensure both dark and light mode styling work for the active button
-                                className={item === currentPage
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                className={
+                                    item === currentPage
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                 }
                                 size="sm"
                                 onClick={() => setPage(item)}
@@ -310,6 +371,7 @@ export default function ProductsPage() {
                     </Button>
                 </div>
             </div>
+
             <Footer />
         </div>
     );

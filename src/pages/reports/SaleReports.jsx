@@ -121,9 +121,6 @@ export default function SaleReports() {
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
-                            <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
-                            </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
                             <TableHead>Brand</TableHead>
@@ -171,9 +168,6 @@ export default function SaleReports() {
                         ) : (
                             paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
-                                    <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
-                                    </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
 
                                     <TableCell>
