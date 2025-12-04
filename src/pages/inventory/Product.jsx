@@ -46,6 +46,10 @@ import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
 import AddImport from "@/components/ui/AddImport";
 
+// new: dynamic modals
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
     const [category, setCategory] = useState("all");
@@ -56,6 +60,44 @@ export default function ProductsPage() {
 
     // track selected rows by SKU
     const [selectedSkus, setSelectedSkus] = useState([]);
+
+    // modal state
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+
+    // which fields to show in the view modal
+    const viewFields = [
+        { key: "sku", label: "SKU" },
+        { key: "name", label: "Product Name" },
+        { key: "category", label: "Category" },
+        { key: "brand", label: "Brand" },
+        { key: "price", label: "Price" },
+        { key: "unit", label: "Unit" },
+        { key: "qty", label: "Quantity" },
+        {
+            key: "user",
+            label: "Created By",
+            render: (val) => (val?.name ? val.name : "-"),
+        },
+    ];
+
+    // which fields to show in the edit modal
+    const formFields = [
+        { name: "name", label: "Product Name", type: "text", required: true },
+        { name: "sku", label: "SKU", type: "text", required: true },
+        { name: "category", label: "Category", type: "text" },
+        { name: "brand", label: "Brand", type: "text" },
+        { name: "price", label: "Price", type: "number" },
+        { name: "unit", label: "Unit", type: "text" },
+        { name: "qty", label: "Quantity", type: "number" },
+    ];
+
+    // handle save from edit modal
+    const handleEditSave = (updated) => {
+        // here you can call API or update local PRODUCT_ROWS state
+        console.log("Updated product", updated);
+    };
 
     const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
@@ -217,7 +259,9 @@ export default function ProductsPage() {
                                             );
                                         } else {
                                             // remove current page SKUs only
-                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            const pageSet = new Set(
+                                                paginatedRows.map((r) => r.sku)
+                                            );
                                             setSelectedSkus((prev) =>
                                                 prev.filter((sku) => !pageSet.has(sku))
                                             );
@@ -270,7 +314,9 @@ export default function ProductsPage() {
                                                         if (prev.includes(r.sku)) return prev;
                                                         return [...prev, r.sku];
                                                     }
-                                                    return prev.filter((sku) => sku !== r.sku);
+                                                    return prev.filter(
+                                                        (sku) => sku !== r.sku
+                                                    );
                                                 });
                                             }}
                                         />
@@ -307,7 +353,10 @@ export default function ProductsPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-6 w-6">
-                                                <AvatarImage src={r.user?.avatar} alt={r.user?.name} />
+                                                <AvatarImage
+                                                    src={r.user?.avatar}
+                                                    alt={r.user?.name}
+                                                />
                                                 <AvatarFallback>
                                                     {r.user?.name
                                                         ? r.user.name
@@ -333,10 +382,22 @@ export default function ProductsPage() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedProduct(r);
+                                                        setViewOpen(true);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedProduct(r);
+                                                        setEditOpen(true);
+                                                    }}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-destructive">
@@ -417,6 +478,30 @@ export default function ProductsPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* dynamic modals */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Product details"
+                description="Quick view of the product information."
+                data={selectedProduct}
+                fields={viewFields}
+                imageSrc={selectedProduct?.image}
+                imageAlt={selectedProduct?.name}
+            />
+
+
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit product"
+                description="Update the product information."
+                initialData={selectedProduct || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
             <Footer />
         </div>
     );
