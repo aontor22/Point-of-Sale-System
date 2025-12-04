@@ -58,8 +58,6 @@ export default function Units() {
         return matchSearch && matchCat && matchBrand;
     });
 
-    // pagination logic remains correct
-
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -68,8 +66,18 @@ export default function Units() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
+
+    // NEW: selection state
+    const [selectedSkus, setSelectedSkus] = useState([]);
+
+    const allSelectedOnPage =
+        paginatedRows.length > 0 &&
+        paginatedRows.every((r) => selectedSkus.includes(r.sku));
+
+    const someSelectedOnPage =
+        paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
+        !allSelectedOnPage;
 
     const makePageList = () => {
         const pages = [];
@@ -144,12 +152,37 @@ export default function Units() {
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
+                                <Checkbox
+                                    aria-label="Select all"
+                                    checked={
+                                        allSelectedOnPage
+                                            ? true
+                                            : someSelectedOnPage
+                                                ? "indeterminate"
+                                                : false
+                                    }
+                                    onCheckedChange={(checked) => {
+                                        if (checked) {
+                                            const pageSkus = paginatedRows.map((r) => r.sku);
+                                            setSelectedSkus((prev) =>
+                                                Array.from(new Set([...prev, ...pageSkus]))
+                                            );
+                                        } else {
+                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            setSelectedSkus((prev) =>
+                                                prev.filter((sku) => !pageSet.has(sku))
+                                            );
+                                        }
+                                    }}
+                                />
                             </TableHead>
                             <TableHead>Unit</TableHead>
                             <TableHead>Short Name</TableHead>
                             <TableHead>No of Products</TableHead>
-                            <TableHead className="inline-flex justify-center items-center gap-1 ">Created Date<ArrowUpDown size={14} /></TableHead>
+                            <TableHead className="inline-flex justify-center items-center gap-1 ">
+                                Created Date
+                                <ArrowUpDown size={14} />
+                            </TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -178,13 +211,29 @@ export default function Units() {
                             paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        <Checkbox aria-label={`Select ${r.status}`} />
+                                        <Checkbox
+                                            aria-label={`Select ${r.status}`}
+                                            checked={selectedSkus.includes(r.sku)}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedSkus((prev) => {
+                                                    if (checked) {
+                                                        if (prev.includes(r.sku)) return prev;
+                                                        return [...prev, r.sku];
+                                                    }
+                                                    return prev.filter((sku) => sku !== r.sku);
+                                                });
+                                            }}
+                                        />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.unit}</TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
                                     <TableCell>{r.qty}</TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
-                                    <TableCell><div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5"><Dot className="-mr-3 -ml-2  " size={40} /> {r.status}</div></TableCell>
+                                    <TableCell>
+                                        <div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5">
+                                            <Dot className="-mr-3 -ml-2" size={40} /> {r.status}
+                                        </div>
+                                    </TableCell>
                                     <TableCell>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -219,13 +268,13 @@ export default function Units() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center text-sm text-muted-foreground">
-                    <span className='p-4'>Row per page:</span>
+                    <span className="p-4">Row per page:</span>
                     <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
                             const num = Number(value);
                             setRowsPerPage(num);
-                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                            setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -254,10 +303,10 @@ export default function Units() {
                         typeof item === "number" ? (
                             <Button
                                 key={idx}
-                                // FIX: Ensure both dark and light mode styling work for the active button
-                                className={item === currentPage
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                className={
+                                    item === currentPage
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                 }
                                 size="sm"
                                 onClick={() => setPage(item)}

@@ -54,8 +54,6 @@ export default function ExpiredProducts() {
         return matchSearch;
     });
 
-    // pagination logic remains correct
-
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -64,8 +62,18 @@ export default function ExpiredProducts() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
+
+    // NEW: selection state
+    const [selectedSkus, setSelectedSkus] = useState([]);
+
+    const allSelectedOnPage =
+        paginatedRows.length > 0 &&
+        paginatedRows.every((r) => selectedSkus.includes(r.sku));
+
+    const someSelectedOnPage =
+        paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
+        !allSelectedOnPage;
 
     const makePageList = () => {
         const pages = [];
@@ -103,7 +111,6 @@ export default function ExpiredProducts() {
                 <ExportsButtons />
             </div>
 
-
             <div className="flex flex-wrap dark:bg-slate-800 items-center justify-between gap-3 rounded-md border bg-white p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
@@ -116,8 +123,6 @@ export default function ExpiredProducts() {
                         />
                     </div>
                 </div>
-
-
             </div>
 
             <div className="overflow-hidden rounded-md border">
@@ -125,7 +130,29 @@ export default function ExpiredProducts() {
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
+                                <Checkbox
+                                    aria-label="Select all"
+                                    checked={
+                                        allSelectedOnPage
+                                            ? true
+                                            : someSelectedOnPage
+                                                ? "indeterminate"
+                                                : false
+                                    }
+                                    onCheckedChange={(checked) => {
+                                        if (checked) {
+                                            const pageSkus = paginatedRows.map((r) => r.sku);
+                                            setSelectedSkus((prev) =>
+                                                Array.from(new Set([...prev, ...pageSkus]))
+                                            );
+                                        } else {
+                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            setSelectedSkus((prev) =>
+                                                prev.filter((sku) => !pageSet.has(sku))
+                                            );
+                                        }
+                                    }}
+                                />
                             </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
@@ -168,7 +195,19 @@ export default function ExpiredProducts() {
                             paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
+                                        <Checkbox
+                                            aria-label={`Select ${r.name}`}
+                                            checked={selectedSkus.includes(r.sku)}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedSkus((prev) => {
+                                                    if (checked) {
+                                                        if (prev.includes(r.sku)) return prev;
+                                                        return [...prev, r.sku];
+                                                    }
+                                                    return prev.filter((sku) => sku !== r.sku);
+                                                });
+                                            }}
+                                        />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
                                     <TableCell>
@@ -181,7 +220,9 @@ export default function ExpiredProducts() {
                                                     loading="lazy"
                                                 />
                                             </div>
-                                            <span className="text-sm text-slate-800 dark:text-slate-300">{r.name}</span>
+                                            <span className="text-sm text-slate-800 dark:text-slate-300">
+                                                {r.name}
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
@@ -189,11 +230,7 @@ export default function ExpiredProducts() {
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-8 w-8"
-                                                >
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
                                                     <MoreHorizontal className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
@@ -220,13 +257,13 @@ export default function ExpiredProducts() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center text-sm text-muted-foreground">
-                    <span className='p-4'>Row per page:</span>
+                    <span className="p-4">Row per page:</span>
                     <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
                             const num = Number(value);
                             setRowsPerPage(num);
-                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                            setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -255,10 +292,10 @@ export default function ExpiredProducts() {
                         typeof item === "number" ? (
                             <Button
                                 key={idx}
-                                // FIX: Ensure both dark and light mode styling work for the active button
-                                className={item === currentPage
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                className={
+                                    item === currentPage
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                 }
                                 size="sm"
                                 onClick={() => setPage(item)}

@@ -59,8 +59,7 @@ export default function ProductsPage() {
         return matchSearch && matchCat && matchBrand && matchWarehouse;
     });
 
-    // pagination logic remains correct
-
+    // pagination logic
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -69,8 +68,18 @@ export default function ProductsPage() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
+
+    // selection state (per product, keyed by sku)
+    const [selectedSkus, setSelectedSkus] = useState([]);
+
+    const allSelectedOnPage =
+        paginatedRows.length > 0 &&
+        paginatedRows.every((r) => selectedSkus.includes(r.sku));
+
+    const someSelectedOnPage =
+        paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
+        !allSelectedOnPage;
 
     const makePageList = () => {
         const pages = [];
@@ -126,13 +135,23 @@ export default function ProductsPage() {
                                 <SelectItem value="all">Warehouse</SelectItem>
                                 <SelectItem value="Lavish Warehouse">Lavish Warehouse</SelectItem>
                                 <SelectItem value="Quaint Warehouse">Quaint Warehouse</SelectItem>
-                                <SelectItem value="Traditional Warehouse">Traditional Warehouse</SelectItem>
+                                <SelectItem value="Traditional Warehouse">
+                                    Traditional Warehouse
+                                </SelectItem>
                                 <SelectItem value="Cool Warehouse">Cool Warehouse</SelectItem>
-                                <SelectItem value="Overflow Warehouse">Overflow Warehouse</SelectItem>
+                                <SelectItem value="Overflow Warehouse">
+                                    Overflow Warehouse
+                                </SelectItem>
                                 <SelectItem value="Nova Storage Hub">Nova Storage Hub</SelectItem>
-                                <SelectItem value="Retail Supply Hub">Retail Supply Hub</SelectItem>
-                                <SelectItem value="EdgeWare Solutions">EdgeWare Solutions</SelectItem>
-                                <SelectItem value="North Zone Warehouse">North Zone Warehouse</SelectItem>
+                                <SelectItem value="Retail Supply Hub">
+                                    Retail Supply Hub
+                                </SelectItem>
+                                <SelectItem value="EdgeWare Solutions">
+                                    EdgeWare Solutions
+                                </SelectItem>
+                                <SelectItem value="North Zone Warehouse">
+                                    North Zone Warehouse
+                                </SelectItem>
                                 <SelectItem value="Fulfillment Hub">Fulfillment Hub</SelectItem>
                             </SelectContent>
                         </Select>
@@ -178,14 +197,39 @@ export default function ProductsPage() {
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
+                                <Checkbox
+                                    aria-label="Select all"
+                                    checked={
+                                        allSelectedOnPage
+                                            ? true
+                                            : someSelectedOnPage
+                                                ? "indeterminate"
+                                                : false
+                                    }
+                                    onCheckedChange={(checked) => {
+                                        if (checked) {
+                                            const pageSkus = paginatedRows.map((r) => r.sku);
+                                            setSelectedSkus((prev) =>
+                                                Array.from(new Set([...prev, ...pageSkus]))
+                                            );
+                                        } else {
+                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            setSelectedSkus((prev) =>
+                                                prev.filter((sku) => !pageSet.has(sku))
+                                            );
+                                        }
+                                    }}
+                                />
                             </TableHead>
                             <TableHead>Warehouse</TableHead>
                             <TableHead>Store</TableHead>
                             <TableHead>Product Name</TableHead>
                             <TableHead>Category</TableHead>
-                            <TableHead className="inline-flex justify-center items-center gap-1 ">SKU<ArrowUpDown size={14} /></TableHead>
-                            <TableHead >Qty</TableHead>
+                            <TableHead className="inline-flex justify-center items-center gap-1 ">
+                                SKU
+                                <ArrowUpDown size={14} />
+                            </TableHead>
+                            <TableHead>Qty</TableHead>
                             <TableHead>Qty Alert</TableHead>
                             <TableHead>Actions</TableHead>
                         </TableRow>
@@ -214,7 +258,19 @@ export default function ProductsPage() {
                             paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
+                                        <Checkbox
+                                            aria-label={`Select ${r.name}`}
+                                            checked={selectedSkus.includes(r.sku)}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedSkus((prev) => {
+                                                    if (checked) {
+                                                        if (prev.includes(r.sku)) return prev;
+                                                        return [...prev, r.sku];
+                                                    }
+                                                    return prev.filter((sku) => sku !== r.sku);
+                                                });
+                                            }}
+                                        />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.warehouse}</TableCell>
                                     <TableCell>
@@ -232,7 +288,9 @@ export default function ProductsPage() {
                                                     loading="lazy"
                                                 />
                                             </div>
-                                            <span className="text-sm text-slate-800 dark:text-slate-300">{r.name}</span>
+                                            <span className="text-sm text-slate-800 dark:text-slate-300">
+                                                {r.name}
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell>{r.category}</TableCell>
@@ -273,13 +331,13 @@ export default function ProductsPage() {
             {/* Pagination */}
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center text-sm text-muted-foreground">
-                    <span className='p-4'>Row per page:</span>
+                    <span className="p-4">Row per page:</span>
                     <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
                             const num = Number(value);
                             setRowsPerPage(num);
-                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                            setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -308,10 +366,10 @@ export default function ProductsPage() {
                         typeof item === "number" ? (
                             <Button
                                 key={idx}
-                                // FIX: Ensure both dark and light mode styling work for the active button
-                                className={item === currentPage
-                                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                className={
+                                    item === currentPage
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                 }
                                 size="sm"
                                 onClick={() => setPage(item)}

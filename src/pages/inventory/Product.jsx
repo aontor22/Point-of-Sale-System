@@ -47,12 +47,15 @@ import ExportsButtons from "@/components/ui/ExportsButtons";
 import AddImport from "@/components/ui/AddImport";
 
 export default function ProductsPage() {
-    const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
-    const [brand, setBrand] = React.useState("all");
-    const [loading] = React.useState(false);
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("all");
+    const [brand, setBrand] = useState("all");
+    const [loading] = useState(false);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
+
+    // track selected rows by SKU
+    const [selectedSkus, setSelectedSkus] = useState([]);
 
     const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
@@ -65,15 +68,24 @@ export default function ProductsPage() {
         return matchSearch && matchCat && matchBrand;
     });
 
-    // pagination logic remains correct
+    // pagination logic
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
     const currentPage = Math.min(page, totalPages);
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    
-    // This is the array that holds only the items for the current page
+
+    // rows for current page only
     const paginatedRows = filtered.slice(startIndex, endIndex);
+
+    // selection status for the current page
+    const allSelectedOnPage =
+        paginatedRows.length > 0 &&
+        paginatedRows.every((r) => selectedSkus.includes(r.sku));
+
+    const someSelectedOnPage =
+        paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
+        !allSelectedOnPage;
 
     const makePageList = () => {
         const pages = [];
@@ -186,7 +198,32 @@ export default function ProductsPage() {
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
-                                <Checkbox aria-label="Select all" />
+                                {/* HEADER CHECKBOX: select/unselect all on current page */}
+                                <Checkbox
+                                    aria-label="Select all on this page"
+                                    checked={
+                                        allSelectedOnPage
+                                            ? true
+                                            : someSelectedOnPage
+                                                ? "indeterminate"
+                                                : false
+                                    }
+                                    onCheckedChange={(checked) => {
+                                        if (checked) {
+                                            // add all current page SKUs
+                                            const pageSkus = paginatedRows.map((r) => r.sku);
+                                            setSelectedSkus((prev) =>
+                                                Array.from(new Set([...prev, ...pageSkus]))
+                                            );
+                                        } else {
+                                            // remove current page SKUs only
+                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
+                                            setSelectedSkus((prev) =>
+                                                prev.filter((sku) => !pageSet.has(sku))
+                                            );
+                                        }
+                                    }}
+                                />
                             </TableHead>
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
@@ -220,11 +257,23 @@ export default function ProductsPage() {
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            // FIX: Changed filtered.map to use paginatedRows.map
-                            paginatedRows.map((r) => ( 
+                            paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        <Checkbox aria-label={`Select ${r.name}`} />
+                                        {/* ROW CHECKBOX: bound to selectedSkus */}
+                                        <Checkbox
+                                            aria-label={`Select ${r.id}`}
+                                            checked={selectedSkus.includes(r.sku)}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedSkus((prev) => {
+                                                    if (checked) {
+                                                        if (prev.includes(r.sku)) return prev;
+                                                        return [...prev, r.sku];
+                                                    }
+                                                    return prev.filter((sku) => sku !== r.sku);
+                                                });
+                                            }}
+                                        />
                                     </TableCell>
                                     <TableCell className="font-medium">{r.sku}</TableCell>
 
@@ -258,15 +307,14 @@ export default function ProductsPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-6 w-6">
-                                                {/* Optional chaining added in previous step is preserved */}
                                                 <AvatarImage src={r.user?.avatar} alt={r.user?.name} />
                                                 <AvatarFallback>
-                                                    {r.user?.name // Check if r.user exists before accessing name
+                                                    {r.user?.name
                                                         ? r.user.name
-                                                                .split(" ")
-                                                                .map((w) => w[0])
-                                                                .join("")
-                                                                .slice(0, 2)
+                                                            .split(" ")
+                                                            .map((w) => w[0])
+                                                            .join("")
+                                                            .slice(0, 2)
                                                         : "UN"}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -313,7 +361,7 @@ export default function ProductsPage() {
                         onValueChange={(value) => {
                             const num = Number(value);
                             setRowsPerPage(num);
-                            setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                            setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -342,10 +390,10 @@ export default function ProductsPage() {
                         typeof item === "number" ? (
                             <Button
                                 key={idx}
-                                // FIX: Ensure both dark and light mode styling work for the active button
-                                className={item === currentPage 
-                                    ? "bg-blue-600 text-white hover:bg-blue-700" 
-                                    : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                className={
+                                    item === currentPage
+                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                 }
                                 size="sm"
                                 onClick={() => setPage(item)}
