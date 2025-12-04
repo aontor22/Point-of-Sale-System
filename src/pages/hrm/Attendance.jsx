@@ -106,6 +106,39 @@ export default function SaleReports() {
 
     const pageItems = makePageList();
 
+    const [selectedIds, setSelectedIds] = useState([]);
+    const currentPageIds = paginatedRows.map((r) => r.empID);
+    const allSelectedOnPage =
+        currentPageIds.length > 0 &&
+        currentPageIds.every((id) => selectedIds.includes(id));
+
+    const someSelectedOnPage =
+        currentPageIds.some((id) => selectedIds.includes(id)) &&
+        !allSelectedOnPage;
+
+    // Toggle all rows on current page
+    const handleToggleAllOnPage = (checked) => {
+        if (checked) {
+            setSelectedIds((prev) =>
+                Array.from(new Set([...prev, ...currentPageIds]))
+            );
+        } else {
+            const pageSet = new Set(currentPageIds);
+            setSelectedIds((prev) => prev.filter((id) => !pageSet.has(id)));
+        }
+    };
+
+    // Toggle single row
+    const handleToggleRow = (id, checked) => {
+        setSelectedIds((prev) => {
+            if (checked) {
+                if (prev.includes(id)) return prev;
+                return [...prev, id];
+            }
+            return prev.filter((item) => item !== id);
+        });
+    };
+
     const categoryColors = {
         "Office Supplies": "bg-purple-100 text-purple-600",
         Utilities: "bg-sky-100 text-sky-600",
@@ -213,8 +246,19 @@ export default function SaleReports() {
                         <TableHeader>
                             <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
-                                    <Checkbox aria-label="Select all" />
+                                    <Checkbox
+                                        aria-label="Select all"
+                                        checked={
+                                            allSelectedOnPage
+                                                ? true
+                                                : someSelectedOnPage
+                                                    ? "indeterminate"
+                                                    : false
+                                        }
+                                        onCheckedChange={handleToggleAllOnPage}
+                                    />
                                 </TableHead>
+
                                 <TableHead>Employee</TableHead>
                                 <TableHead>Employee ID</TableHead>
                                 <TableHead>Department</TableHead>
@@ -251,8 +295,13 @@ export default function SaleReports() {
                                 paginatedRows.map((r) => (
                                     <TableRow key={r.empID}>
                                         <TableCell>
-                                            <Checkbox aria-label={`Select ${r.empStatus}`} />
+                                            <Checkbox
+                                                aria-label={`Select ${r.empName || r.empID}`}
+                                                checked={selectedIds.includes(r.empID)}
+                                                onCheckedChange={(checked) => handleToggleRow(r.empID, checked)}
+                                            />
                                         </TableCell>
+
                                         <TableCell>
                                             <div className="flex items-center gap-3">
                                                 <div className="h-9 w-9 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center shrink-0">

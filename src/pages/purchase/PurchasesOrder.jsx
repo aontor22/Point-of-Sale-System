@@ -138,6 +138,39 @@ export default function SaleReports() {
 
     const pageItems = makePageList();
 
+    const [selectedIds, setSelectedIds] = useState([]);
+    const currentPageIds = paginatedRows.map((r) => r.prID);
+    const allSelectedOnPage =
+        currentPageIds.length > 0 &&
+        currentPageIds.every((id) => selectedIds.includes(id));
+
+    const someSelectedOnPage =
+        currentPageIds.some((id) => selectedIds.includes(id)) &&
+        !allSelectedOnPage;
+
+    // Toggle all rows on current page
+    const handleToggleAllOnPage = (checked) => {
+        if (checked) {
+            setSelectedIds((prev) =>
+                Array.from(new Set([...prev, ...currentPageIds]))
+            );
+        } else {
+            const pageSet = new Set(currentPageIds);
+            setSelectedIds((prev) => prev.filter((id) => !pageSet.has(id)));
+        }
+    };
+
+    // Toggle single row
+    const handleToggleRow = (id, checked) => {
+        setSelectedIds((prev) => {
+            if (checked) {
+                if (prev.includes(id)) return prev;
+                return [...prev, id];
+            }
+            return prev.filter((item) => item !== id);
+        });
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate />
@@ -204,8 +237,19 @@ export default function SaleReports() {
                         <TableHeader>
                             <TableRow className="bg-slate-200 dark:bg-slate-800">
                                 <TableHead className="w-10">
-                                    <Checkbox aria-label="Select all" />
+                                    <Checkbox
+                                        aria-label="Select all"
+                                        checked={
+                                            allSelectedOnPage
+                                                ? true
+                                                : someSelectedOnPage
+                                                    ? "indeterminate"
+                                                    : false
+                                        }
+                                        onCheckedChange={handleToggleAllOnPage}
+                                    />
                                 </TableHead>
+
                                 <TableHead>Order ID</TableHead>
                                 <TableHead>Supplier</TableHead>
                                 <TableHead>Order Date</TableHead>
@@ -242,8 +286,13 @@ export default function SaleReports() {
                                 paginatedRows.map((r) => (
                                     <TableRow key={r.prID}>
                                         <TableCell>
-                                            <Checkbox aria-label={`Select ${r.prID}`} />
+                                            <Checkbox
+                                                aria-label={`Select ${r.prID}`}
+                                                checked={selectedIds.includes(r.prID)}
+                                                onCheckedChange={(checked) => handleToggleRow(r.prID, checked)}
+                                            />
                                         </TableCell>
+
 
                                         <TableCell>{r.prCode}</TableCell>
 
