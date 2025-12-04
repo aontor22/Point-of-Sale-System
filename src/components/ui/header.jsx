@@ -76,6 +76,16 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
         navigate("/maintenance");
     };
 
+    const handleDashboard = (e) => {
+        e.preventDefault();
+        navigate("/");
+    };
+
+    const handleSettings = (e) => {
+        e.preventDefault();
+        navigate("/");
+    };
+
     return (
         <div className="bg-white dark:bg-gray-800 backdrop-blur-xl border-b border-s-gray-400 dark:border-slate-700/50 px-6 py-3">
             <div className="flex items-center justify-between">
@@ -162,11 +172,28 @@ const Header = ({ sidebarCollapsed, onToggleSidebar }) => {
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <button title="Settings" className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-                        <Settings className="w-5 h-5" />
-                    </button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button title="Settings" className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                                <Settings className="w-5 h-5" />
+                            </button>
+                        </DropdownMenuTrigger>
 
-                    <div className="flex items-center space-x-3 pl-3 border-l border-slate-200 dark:border-slate-700">
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem
+                                onClick={() => navigate("/settings/general")}
+                            >
+                                General Setting
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => navigate("/settings/")}
+                            >
+                                Website Settings
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <div onClick={handleDashboard} className="flex items-center cursor-pointer space-x-3 pl-3 border-l border-slate-200 dark:border-slate-700">
                         <img
                             src={user}
                             alt="user"
