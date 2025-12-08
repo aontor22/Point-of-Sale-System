@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,260 +34,81 @@ import {
     Trash2,
     ArrowUpDown,
     Download,
+    PlusCircle,
 } from "lucide-react";
 
-import CATALOG_ROWS from "@/data/ProductData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
-import AddBrand from "@/components/ui/AddBrand";
+import ButtonComponent from "@/components/ui/ChangeButton";
 
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import * as XLSX from "xlsx";
+// dynamic modals
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
+import {
+    useStockTransfer,
+    STOCK_TRANSFER_VIEW_FIELDS,
+    STOCK_TRANSFER_FORM_FIELDS,
+} from "./logic/useStockTransfer";
+
+export { STOCK_TRANSFER_VIEW_FIELDS, STOCK_TRANSFER_FORM_FIELDS };
 
 export default function ProductsPage() {
-    const [search, setSearch] = useState("");
-    const [category] = useState("all");
-    const [store] = useState("all");
-    const [warehouse] = useState("all");
-    const [loading] = useState(false);
+    const {
+        search,
+        setSearch,
+        loading,
 
-    const filtered = CATALOG_ROWS.filter((r) => {
-        const s = search.toLowerCase();
-        const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
-            r.name.toLowerCase().includes(s) ||
-            r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = store === "all" || r.store === store;
-        const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
-        return matchSearch && matchCat && matchBrand && matchWarehouse;
-    });
+        rowsPerPage,
+        setRowsPerPage,
+        page,
+        setPage,
+        totalPages,
+        currentPage,
+        paginatedRows,
+        pageItems,
 
-    // pagination
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-    const currentPage = Math.min(page, totalPages);
+        selectedIds,
+        allSelectedOnPage,
+        someSelectedOnPage,
+        handleToggleAllOnPage,
+        handleToggleRow,
 
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
+        selectedItem,
+        setSelectedItem,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        addOpen,
+        setAddOpen,
 
-    const paginatedRows = filtered.slice(startIndex, endIndex);
+        viewFields,
+        transferFormFields,
+        handleEditSave,
+        handleAddSave,
 
-    const makePageList = () => {
-        const pages = [];
+        handleExportPdf,
+        handleExportXls,
+        handleExportCurrentCsv,
+        handleExportCurrentPdf,
+        handleExportCurrentXls,
+        handleRefresh,
 
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-
-            if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
-            if (end < totalPages - 1) pages.push("ellipsis-end");
-
-            pages.push(totalPages);
-        }
-
-        return pages;
-    };
-
-    const pageItems = makePageList();
-
-    // selection
-    const [selectedIds, setSelectedIds] = useState([]);
-    const currentPageIds = paginatedRows.map((r) => r.sku);
-
-    const allSelectedOnPage =
-        currentPageIds.length > 0 &&
-        currentPageIds.every((id) => selectedIds.includes(id));
-
-    const someSelectedOnPage =
-        currentPageIds.some((id) => selectedIds.includes(id)) &&
-        !allSelectedOnPage;
-
-    const handleToggleAllOnPage = (checked) => {
-        if (checked) {
-            setSelectedIds((prev) =>
-                Array.from(new Set([...prev, ...currentPageIds]))
-            );
-        } else {
-            const pageSet = new Set(currentPageIds);
-            setSelectedIds((prev) => prev.filter((id) => !pageSet.has(id)));
-        }
-    };
-
-    const handleToggleRow = (id, checked) => {
-        setSelectedIds((prev) => {
-            if (checked) {
-                if (prev.includes(id)) return prev;
-                return [...prev, id];
-            }
-            return prev.filter((item) => item !== id);
-        });
-    };
-
-    /** ---------- FILTERED EXPORT ---------- */
-    const fullFilteredRows = filtered;
-
-    const handleExportPdf = () => {
-        const doc = new jsPDF();
-
-        const tableColumn = [
-            "From Warehouse",
-            "To Warehouse",
-            "No of Products",
-            "Quantity Transfer",
-            "Reference Number",
-            "Date",
-        ];
-        const tableRows = [];
-
-        fullFilteredRows.forEach((item) => {
-            tableRows.push([
-                item.warehouse,
-                item.toWareHouse,
-                item.locationQty,
-                item.qtyAlert,
-                item.refNumber,
-                item.manufacturedDate,
-            ]);
-        });
-
-        autoTable(doc, {
-            head: [tableColumn],
-            body: tableRows,
-            startY: 20,
-        });
-
-        doc.text(
-            `Stock Transfer Export (${fullFilteredRows.length} items)`,
-            14,
-            15
-        );
-        doc.save("stock_transfer.pdf");
-    };
-
-    const handleExportXls = () => {
-        const data = fullFilteredRows.map((item) => ({
-            FromWarehouse: item.warehouse,
-            ToWarehouse: item.toWareHouse,
-            NoOfProducts: item.locationQty,
-            QuantityTransfer: item.qtyAlert,
-            ReferenceNumber: item.refNumber,
-            Date: item.manufacturedDate,
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "StockTransfer");
-
-        XLSX.writeFile(workbook, "stock_transfer.xlsx");
-    };
-
-    /** ---------- CURRENT PAGE EXPORT ---------- */
-    const handleExportCurrentCsv = () => {
-        const data = paginatedRows.map((item) => ({
-            FromWarehouse: item.warehouse,
-            ToWarehouse: item.toWareHouse,
-            NoOfProducts: item.locationQty,
-            QuantityTransfer: item.qtyAlert,
-            ReferenceNumber: item.refNumber,
-            Date: item.manufacturedDate,
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const csv = XLSX.utils.sheet_to_csv(worksheet);
-
-        const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8;",
-        });
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute(
-            "download",
-            `stock_transfer_page_${currentPage}.csv`
-        );
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    };
-
-    const handleExportCurrentPdf = () => {
-        const doc = new jsPDF();
-
-        const tableColumn = [
-            "From Warehouse",
-            "To Warehouse",
-            "No of Products",
-            "Quantity Transfer",
-            "Reference Number",
-            "Date",
-        ];
-        const tableRows = [];
-
-        paginatedRows.forEach((item) => {
-            tableRows.push([
-                item.warehouse,
-                item.toWareHouse,
-                item.locationQty,
-                item.qtyAlert,
-                item.refNumber,
-                item.manufacturedDate,
-            ]);
-        });
-
-        autoTable(doc, {
-            head: [tableColumn],
-            body: tableRows,
-            startY: 20,
-        });
-
-        doc.text(
-            `Stock Transfer - Page ${currentPage} (${paginatedRows.length} items)`,
-            14,
-            15
-        );
-        doc.save(`stock_transfer_page_${currentPage}.pdf`);
-    };
-
-    const handleExportCurrentXls = () => {
-        const data = paginatedRows.map((item) => ({
-            FromWarehouse: item.warehouse,
-            ToWarehouse: item.toWareHouse,
-            NoOfProducts: item.locationQty,
-            QuantityTransfer: item.qtyAlert,
-            ReferenceNumber: item.refNumber,
-            Date: item.manufacturedDate,
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(
-            workbook,
-            worksheet,
-            "StockTransfer_Page"
-        );
-
-        XLSX.writeFile(workbook, `stock_transfer_page_${currentPage}.xlsx`);
-    };
-
-    const handleRefresh = () => {
-        setSearch("");
-        setPage(1);
-    };
+        fileInputRef,
+        handleImportClick,
+        handleFileChange,
+        handleAddClick,
+        handleDelete,
+        deletingId,
+    } = useStockTransfer();
 
     return (
         <div className="space-y-4">
             <ProductsDate />
+
             <div className="flex">
                 <ProductHeader
                     title="Stock Transfer"
@@ -296,56 +117,56 @@ export default function ProductsPage() {
                         { label: "Stock Transfer", active: true },
                     ]}
                 />
+
                 <div className="flex gap-2">
                     <ExportsButtons
                         onExportPdf={handleExportPdf}
                         onExportXls={handleExportXls}
                         onRefresh={handleRefresh}
                     />
-                    <AddBrand />
+
+                    <ButtonComponent
+                        title="Add Transfer"
+                        icon={<PlusCircle className="mr-2 h-4 w-4" />}
+                        onClick={handleAddClick}
+                        className="bg-[#0b5ed7] mt-2.5 text-white hover:bg-[#0a58ca]"
+                    />
+
+                    <ButtonComponent
+                        title="Import Transfer"
+                        icon={<Download className="mr-2 h-4 w-4" />}
+                        onClick={handleImportClick}
+                        className="bg-[#28a745] mt-2.5 text-white hover:bg-[#218838]"
+                    />
                 </div>
             </div>
 
+            {/* Hidden file input for Import */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.xls,.xlsx,.pdf"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+            />
+
+            {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Search product, SKU, brand"
+                            placeholder="Search warehouse, reference, SKU"
                             className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-
-                    <div className="ml-auto flex gap-2">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="gap-2 dark:bg-slate-900"
-                                >
-                                    <Download className="h-4 w-4" />
-                                    Export
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40">
-                                <DropdownMenuItem onClick={handleExportCurrentCsv}>
-                                    CSV (this page)
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleExportCurrentXls}>
-                                    Excel (this page)
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleExportCurrentPdf}>
-                                    PDF (this page)
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
                 </div>
             </div>
 
+            {/* Table */}
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
@@ -404,7 +225,7 @@ export default function ProductsPage() {
                                     </div>
                                 </TableCell>
                             </TableRow>
-                        ) : filtered.length === 0 ? (
+                        ) : paginatedRows.length === 0 ? (
                             <TableRow>
                                 <TableCell
                                     colSpan={10}
@@ -443,15 +264,33 @@ export default function ProductsPage() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedItem(r);
+                                                        setViewOpen(true);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedItem(r);
+                                                        setEditOpen(true);
+                                                    }}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-destructive">
-                                                    <Trash2 className="h-4 w-4" /> Delete
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-destructive"
+                                                    onClick={() => handleDelete(r.id, r.warehouse)}
+                                                    disabled={deletingId === r.id}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    {deletingId === r.id ? "Deleting..." : "Delete"}
                                                 </DropdownMenuItem>
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
@@ -527,6 +366,38 @@ export default function ProductsPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* View modal */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Stock transfer details"
+                description="Quick view of the stock transfer information."
+                data={selectedItem}
+                fields={viewFields}
+            />
+
+            {/* Add modal */}
+            <DynamicFormModal
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                title="Add transfer"
+                description="Create a new stock transfer entry."
+                initialData={{}}
+                fields={transferFormFields}
+                onSubmit={handleAddSave}
+            />
+
+            {/* Edit modal */}
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit transfer"
+                description="Update the stock transfer information."
+                initialData={selectedItem || {}}
+                fields={transferFormFields}
+                onSubmit={handleEditSave}
+            />
 
             <Footer />
         </div>

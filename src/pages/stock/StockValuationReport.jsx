@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,113 +32,97 @@ import {
     Edit,
     Eye,
     Trash2,
-    Download,
 } from "lucide-react";
 
-import CATALOG_ROWS from "@/data/ProductData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import AddImport from "@/components/ui/AddImport";
 import InventoryCard from "@/components/ui/stockValuationHeader";
 
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
+import {
+    useStockValuation,
+    STOCK_VALUATION_VIEW_FIELDS,
+    STOCK_VALUATION_FORM_FIELDS,
+} from "./logic/useStockValuation";
+
+export { STOCK_VALUATION_VIEW_FIELDS, STOCK_VALUATION_FORM_FIELDS };
+
 export default function ProductsPage() {
-    const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("all");
-    const [store, setStore] = useState("all");
-    const [warehouse, setWarehouse] = useState("all");
-    const [loading] = useState(false);
+    const {
+        // filters
+        search,
+        setSearch,
+        category,
+        setCategory,
+        store,
+        setStore,
+        // warehouse, setWarehouse, // currently unused in UI
+        loading,
 
-    const filtered = CATALOG_ROWS.filter((r) => {
-        const s = search.toLowerCase();
-        const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
-            r.name.toLowerCase().includes(s) ||
-            r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = store === "all" || r.status === store;
-        return matchSearch && matchCat && matchBrand;
-    });
+        // inventory summary
+        inventoryValue,
+        currentDate,
 
-    const inventoryValue = CATALOG_ROWS.reduce(
-        (sum, product) => sum + product.totalPrice,
-        0
-    ).toFixed(2);
+        // pagination
+        rowsPerPage,
+        setRowsPerPage,
+        page,
+        setPage,
+        totalPages,
+        currentPage,
+        paginatedRows,
+        pageItems,
 
-    const currentDate = new Date().toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-    });
+        // selection
+        selectedIds,
+        allSelectedOnPage,
+        someSelectedOnPage,
+        handleToggleAllOnPage,
+        handleToggleRow,
 
-    // pagination
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-    const currentPage = Math.min(page, totalPages);
+        // modals + current item
+        selectedItem,
+        setSelectedItem,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        addOpen,
+        setAddOpen,
 
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
+        // delete
+        deletingId,
+        handleDelete,
 
-    const paginatedRows = filtered.slice(startIndex, endIndex);
+        // field configs + handlers
+        viewFields,
+        formFields,
+        handleEditSave,
+        handleAddSave,
 
-    const makePageList = () => {
-        const pages = [];
-
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-
-            if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
-            if (end < totalPages - 1) pages.push("ellipsis-end");
-
-            pages.push(totalPages);
-        }
-
-        return pages;
-    };
-
-    const pageItems = makePageList();
-
-    const [selectedIds, setSelectedIds] = useState([]);
-    const currentPageIds = paginatedRows.map((r) => r.sku);
-
-    const allSelectedOnPage =
-        currentPageIds.length > 0 &&
-        currentPageIds.every((id) => selectedIds.includes(id));
-
-    const someSelectedOnPage =
-        currentPageIds.some((id) => selectedIds.includes(id)) &&
-        !allSelectedOnPage;
-
-    const handleToggleAllOnPage = (checked) => {
-        if (checked) {
-            setSelectedIds((prev) =>
-                Array.from(new Set([...prev, ...currentPageIds]))
-            );
-        } else {
-            const pageSet = new Set(currentPageIds);
-            setSelectedIds((prev) => prev.filter((id) => !pageSet.has(id)));
-        }
-    };
-
-    const handleToggleRow = (id, checked) => {
-        setSelectedIds((prev) => {
-            if (checked) {
-                if (prev.includes(id)) return prev;
-                return [...prev, id];
-            }
-            return prev.filter((item) => item !== id);
-        });
-    };
+        // import
+        fileInputRef,
+        handleImportClick,
+        handleFileChange,
+    } = useStockValuation();
 
     return (
         <div className="space-y-4">
             <ProductsDate />
             <InventoryCard inventoryValue={inventoryValue} date={currentDate} />
+
+            {/* Hidden file input for Import */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.xls,.xlsx,.pdf"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+            />
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
@@ -181,11 +165,18 @@ export default function ProductsPage() {
                     </div>
 
                     <div className="flex gap-2">
-                        <AddImport />
+                        <AddImport
+                            onAddClick={() => {
+                                setSelectedItem(null);
+                                setAddOpen(true);
+                            }}
+                            onImportClick={handleImportClick}
+                        />
                     </div>
                 </div>
             </div>
 
+            {/* Table */}
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
@@ -197,8 +188,8 @@ export default function ProductsPage() {
                                         allSelectedOnPage
                                             ? true
                                             : someSelectedOnPage
-                                                ? "indeterminate"
-                                                : false
+                                            ? "indeterminate"
+                                            : false
                                     }
                                     onCheckedChange={handleToggleAllOnPage}
                                 />
@@ -224,7 +215,7 @@ export default function ProductsPage() {
                                     </div>
                                 </TableCell>
                             </TableRow>
-                        ) : filtered.length === 0 ? (
+                        ) : paginatedRows.length === 0 ? (
                             <TableRow>
                                 <TableCell
                                     colSpan={10}
@@ -264,14 +255,33 @@ export default function ProductsPage() {
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedItem(r);
+                                                        setViewOpen(true);
+                                                    }}
+                                                >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2">
+                                                <DropdownMenuItem
+                                                    className="gap-2"
+                                                    onClick={() => {
+                                                        setSelectedItem(r);
+                                                        setEditOpen(true);
+                                                    }}
+                                                >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-destructive">
-                                                    <Trash2 className="h-4 w-4" /> Delete
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-destructive"
+                                                    onClick={() => handleDelete(r)}
+                                                    disabled={deletingId === r.sku}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    {deletingId === r.sku
+                                                        ? "Deleting..."
+                                                        : "Delete"}
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
@@ -348,6 +358,40 @@ export default function ProductsPage() {
                     </Button>
                 </div>
             </div>
+
+            {/* View modal */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Stock valuation details"
+                description="Quick view of the stock valuation item."
+                data={selectedItem}
+                fields={viewFields}
+                imageSrc={selectedItem?.image}
+                imageAlt={selectedItem?.name}
+            />
+
+            {/* Add modal */}
+            <DynamicFormModal
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                title="Add stock valuation item"
+                description="Create a new stock valuation entry."
+                initialData={{}}
+                fields={formFields}
+                onSubmit={handleAddSave}
+            />
+
+            {/* Edit modal */}
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit stock valuation item"
+                description="Update the stock valuation information."
+                initialData={selectedItem || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
 
             <Footer />
         </div>
