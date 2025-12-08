@@ -32,6 +32,7 @@ import {
     Edit,
     Eye,
     Trash2,
+    Download,
 } from "lucide-react";
 
 import CATALOG_ROWS from "@/data/ProductData";
@@ -54,9 +55,8 @@ export default function ProductsPage() {
             r.name.toLowerCase().includes(s) ||
             r.store.toLowerCase().includes(s);
         const matchCat = category === "all" || r.category === category;
-        const matchBrand = store === "all" || r.store === store;
-        const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
-        return matchSearch && matchCat && matchBrand && matchWarehouse;
+        const matchBrand = store === "all" || r.status === store;
+        return matchSearch && matchCat && matchBrand;
     });
 
     const inventoryValue = CATALOG_ROWS.reduce(
@@ -103,7 +103,6 @@ export default function ProductsPage() {
 
     const pageItems = makePageList();
 
-    // selection (using sku as unique id)
     const [selectedIds, setSelectedIds] = useState([]);
     const currentPageIds = paginatedRows.map((r) => r.sku);
 
@@ -147,46 +146,13 @@ export default function ProductsPage() {
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8 dark:bg-slate-900"
+                            className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
 
                     <div className="ml-auto gap-3 flex">
-                        <Select value={warehouse} onValueChange={setWarehouse}>
-                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
-                                <SelectValue placeholder="Warehouse" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Warehouses</SelectItem>
-                                <SelectItem value="Lavish Warehouse">
-                                    Lavish Warehouse
-                                </SelectItem>
-                                <SelectItem value="Quaint Warehouse">
-                                    Quaint Warehouse
-                                </SelectItem>
-                                <SelectItem value="Traditional Warehouse">
-                                    Traditional Warehouse
-                                </SelectItem>
-                                <SelectItem value="Cool Warehouse">Cool Warehouse</SelectItem>
-                                <SelectItem value="Overflow Warehouse">
-                                    Overflow Warehouse
-                                </SelectItem>
-                                <SelectItem value="Nova Storage Hub">Nova Storage Hub</SelectItem>
-                                <SelectItem value="Retail Supply Hub">
-                                    Retail Supply Hub
-                                </SelectItem>
-                                <SelectItem value="EdgeWare Solutions">
-                                    EdgeWare Solutions
-                                </SelectItem>
-                                <SelectItem value="North Zone Warehouse">
-                                    North Zone Warehouse
-                                </SelectItem>
-                                <SelectItem value="Fulfillment Hub">Fulfillment Hub</SelectItem>
-                            </SelectContent>
-                        </Select>
-
                         <Select value={category} onValueChange={setCategory}>
                             <SelectTrigger className="w-42.5 dark:bg-slate-900">
                                 <SelectValue placeholder="Category" />
@@ -199,6 +165,17 @@ export default function ProductsPage() {
                                 <SelectItem value="Furniture">Furniture</SelectItem>
                                 <SelectItem value="Bags">Bags</SelectItem>
                                 <SelectItem value="Phone">Phone</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={store} onValueChange={setStore}>
+                            <SelectTrigger className="w-42.5 dark:bg-slate-900">
+                                <SelectValue placeholder="Store" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Status</SelectItem>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

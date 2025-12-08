@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,6 +68,11 @@ export default function ProductsPage() {
     const [viewOpen, setViewOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
 
+    // NEW: add-product modal
+    const [addOpen, setAddOpen] = useState(false);
+
+    const fileInputRef = useRef(null);
+
     const viewFields = [
         { key: "warehouse", label: "Warehouse" },
         { key: "store", label: "Store" },
@@ -92,6 +97,33 @@ export default function ProductsPage() {
 
     const handleEditSave = (updated) => {
         console.log("Updated manage stock item", updated);
+    };
+
+    const handleAddSave = (data) => {
+        console.log("New manage stock item", data);
+    };
+
+    const handleImportButtonClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+
+        const allowedExt = /\.(csv|xls|xlsx|pdf)$/i;
+        const invalid = files.some((file) => !allowedExt.test(file.name));
+
+        if (invalid) {
+            alert("Only CSV, XLS, XLSX and PDF files are allowed.");
+            e.target.value = "";
+            return;
+        }
+        console.log("Files selected for import:", files);
+
+        e.target.value = "";
     };
 
     /** ------------------------------
@@ -239,9 +271,27 @@ export default function ProductsPage() {
                         onExportXls={handleExportXls}
                         onRefresh={handleRefresh}
                     />
-                    <AddImport />
+
+                    {/* Add / Import buttons */}
+                    <AddImport
+                        onAddClick={() => {
+                            setSelectedItem(null);
+                            setAddOpen(true);
+                        }}
+                        onImportClick={handleImportButtonClick}
+                    />
                 </div>
             </div>
+
+            {/* Hidden file input for Import Product */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.xls,.xlsx,.pdf"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+            />
 
             {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
@@ -255,7 +305,6 @@ export default function ProductsPage() {
                             onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
-
 
                     <div className="ml-auto gap-3 flex">
                         <Select value={warehouse} onValueChange={setWarehouse}>
@@ -273,9 +322,7 @@ export default function ProductsPage() {
                                 <SelectItem value="Traditional Warehouse">
                                     Traditional Warehouse
                                 </SelectItem>
-                                <SelectItem value="Cool Warehouse">
-                                    Cool Warehouse
-                                </SelectItem>
+                                <SelectItem value="Cool Warehouse">Cool Warehouse</SelectItem>
                                 <SelectItem value="Overflow Warehouse">
                                     Overflow Warehouse
                                 </SelectItem>
@@ -342,9 +389,7 @@ export default function ProductsPage() {
                                                 Array.from(new Set([...prev, ...pageSkus]))
                                             );
                                         } else {
-                                            const pageSet = new Set(
-                                                paginatedRows.map((r) => r.sku)
-                                            );
+                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
                                             setSelectedSkus((prev) =>
                                                 prev.filter((sku) => !pageSet.has(sku))
                                             );
@@ -394,9 +439,7 @@ export default function ProductsPage() {
                                                         if (prev.includes(r.sku)) return prev;
                                                         return [...prev, r.sku];
                                                     }
-                                                    return prev.filter(
-                                                        (sku) => sku !== r.sku
-                                                    );
+                                                    return prev.filter((sku) => sku !== r.sku);
                                                 });
                                             }}
                                         />
@@ -433,10 +476,7 @@ export default function ProductsPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-7 w-7">
-                                                <AvatarImage
-                                                    src={r.personImg}
-                                                    alt={r.person}
-                                                />
+                                                <AvatarImage src={r.personImg} alt={r.person} />
                                                 <AvatarFallback>
                                                     {r.person
                                                         ? r.person
@@ -566,7 +606,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            {/* Modals */}
+            {/* View modal */}
             <DynamicViewModal
                 open={viewOpen}
                 onOpenChange={setViewOpen}
@@ -578,6 +618,18 @@ export default function ProductsPage() {
                 imageAlt={selectedItem?.name}
             />
 
+            {/* Add modal */}
+            <DynamicFormModal
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                title="Add manage stock"
+                description="Create a new manage stock entry."
+                initialData={{}}
+                fields={formFields}
+                onSubmit={handleAddSave}
+            />
+
+            {/* Edit modal */}
             <DynamicFormModal
                 open={editOpen}
                 onOpenChange={setEditOpen}

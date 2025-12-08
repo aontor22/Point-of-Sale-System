@@ -33,6 +33,7 @@ import {
     Eye,
     Trash2,
     ArrowUpDown,
+    Download,
 } from "lucide-react";
 
 import CATALOG_ROWS from "@/data/ProductData";
@@ -42,6 +43,10 @@ import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
 import AddBrand from "@/components/ui/AddBrand";
 
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
     const [warehouse, setWarehouse] = useState("all");
@@ -50,7 +55,7 @@ export default function ProductsPage() {
     const filtered = CATALOG_ROWS.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
+            r.warehouse.toLowerCase().includes(s) ||
             r.name.toLowerCase().includes(s) ||
             r.store.toLowerCase().includes(s);
         const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
@@ -123,6 +128,159 @@ export default function ProductsPage() {
         });
     };
 
+    /** ---------- FILTERED EXPORT (all filtered rows) ---------- */
+    const fullFilteredRows = filtered;
+
+    const handleExportPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "Warehouse",
+            "Store",
+            "Product",
+            "Date",
+            "Person",
+            "Qty",
+        ];
+        const tableRows = [];
+
+        fullFilteredRows.forEach((item) => {
+            tableRows.push([
+                item.warehouse,
+                item.store,
+                item.name,
+                item.manufacturedDate,
+                item.person,
+                item.qty,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Stock Adjustment Export (${fullFilteredRows.length} items)`,
+            14,
+            15
+        );
+        doc.save("stock_adjustment.pdf");
+    };
+
+    const handleExportXls = () => {
+        const data = fullFilteredRows.map((item) => ({
+            Warehouse: item.warehouse,
+            Store: item.store,
+            Product: item.name,
+            Date: item.manufacturedDate,
+            Person: item.person,
+            Qty: item.qty,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "StockAdjustment");
+
+        XLSX.writeFile(workbook, "stock_adjustment.xlsx");
+    };
+
+    /** ---------- CURRENT PAGE EXPORT (paginated rows) ---------- */
+    const handleExportCurrentCsv = () => {
+        const data = paginatedRows.map((item) => ({
+            Warehouse: item.warehouse,
+            Store: item.store,
+            Product: item.name,
+            Date: item.manufacturedDate,
+            Person: item.person,
+            Qty: item.qty,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute(
+            "download",
+            `stock_adjustment_page_${currentPage}.csv`
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleExportCurrentPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "Warehouse",
+            "Store",
+            "Product",
+            "Date",
+            "Person",
+            "Qty",
+        ];
+        const tableRows = [];
+
+        paginatedRows.forEach((item) => {
+            tableRows.push([
+                item.warehouse,
+                item.store,
+                item.name,
+                item.manufacturedDate,
+                item.person,
+                item.qty,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Stock Adjustment - Page ${currentPage} (${paginatedRows.length} items)`,
+            14,
+            15
+        );
+        doc.save(`stock_adjustment_page_${currentPage}.pdf`);
+    };
+
+    const handleExportCurrentXls = () => {
+        const data = paginatedRows.map((item) => ({
+            Warehouse: item.warehouse,
+            Store: item.store,
+            Product: item.name,
+            Date: item.manufacturedDate,
+            Person: item.person,
+            Qty: item.qty,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "StockAdjustment_Page");
+
+        XLSX.writeFile(
+            workbook,
+            `stock_adjustment_page_${currentPage}.xlsx`
+        );
+    };
+
+    const handleRefresh = () => {
+        setSearch("");
+        setWarehouse("all");
+        setPage(1);
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate />
@@ -135,7 +293,11 @@ export default function ProductsPage() {
                     ]}
                 />
                 <div className="flex gap-2">
-                    <ExportsButtons />
+                    <ExportsButtons
+                        onExportPdf={handleExportPdf}
+                        onExportXls={handleExportXls}
+                        onRefresh={handleRefresh}
+                    />
                     <AddBrand />
                 </div>
             </div>
@@ -146,7 +308,7 @@ export default function ProductsPage() {
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8 dark:bg-slate-900"
+                            className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -158,7 +320,7 @@ export default function ProductsPage() {
                                 <SelectValue placeholder="Warehouse" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Warehouse</SelectItem>
+                                <SelectItem value="all">All Warehouse</SelectItem>
                                 <SelectItem value="Lavish Warehouse">
                                     Lavish Warehouse
                                 </SelectItem>
@@ -168,11 +330,15 @@ export default function ProductsPage() {
                                 <SelectItem value="Traditional Warehouse">
                                     Traditional Warehouse
                                 </SelectItem>
-                                <SelectItem value="Cool Warehouse">Cool Warehouse</SelectItem>
+                                <SelectItem value="Cool Warehouse">
+                                    Cool Warehouse
+                                </SelectItem>
                                 <SelectItem value="Overflow Warehouse">
                                     Overflow Warehouse
                                 </SelectItem>
-                                <SelectItem value="Nova Storage Hub">Nova Storage Hub</SelectItem>
+                                <SelectItem value="Nova Storage Hub">
+                                    Nova Storage Hub
+                                </SelectItem>
                                 <SelectItem value="Retail Supply Hub">
                                     Retail Supply Hub
                                 </SelectItem>
@@ -182,9 +348,36 @@ export default function ProductsPage() {
                                 <SelectItem value="North Zone Warehouse">
                                     North Zone Warehouse
                                 </SelectItem>
-                                <SelectItem value="Fulfillment Hub">Fulfillment Hub</SelectItem>
+                                <SelectItem value="Fulfillment Hub">
+                                    Fulfillment Hub
+                                </SelectItem>
                             </SelectContent>
                         </Select>
+
+                        {/* current-page export dropdown */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-2 dark:bg-slate-900"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Export
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                                <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                    CSV (this page)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                    Excel (this page)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                    PDF (this page)
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </div>
@@ -251,10 +444,14 @@ export default function ProductsPage() {
                                             }
                                         />
                                     </TableCell>
-                                    <TableCell className="font-medium">{r.warehouse}</TableCell>
+                                    <TableCell className="font-medium">
+                                        {r.warehouse}
+                                    </TableCell>
                                     <TableCell>
                                         <div className="flex flex-col">
-                                            <span className="font-medium">{r.store}</span>
+                                            <span className="font-medium">
+                                                {r.store}
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell>

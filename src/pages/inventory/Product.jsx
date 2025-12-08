@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,7 +45,7 @@ import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
 import AddImport from "@/components/ui/AddImport";
 
-// new dynamic modals
+// dynamic modals
 import DynamicViewModal from "@/components/common/DynamicViewModal";
 import DynamicFormModal from "@/components/common/DynamicFormModal";
 
@@ -66,6 +66,9 @@ export default function ProductsPage() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [viewOpen, setViewOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
+    const [addOpen, setAddOpen] = useState(false);
+
+    const fileInputRef = useRef(null);
 
     const viewFields = [
         { key: "sku", label: "SKU" },
@@ -94,6 +97,10 @@ export default function ProductsPage() {
 
     const handleEditSave = (updated) => {
         console.log("Updated product", updated);
+    };
+
+    const handleAddSave = (data) => {
+        console.log("New product", data);
     };
 
     /** ------------------------------
@@ -154,10 +161,35 @@ export default function ProductsPage() {
 
     const pageItems = makePageList();
 
+    /** IMPORT HANDLERS */
+    const handleImportButtonClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+
+        const allowedExt = /\.(csv|xls|xlsx|pdf)$/i;
+        const invalid = files.some((file) => !allowedExt.test(file.name));
+
+        if (invalid) {
+            alert("Only CSV, XLS, XLSX and PDF files are allowed.");
+            e.target.value = "";
+            return;
+        }
+
+        console.log("Files selected for import:", files);
+
+        e.target.value = "";
+    };
+
     /** -----------------------------------------
      * EXPORT FILTERED ROWS (WITHOUT PAGINATION)
      * ----------------------------------------- */
-    const fullFilteredRows = filtered; // SAME FILTERS as table
+    const fullFilteredRows = filtered;
 
     /** PDF Export (FILTERED) */
     const handleExportPdf = () => {
@@ -292,7 +324,6 @@ export default function ProductsPage() {
         XLSX.writeFile(workbook, `products_page_${currentPage}.xlsx`);
     };
 
-    /** REFRESH — reset filters only */
     const handleRefresh = () => {
         setSearch("");
         setCategory("all");
@@ -314,16 +345,31 @@ export default function ProductsPage() {
                 />
 
                 <div className="flex gap-2">
-                    {/* FILTERED EXPORT BUTTONS (keep existing behavior) */}
                     <ExportsButtons
                         onExportPdf={handleExportPdf}
                         onExportXls={handleExportXls}
                         onRefresh={handleRefresh}
                     />
 
-                    <AddImport />
+                    <AddImport
+                        onAddClick={() => {
+                            setSelectedProduct(null);
+                            setAddOpen(true);
+                        }}
+                        onImportClick={handleImportButtonClick}
+                    />
                 </div>
             </div>
+
+            {/* Hidden file input for Import Product */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,.xls,.xlsx,.pdf"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+            />
 
             {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
@@ -415,8 +461,8 @@ export default function ProductsPage() {
                                         allSelectedOnPage
                                             ? true
                                             : someSelectedOnPage
-                                            ? "indeterminate"
-                                            : false
+                                                ? "indeterminate"
+                                                : false
                                     }
                                     onCheckedChange={(checked) => {
                                         if (checked) {
@@ -425,9 +471,7 @@ export default function ProductsPage() {
                                                 Array.from(new Set([...prev, ...pageSkus]))
                                             );
                                         } else {
-                                            const pageSet = new Set(
-                                                paginatedRows.map((r) => r.sku)
-                                            );
+                                            const pageSet = new Set(paginatedRows.map((r) => r.sku));
                                             setSelectedSkus((prev) =>
                                                 prev.filter((sku) => !pageSet.has(sku))
                                             );
@@ -523,17 +567,14 @@ export default function ProductsPage() {
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-6 w-6">
-                                                <AvatarImage
-                                                    src={r.user?.avatar}
-                                                    alt={r.user?.name}
-                                                />
+                                                <AvatarImage src={r.user?.avatar} alt={r.user?.name} />
                                                 <AvatarFallback>
                                                     {r.user?.name
                                                         ? r.user.name
-                                                              .split(" ")
-                                                              .map((w) => w[0])
-                                                              .join("")
-                                                              .slice(0, 2)
+                                                            .split(" ")
+                                                            .map((w) => w[0])
+                                                            .join("")
+                                                            .slice(0, 2)
                                                         : "UN"}
                                                 </AvatarFallback>
                                             </Avatar>
@@ -654,7 +695,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            {/* Modals */}
+            {/* View modal */}
             <DynamicViewModal
                 open={viewOpen}
                 onOpenChange={setViewOpen}
@@ -666,6 +707,7 @@ export default function ProductsPage() {
                 imageAlt={selectedProduct?.name}
             />
 
+            {/* Edit modal */}
             <DynamicFormModal
                 open={editOpen}
                 onOpenChange={setEditOpen}
@@ -674,6 +716,17 @@ export default function ProductsPage() {
                 initialData={selectedProduct || {}}
                 fields={formFields}
                 onSubmit={handleEditSave}
+            />
+
+            {/* Add modal */}
+            <DynamicFormModal
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                title="Add product"
+                description="Create a new product entry."
+                initialData={{}}
+                fields={formFields}
+                onSubmit={handleAddSave}
             />
 
             <Footer />

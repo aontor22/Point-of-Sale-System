@@ -33,6 +33,7 @@ import {
     Eye,
     Trash2,
     ArrowUpDown,
+    Download,
 } from "lucide-react";
 
 import CATALOG_ROWS from "@/data/ProductData";
@@ -41,6 +42,10 @@ import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
 import AddBrand from "@/components/ui/AddBrand";
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
@@ -127,6 +132,159 @@ export default function ProductsPage() {
         });
     };
 
+    /** ---------- FILTERED EXPORT ---------- */
+    const fullFilteredRows = filtered;
+
+    const handleExportPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "From Warehouse",
+            "To Warehouse",
+            "No of Products",
+            "Quantity Transfer",
+            "Reference Number",
+            "Date",
+        ];
+        const tableRows = [];
+
+        fullFilteredRows.forEach((item) => {
+            tableRows.push([
+                item.warehouse,
+                item.toWareHouse,
+                item.locationQty,
+                item.qtyAlert,
+                item.refNumber,
+                item.manufacturedDate,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Stock Transfer Export (${fullFilteredRows.length} items)`,
+            14,
+            15
+        );
+        doc.save("stock_transfer.pdf");
+    };
+
+    const handleExportXls = () => {
+        const data = fullFilteredRows.map((item) => ({
+            FromWarehouse: item.warehouse,
+            ToWarehouse: item.toWareHouse,
+            NoOfProducts: item.locationQty,
+            QuantityTransfer: item.qtyAlert,
+            ReferenceNumber: item.refNumber,
+            Date: item.manufacturedDate,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "StockTransfer");
+
+        XLSX.writeFile(workbook, "stock_transfer.xlsx");
+    };
+
+    /** ---------- CURRENT PAGE EXPORT ---------- */
+    const handleExportCurrentCsv = () => {
+        const data = paginatedRows.map((item) => ({
+            FromWarehouse: item.warehouse,
+            ToWarehouse: item.toWareHouse,
+            NoOfProducts: item.locationQty,
+            QuantityTransfer: item.qtyAlert,
+            ReferenceNumber: item.refNumber,
+            Date: item.manufacturedDate,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute(
+            "download",
+            `stock_transfer_page_${currentPage}.csv`
+        );
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleExportCurrentPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "From Warehouse",
+            "To Warehouse",
+            "No of Products",
+            "Quantity Transfer",
+            "Reference Number",
+            "Date",
+        ];
+        const tableRows = [];
+
+        paginatedRows.forEach((item) => {
+            tableRows.push([
+                item.warehouse,
+                item.toWareHouse,
+                item.locationQty,
+                item.qtyAlert,
+                item.refNumber,
+                item.manufacturedDate,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Stock Transfer - Page ${currentPage} (${paginatedRows.length} items)`,
+            14,
+            15
+        );
+        doc.save(`stock_transfer_page_${currentPage}.pdf`);
+    };
+
+    const handleExportCurrentXls = () => {
+        const data = paginatedRows.map((item) => ({
+            FromWarehouse: item.warehouse,
+            ToWarehouse: item.toWareHouse,
+            NoOfProducts: item.locationQty,
+            QuantityTransfer: item.qtyAlert,
+            ReferenceNumber: item.refNumber,
+            Date: item.manufacturedDate,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            "StockTransfer_Page"
+        );
+
+        XLSX.writeFile(workbook, `stock_transfer_page_${currentPage}.xlsx`);
+    };
+
+    const handleRefresh = () => {
+        setSearch("");
+        setPage(1);
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate />
@@ -139,7 +297,11 @@ export default function ProductsPage() {
                     ]}
                 />
                 <div className="flex gap-2">
-                    <ExportsButtons />
+                    <ExportsButtons
+                        onExportPdf={handleExportPdf}
+                        onExportXls={handleExportXls}
+                        onRefresh={handleRefresh}
+                    />
                     <AddBrand />
                 </div>
             </div>
@@ -150,10 +312,36 @@ export default function ProductsPage() {
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search product, SKU, brand"
-                            className="pl-8 dark:bg-slate-900"
+                            className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
+                    </div>
+
+                    <div className="ml-auto flex gap-2">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="gap-2 dark:bg-slate-900"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    Export
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                                <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                    CSV (this page)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                    Excel (this page)
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                    PDF (this page)
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
             </div>
