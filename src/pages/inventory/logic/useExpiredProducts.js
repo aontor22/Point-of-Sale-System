@@ -57,6 +57,36 @@ export function useExpiredProducts() {
         console.log("Updated product", updated);
     };
 
+    const [deletingId, setDeletingId] = useState(null);
+    const [rows, setRows] = useState(CATALOG_ROWS);
+
+    // reusable delete handler
+    const handleDelete = async (rowId, labelForConfirm = "") => {
+        const ok = window.confirm(
+            labelForConfirm
+                ? `Are you sure you want to delete "${labelForConfirm}"?`
+                : "Are you sure you want to delete this item?"
+        );
+        if (!ok) return;
+
+        try {
+            setDeletingId(rowId);
+
+            // TODO: replace with the real API call
+            // example:
+            // await api.delete(`/-endpoint/${rowId}`);
+            console.log("Delete request sent for id:", rowId);
+
+            setRows((prev) => prev.filter((row) => row.id !== rowId));
+        } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete item. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+
     // selection state
     const [selectedSkus, setSelectedSkus] = useState([]);
 
@@ -247,5 +277,8 @@ export function useExpiredProducts() {
         viewFields,
         formFields,
         handleEditSave,
+        // delete
+        handleDelete,
+        deletingId,
     };
 }

@@ -103,6 +103,36 @@ export default function ProductsPage() {
         console.log("New product", data);
     };
 
+    const [deletingId, setDeletingId] = useState(null);
+    const [rows, setRows] = useState(PRODUCT_ROWS);
+
+    // reusable delete handler
+    const handleDelete = async (rowId, labelForConfirm = "") => {
+        const ok = window.confirm(
+            labelForConfirm
+                ? `Are you sure you want to delete "${labelForConfirm}"?`
+                : "Are you sure you want to delete this item?"
+        );
+        if (!ok) return;
+
+        try {
+            setDeletingId(rowId);
+
+            // TODO: replace with the real API call
+            // example:
+            // await api.delete(`/-endpoint/${rowId}`);
+            console.log("Delete request sent for id:", rowId);
+
+            setRows((prev) => prev.filter((row) => row.id !== rowId));
+        } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete item. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+
     /** ------------------------------
      * FILTER LOGIC (Table + Export)
      * ------------------------------ */
@@ -615,9 +645,15 @@ export default function ProductsPage() {
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
 
-                                                <DropdownMenuItem className="gap-2 text-destructive">
-                                                    <Trash2 className="h-4 w-4" /> Delete
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-destructive"
+                                                    onClick={() => handleDelete(r.sku, r.name)}
+                                                    disabled={deletingId === r.sku}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    {deletingId === r.sku ? "Deleting..." : "Delete"}
                                                 </DropdownMenuItem>
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

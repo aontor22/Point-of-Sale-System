@@ -74,7 +74,9 @@ export default function Units() {
         setEditOpen,
         viewFields,
         formFields,
-        handleEditSave,
+        handleEditSave, // delete
+        handleDelete,
+        deletingId,
     } = useUnits();
 
     return (
@@ -234,9 +236,15 @@ export default function Units() {
                                                 >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-destructive">
-                                                    <Trash2 className="h-4 w-4" /> Delete
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-destructive"
+                                                    onClick={() => handleDelete(r.sku, r.unitName)}
+                                                    disabled={deletingId === r.sku}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    {deletingId === r.sku ? "Deleting..." : "Delete"}
                                                 </DropdownMenuItem>
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

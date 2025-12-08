@@ -65,6 +65,36 @@ export function useWarranties() {
         // here I'll later plug API / state update
     };
 
+    const [deletingId, setDeletingId] = useState(null);
+    const [rows, setRows] = useState(warranties);
+
+    // reusable delete handler
+    const handleDelete = async (rowId, labelForConfirm = "") => {
+        const ok = window.confirm(
+            labelForConfirm
+                ? `Are you sure you want to delete "${labelForConfirm}"?`
+                : "Are you sure you want to delete this item?"
+        );
+        if (!ok) return;
+
+        try {
+            setDeletingId(rowId);
+
+            // TODO: replace with the real API call
+            // example:
+            // await api.delete(`/-endpoint/${rowId}`);
+            console.log("Delete request sent for id:", rowId);
+
+            setRows((prev) => prev.filter((row) => row.id !== rowId));
+        } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete item. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+
     const makePageList = () => {
         const pages = [];
 
@@ -126,5 +156,8 @@ export function useWarranties() {
         viewFields,
         formFields,
         handleEditSave,
+        // delete
+        handleDelete,
+        deletingId,
     };
 }

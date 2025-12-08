@@ -74,7 +74,9 @@ export default function WarrantiesPage() {
         setEditOpen,
         viewFields,
         formFields,
-        handleEditSave,
+        handleEditSave, // delete
+        handleDelete,
+        deletingId,
     } = useWarranties();
 
     return (
@@ -236,9 +238,15 @@ export default function WarrantiesPage() {
                                                 >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-destructive">
-                                                    <Trash2 className="h-4 w-4" /> Delete
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-destructive"
+                                                    onClick={() => handleDelete(r.sku, r.name)}
+                                                    disabled={deletingId === r.sku}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                    {deletingId === r.sku ? "Deleting..." : "Delete"}
                                                 </DropdownMenuItem>
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>
