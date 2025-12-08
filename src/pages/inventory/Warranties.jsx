@@ -1,5 +1,4 @@
-// src/pages/inventory/Warranties.jsx
-import React, { useState } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +36,6 @@ import {
     Dot,
 } from "lucide-react";
 
-import warranties from "@/data/WarrantyData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
@@ -46,90 +44,38 @@ import Footer from "@/components/ui/Footer";
 import DynamicViewModal from "@/components/common/DynamicViewModal";
 import DynamicFormModal from "@/components/common/DynamicFormModal";
 
+import { useWarranties, WARRANTY_VIEW_FIELDS, WARRANTY_FORM_FIELDS } from "./logic/useWarranties";
+
+export { WARRANTY_VIEW_FIELDS, WARRANTY_FORM_FIELDS };
+
 export default function WarrantiesPage() {
-    const [search, setSearch] = React.useState("");
-    const [category, setCategory] = React.useState("all");
-    const [store, setStore] = React.useState("all");
-    const [loading] = React.useState(false);
-
-    const filtered = warranties.filter((r) => {
-        const s = search.toLowerCase();
-        const matchSearch =
-            r.name.toLowerCase().includes(s) ||
-            r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = store === "all" || r.store === store;
-        return matchSearch && matchCat && matchBrand;
-    });
-
-    // pagination
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-    const currentPage = Math.min(page, totalPages);
-
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const paginatedRows = filtered.slice(startIndex, endIndex);
-
-    // selection state (by id)
-    const [selectedIds, setSelectedIds] = useState([]);
-
-    const allSelectedOnPage =
-        paginatedRows.length > 0 &&
-        paginatedRows.every((r) => selectedIds.includes(r.id));
-
-    const someSelectedOnPage =
-        paginatedRows.some((r) => selectedIds.includes(r.id)) &&
-        !allSelectedOnPage;
-
-    // modal state (same pattern as Product.jsx)
-    const [selectedWarranty, setSelectedWarranty] = useState(null);
-    const [viewOpen, setViewOpen] = useState(false);
-    const [editOpen, setEditOpen] = useState(false);
-
-    const viewFields = [
-        { key: "name", label: "Warranty Name" },
-        { key: "description", label: "Description" },
-        { key: "durationValue", label: "Duration Value" },
-        { key: "durationUnit", label: "Duration Unit" },
-        { key: "status", label: "Status" },
-    ];
-
-    const formFields = [
-        { name: "name", label: "Warranty Name", type: "text", required: true },
-        { name: "description", label: "Description", type: "text" },
-        { name: "durationValue", label: "Duration Value", type: "number" },
-        { name: "durationUnit", label: "Duration Unit", type: "text" },
-        { name: "status", label: "Status", type: "text" },
-    ];
-
-    const handleEditSave = (updated) => {
-        console.log("Updated warranty", updated);
-        // here you'll later plug API / state update
-    };
-
-    const makePageList = () => {
-        const pages = [];
-
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-
-            if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
-            if (end < totalPages - 1) pages.push("ellipsis-end");
-
-            pages.push(totalPages);
-        }
-
-        return pages;
-    };
-
-    const pageItems = makePageList();
+    const {
+        search,
+        setSearch,
+        store,
+        setStore,
+        loading,
+        rowsPerPage,
+        setRowsPerPage,
+        currentPage,
+        totalPages,
+        pageItems,
+        setPage,
+        paginatedRows,
+        selectedIds,
+        setSelectedIds,
+        allSelectedOnPage,
+        someSelectedOnPage,
+        selectedWarranty,
+        setSelectedWarranty,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        viewFields,
+        formFields,
+        handleEditSave,
+    } = useWarranties();
 
     return (
         <div className="space-y-4">
@@ -147,7 +93,7 @@ export default function WarrantiesPage() {
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Search warranty, store"
+                            placeholder="Search warranty"
                             className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
@@ -180,8 +126,8 @@ export default function WarrantiesPage() {
                                         allSelectedOnPage
                                             ? true
                                             : someSelectedOnPage
-                                            ? "indeterminate"
-                                            : false
+                                                ? "indeterminate"
+                                                : false
                                     }
                                     onCheckedChange={(checked) => {
                                         if (checked) {
@@ -221,7 +167,7 @@ export default function WarrantiesPage() {
                                     </div>
                                 </TableCell>
                             </TableRow>
-                        ) : filtered.length === 0 ? (
+                        ) : paginatedRows.length === 0 ? (
                             <TableRow>
                                 <TableCell
                                     colSpan={10}

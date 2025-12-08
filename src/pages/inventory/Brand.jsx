@@ -1,5 +1,4 @@
-// src/pages/inventory/Brand.jsx
-import React, { useState } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,104 +34,77 @@ import {
     Trash2,
     ArrowUpDown,
     Dot,
+    Download,
 } from "lucide-react";
 
-import BRAND_ROWS from "@/data/BrandData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
-// dynamic modals (same pattern as Product.jsx)
+// dynamic modals
 import DynamicViewModal from "@/components/common/DynamicViewModal";
 import DynamicFormModal from "@/components/common/DynamicFormModal";
+import ExportsButtons from "@/components/ui/ExportsButtons";
+
+import { useBrand, BRAND_VIEW_FIELDS, BRAND_FORM_FIELDS } from "./logic/useBrand";
+
+export { BRAND_VIEW_FIELDS, BRAND_FORM_FIELDS };
 
 export default function Brand() {
-    const [search, setSearch] = React.useState("");
-    const [store, setStore] = React.useState("all");
-    const [loading] = React.useState(false);
-
-    const filtered = BRAND_ROWS.filter((r) => {
-        const s = search.toLowerCase();
-        const matchSearch =
-            r.name.toLowerCase().includes(s) ||
-            r.status.toLowerCase().includes(s);
-        const matchBrand = store === "all" || r.store === store;
-        return matchSearch && matchBrand;
-    });
-
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-    const currentPage = Math.min(page, totalPages);
-
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    const paginatedRows = filtered.slice(startIndex, endIndex);
-
-    // selection state
-    const [selectedNames, setSelectedNames] = useState([]);
-
-    const allSelectedOnPage =
-        paginatedRows.length > 0 &&
-        paginatedRows.every((r) => selectedNames.includes(r.name));
-
-    const someSelectedOnPage =
-        paginatedRows.some((r) => selectedNames.includes(r.name)) &&
-        !allSelectedOnPage;
-
-    // modal state
-    const [selectedBrand, setSelectedBrand] = useState(null);
-    const [viewOpen, setViewOpen] = useState(false);
-    const [editOpen, setEditOpen] = useState(false);
-
-    const viewFields = [
-        { key: "name", label: "Brand Name" },
-        { key: "createdDate", label: "Created Date" },
-        { key: "status", label: "Status" },
-    ];
-
-    const formFields = [
-        { name: "name", label: "Brand Name", type: "text", required: true },
-        { name: "createdDate", label: "Created Date", type: "text" },
-        { name: "status", label: "Status", type: "text" },
-    ];
-
-    const handleEditSave = (updated) => {
-        console.log("Updated brand", updated);
-    };
-
-    const makePageList = () => {
-        const pages = [];
-
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-
-            if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
-            if (end < totalPages - 1) pages.push("ellipsis-end");
-
-            pages.push(totalPages);
-        }
-
-        return pages;
-    };
-
-    const pageItems = makePageList();
+    const {
+        search,
+        setSearch,
+        store,
+        setStore,
+        loading,
+        filtered,
+        rowsPerPage,
+        setRowsPerPage,
+        currentPage,
+        totalPages,
+        pageItems,
+        setPage,
+        paginatedRows,
+        selectedNames,
+        setSelectedNames,
+        allSelectedOnPage,
+        someSelectedOnPage,
+        selectedBrand,
+        setSelectedBrand,
+        viewOpen,
+        setViewOpen,
+        editOpen,
+        setEditOpen,
+        viewFields,
+        formFields,
+        handleEditSave,
+        handleExportPdf,
+        handleExportXls,
+        handleExportCurrentCsv,
+        handleExportCurrentPdf,
+        handleExportCurrentXls,
+        handleRefresh,
+    } = useBrand();
 
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <ProductHeader
-                title="Brands"
-                breadcrumbs={[
-                    { label: "Dashboard" },
-                    { label: "Brands", active: true },
-                ]}
-            />
+            <div className="flex">
+                <ProductHeader
+                    title="Brands"
+                    breadcrumbs={[
+                        { label: "Dashboard" },
+                        { label: "Brands", active: true },
+                    ]}
+                />
+                <div className="flex gap-2">
+                    <ExportsButtons
+                        onExportPdf={handleExportPdf}
+                        onExportXls={handleExportXls}
+                        onRefresh={handleRefresh}
+                    />
+                </div>
+            </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex w-full flex-1 items-center gap-2">
@@ -140,7 +112,7 @@ export default function Brand() {
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
                             placeholder="Search brand, status"
-                            className="pl-8 dark:bg-slate-900"
+                            className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -158,6 +130,33 @@ export default function Brand() {
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+
+                {/* paginated export dropdown */}
+                <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 dark:bg-slate-900"
+                            >
+                                <Download className="h-4 w-4" />
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                CSV (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                Excel (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                PDF (this page)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
 
@@ -186,7 +185,9 @@ export default function Brand() {
                                                 paginatedRows.map((r) => r.name)
                                             );
                                             setSelectedNames((prev) =>
-                                                prev.filter((name) => !pageSet.has(name))
+                                                prev.filter(
+                                                    (name) => !pageSet.has(name)
+                                                )
                                             );
                                         }
                                     }}
@@ -232,7 +233,8 @@ export default function Brand() {
                                             onCheckedChange={(checked) => {
                                                 setSelectedNames((prev) => {
                                                     if (checked) {
-                                                        if (prev.includes(r.name)) return prev;
+                                                        if (prev.includes(r.name))
+                                                            return prev;
                                                         return [...prev, r.name];
                                                     }
                                                     return prev.filter(
@@ -259,7 +261,8 @@ export default function Brand() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5">
-                                            <Dot className="-mr-3 -ml-2" size={40} /> {r.status}
+                                            <Dot className="-mr-3 -ml-2" size={40} />{" "}
+                                            {r.status}
                                         </div>
                                     </TableCell>
                                     <TableCell>

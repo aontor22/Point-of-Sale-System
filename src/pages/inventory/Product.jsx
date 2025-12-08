@@ -1,4 +1,3 @@
-// src/pages/inventory/Product.jsx
 import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -46,9 +45,13 @@ import Footer from "@/components/ui/Footer";
 import ExportsButtons from "@/components/ui/ExportsButtons";
 import AddImport from "@/components/ui/AddImport";
 
-// new: dynamic modals
+// new dynamic modals
 import DynamicViewModal from "@/components/common/DynamicViewModal";
 import DynamicFormModal from "@/components/common/DynamicFormModal";
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
 
 export default function ProductsPage() {
     const [search, setSearch] = useState("");
@@ -58,10 +61,8 @@ export default function ProductsPage() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
 
-    // track selected rows by SKU
     const [selectedSkus, setSelectedSkus] = useState([]);
 
-    // modal state
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [viewOpen, setViewOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
@@ -91,33 +92,39 @@ export default function ProductsPage() {
         { name: "qty", label: "Quantity", type: "number" },
     ];
 
-    // handle save from edit modal
     const handleEditSave = (updated) => {
         console.log("Updated product", updated);
     };
 
+    /** ------------------------------
+     * FILTER LOGIC (Table + Export)
+     * ------------------------------ */
     const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
+
         const matchSearch =
             r.sku.toLowerCase().includes(s) ||
             r.name.toLowerCase().includes(s) ||
             r.brand.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
+
+        const matchCategory = category === "all" || r.category === category;
+
         const matchBrand = brand === "all" || r.brand === brand;
-        return matchSearch && matchCat && matchBrand;
+
+        return matchSearch && matchCategory && matchBrand;
     });
 
-    // pagination logic
+    /** ------------------------------
+     * PAGINATION
+     * ------------------------------ */
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
     const currentPage = Math.min(page, totalPages);
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-
-    // rows for current page only
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
-    // selection status for the current page
+    /** Checkbox selection */
     const allSelectedOnPage =
         paginatedRows.length > 0 &&
         paginatedRows.every((r) => selectedSkus.includes(r.sku));
@@ -126,31 +133,177 @@ export default function ProductsPage() {
         paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
         !allSelectedOnPage;
 
+    /** page list */
     const makePageList = () => {
         const pages = [];
-
         if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
         } else {
             pages.push(1);
             let start = Math.max(2, currentPage - 1);
             let end = Math.min(totalPages - 1, currentPage + 1);
 
             if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
+            for (let i = start; i <= end; i++) pages.push(i);
             if (end < totalPages - 1) pages.push("ellipsis-end");
 
             pages.push(totalPages);
         }
-
         return pages;
     };
 
     const pageItems = makePageList();
 
+    /** -----------------------------------------
+     * EXPORT FILTERED ROWS (WITHOUT PAGINATION)
+     * ----------------------------------------- */
+    const fullFilteredRows = filtered; // SAME FILTERS as table
+
+    /** PDF Export (FILTERED) */
+    const handleExportPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = ["SKU", "Name", "Category", "Brand", "Price", "Unit", "Qty"];
+        const tableRows = [];
+
+        fullFilteredRows.forEach((item) => {
+            tableRows.push([
+                item.sku,
+                item.name,
+                item.category,
+                item.brand,
+                `$${item.price}`,
+                item.unit,
+                item.qty,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(`Products Export (${fullFilteredRows.length} items)`, 14, 15);
+        doc.save("products.pdf");
+    };
+
+    /** Excel Export (FILTERED) */
+    const handleExportXls = () => {
+        const data = fullFilteredRows.map((item) => ({
+            SKU: item.sku,
+            Name: item.name,
+            Category: item.category,
+            Brand: item.brand,
+            Price: item.price,
+            Unit: item.unit,
+            Qty: item.qty,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Products");
+
+        XLSX.writeFile(workbook, "products.xlsx");
+    };
+
+    /** -----------------------------------------
+     * EXPORT CURRENT PAGE (PAGINATED DATA)
+     * ----------------------------------------- */
+
+    /** CSV Export (CURRENT PAGE) */
+    const handleExportCurrentCsv = () => {
+        const data = paginatedRows.map((item) => ({
+            SKU: item.sku,
+            Name: item.name,
+            Category: item.category,
+            Brand: item.brand,
+            Price: item.price,
+            Unit: item.unit,
+            Qty: item.qty,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `products_page_${currentPage}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    /** PDF Export (CURRENT PAGE) */
+    const handleExportCurrentPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = ["SKU", "Name", "Category", "Brand", "Price", "Unit", "Qty"];
+        const tableRows = [];
+
+        paginatedRows.forEach((item) => {
+            tableRows.push([
+                item.sku,
+                item.name,
+                item.category,
+                item.brand,
+                `$${item.price}`,
+                item.unit,
+                item.qty,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Products Export - Page ${currentPage} (${paginatedRows.length} items)`,
+            14,
+            15
+        );
+        doc.save(`products_page_${currentPage}.pdf`);
+    };
+
+    /** Excel Export (CURRENT PAGE) */
+    const handleExportCurrentXls = () => {
+        const data = paginatedRows.map((item) => ({
+            SKU: item.sku,
+            Name: item.name,
+            Category: item.category,
+            Brand: item.brand,
+            Price: item.price,
+            Unit: item.unit,
+            Qty: item.qty,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Products_Page");
+
+        XLSX.writeFile(workbook, `products_page_${currentPage}.xlsx`);
+    };
+
+    /** REFRESH — reset filters only */
+    const handleRefresh = () => {
+        setSearch("");
+        setCategory("all");
+        setBrand("all");
+        setPage(1);
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate />
+
             <div className="flex">
                 <ProductHeader
                     title="Products"
@@ -159,16 +312,25 @@ export default function ProductsPage() {
                         { label: "Products", active: true },
                     ]}
                 />
+
                 <div className="flex gap-2">
-                    <ExportsButtons />
+                    {/* FILTERED EXPORT BUTTONS (keep existing behavior) */}
+                    <ExportsButtons
+                        onExportPdf={handleExportPdf}
+                        onExportXls={handleExportXls}
+                        onRefresh={handleRefresh}
+                    />
+
                     <AddImport />
                 </div>
             </div>
 
+            {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
                 <div className="flex min-w-[260px] flex-1 items-center gap-2">
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
                         <Input
                             placeholder="Search product, SKU, brand"
                             className="pl-8 dark:bg-slate-900"
@@ -177,6 +339,7 @@ export default function ProductsPage() {
                         />
                     </div>
 
+                    {/* Category */}
                     <Select value={category} onValueChange={setCategory}>
                         <SelectTrigger className="w-42.5 dark:bg-slate-900">
                             <SelectValue placeholder="Category" />
@@ -192,6 +355,7 @@ export default function ProductsPage() {
                         </SelectContent>
                     </Select>
 
+                    {/* Brand */}
                     <Select value={brand} onValueChange={setBrand}>
                         <SelectTrigger className="w-42.5 dark:bg-slate-900">
                             <SelectValue placeholder="Brand" />
@@ -216,6 +380,8 @@ export default function ProductsPage() {
                         <Filter className="h-4 w-4" />
                         Filters
                     </Button>
+
+                    {/* PAGINATED EXPORT DROPDOWN (CURRENT PAGE) */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button size="sm" variant="outline" className="gap-2 dark:bg-slate-900">
@@ -224,38 +390,41 @@ export default function ProductsPage() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem>CSV</DropdownMenuItem>
-                            <DropdownMenuItem>Excel</DropdownMenuItem>
-                            <DropdownMenuItem>PDF</DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                CSV (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                Excel (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                PDF (this page)
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
             </div>
 
+            {/* Table */}
             <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-slate-200 dark:bg-slate-800">
                             <TableHead className="w-10">
-                                {/* HEADER CHECKBOX: select/unselect all on current page */}
                                 <Checkbox
-                                    aria-label="Select all on this page"
                                     checked={
                                         allSelectedOnPage
                                             ? true
                                             : someSelectedOnPage
-                                                ? "indeterminate"
-                                                : false
+                                            ? "indeterminate"
+                                            : false
                                     }
                                     onCheckedChange={(checked) => {
                                         if (checked) {
-                                            // add all current page SKUs
                                             const pageSkus = paginatedRows.map((r) => r.sku);
                                             setSelectedSkus((prev) =>
                                                 Array.from(new Set([...prev, ...pageSkus]))
                                             );
                                         } else {
-                                            // remove current page SKUs only
                                             const pageSet = new Set(
                                                 paginatedRows.map((r) => r.sku)
                                             );
@@ -266,6 +435,7 @@ export default function ProductsPage() {
                                     }}
                                 />
                             </TableHead>
+
                             <TableHead>SKU</TableHead>
                             <TableHead>Product Name</TableHead>
                             <TableHead>Category</TableHead>
@@ -301,9 +471,7 @@ export default function ProductsPage() {
                             paginatedRows.map((r) => (
                                 <TableRow key={r.sku}>
                                     <TableCell>
-                                        {/* ROW CHECKBOX: bound to selectedSkus */}
                                         <Checkbox
-                                            aria-label={`Select ${r.id}`}
                                             checked={selectedSkus.includes(r.sku)}
                                             onCheckedChange={(checked) => {
                                                 setSelectedSkus((prev) => {
@@ -311,13 +479,12 @@ export default function ProductsPage() {
                                                         if (prev.includes(r.sku)) return prev;
                                                         return [...prev, r.sku];
                                                     }
-                                                    return prev.filter(
-                                                        (sku) => sku !== r.sku
-                                                    );
+                                                    return prev.filter((sku) => sku !== r.sku);
                                                 });
                                             }}
                                         />
                                     </TableCell>
+
                                     <TableCell className="font-medium">{r.sku}</TableCell>
 
                                     <TableCell>
@@ -338,15 +505,21 @@ export default function ProductsPage() {
                                             </div>
                                         </div>
                                     </TableCell>
+
                                     <TableCell>
                                         <Badge variant="secondary" className="font-normal">
                                             {r.category}
                                         </Badge>
                                     </TableCell>
+
                                     <TableCell>{r.brand}</TableCell>
+
                                     <TableCell className="text-right">${r.price}</TableCell>
+
                                     <TableCell>{r.unit}</TableCell>
+
                                     <TableCell className="text-right">{r.qty}</TableCell>
+
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Avatar className="h-6 w-6">
@@ -357,16 +530,17 @@ export default function ProductsPage() {
                                                 <AvatarFallback>
                                                     {r.user?.name
                                                         ? r.user.name
-                                                            .split(" ")
-                                                            .map((w) => w[0])
-                                                            .join("")
-                                                            .slice(0, 2)
+                                                              .split(" ")
+                                                              .map((w) => w[0])
+                                                              .join("")
+                                                              .slice(0, 2)
                                                         : "UN"}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <span className="text-sm">{r.user?.name}</span>
                                         </div>
                                     </TableCell>
+
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -378,6 +552,7 @@ export default function ProductsPage() {
                                                     <MoreHorizontal className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
+
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem
                                                     className="gap-2"
@@ -388,6 +563,7 @@ export default function ProductsPage() {
                                                 >
                                                     <Eye className="h-4 w-4" /> View
                                                 </DropdownMenuItem>
+
                                                 <DropdownMenuItem
                                                     className="gap-2"
                                                     onClick={() => {
@@ -397,6 +573,7 @@ export default function ProductsPage() {
                                                 >
                                                     <Edit className="h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
+
                                                 <DropdownMenuItem className="gap-2 text-destructive">
                                                     <Trash2 className="h-4 w-4" /> Delete
                                                 </DropdownMenuItem>
@@ -414,17 +591,18 @@ export default function ProductsPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-center text-sm text-muted-foreground">
                     <span>Row per page:</span>
+
                     <Select
                         value={String(rowsPerPage)}
                         onValueChange={(value) => {
-                            const num = Number(value);
-                            setRowsPerPage(num);
+                            setRowsPerPage(Number(value));
                             setPage(1);
                         }}
                     >
                         <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
                             <SelectValue />
                         </SelectTrigger>
+
                         <SelectContent>
                             <SelectItem value="10">10</SelectItem>
                             <SelectItem value="25">25</SelectItem>
@@ -476,7 +654,7 @@ export default function ProductsPage() {
                 </div>
             </div>
 
-            {/* dynamic modals */}
+            {/* Modals */}
             <DynamicViewModal
                 open={viewOpen}
                 onOpenChange={setViewOpen}
@@ -487,7 +665,6 @@ export default function ProductsPage() {
                 imageSrc={selectedProduct?.image}
                 imageAlt={selectedProduct?.name}
             />
-
 
             <DynamicFormModal
                 open={editOpen}

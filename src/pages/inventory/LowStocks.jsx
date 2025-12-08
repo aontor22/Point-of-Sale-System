@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DynamicViewModal from "@/components/common/DynamicViewModal";
 import DynamicFormModal from "@/components/common/DynamicFormModal";
-import { useEntityModals } from "@/hooks/useEntityModals";
 
 import {
     Select,
@@ -39,105 +38,46 @@ import {
     ArrowUpDown,
 } from "lucide-react";
 
-import CATALOG_ROWS from "@/data/ProductData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
 
+import { useProductsPage } from "./logic/useLowStockPage";
+
 export default function ProductsPage() {
-    const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("all");
-    const [store, setStore] = useState("all");
-    const [warehouse, setWarehouse] = useState("all");
-    const [loading] = useState(false);
-
-    const filtered = CATALOG_ROWS.filter((r) => {
-        const s = search.toLowerCase();
-        const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
-            r.name.toLowerCase().includes(s) ||
-            r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = store === "all" || r.store === store;
-        const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
-        return matchSearch && matchCat && matchBrand && matchWarehouse;
-    });
-
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-    const currentPage = Math.min(page, totalPages);
-
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    const paginatedRows = filtered.slice(startIndex, endIndex);
-
-    const [selectedSkus, setSelectedSkus] = useState([]);
-
-    const allSelectedOnPage =
-        paginatedRows.length > 0 &&
-        paginatedRows.every((r) => selectedSkus.includes(r.sku));
-
-    const someSelectedOnPage =
-        paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
-        !allSelectedOnPage;
-
     const {
-        selectedItem: selectedProduct,
+        search,
+        setSearch,
+        category,
+        setCategory,
+        store,
+        setStore,
+        warehouse,
+        setWarehouse,
+        loading,
+        filtered,
+        rowsPerPage,
+        setRowsPerPage,
+        currentPage,
+        totalPages,
+        pageItems,
+        setPage,
+        paginatedRows,
+        selectedSkus,
+        setSelectedSkus,
+        allSelectedOnPage,
+        someSelectedOnPage,
+        selectedProduct,
         viewOpen,
         setViewOpen,
         editOpen,
         setEditOpen,
         openView,
         openEdit,
-    } = useEntityModals();
-
-    const viewFields = [
-        { key: "warehouse", label: "Warehouse" },
-        { key: "store", label: "Store" },
-        { key: "name", label: "Product Name" },
-        { key: "category", label: "Category" },
-        { key: "sku", label: "SKU" },
-        { key: "qty", label: "Quantity" },
-        { key: "qtyAlert", label: "Qty Alert" },
-    ];
-
-    const formFields = [
-        { name: "warehouse", label: "Warehouse", type: "text" },
-        { name: "store", label: "Store", type: "text" },
-        { name: "name", label: "Product Name", type: "text", required: true },
-        { name: "category", label: "Category", type: "text" },
-        { name: "sku", label: "SKU", type: "text", required: true },
-        { name: "qty", label: "Quantity", type: "number" },
-        { name: "qtyAlert", label: "Qty Alert", type: "number" },
-    ];
-
-    const handleEditSave = (updated) => {
-        console.log("Updated low stock product", updated);
-    };
-
-    const makePageList = () => {
-        const pages = [];
-
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-
-            if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
-            if (end < totalPages - 1) pages.push("ellipsis-end");
-
-            pages.push(totalPages);
-        }
-
-        return pages;
-    };
-
-    const pageItems = makePageList();
+        viewFields,
+        formFields,
+        handleEditSave,
+    } = useProductsPage();
 
     return (
         <div className="space-y-4">
@@ -156,8 +96,8 @@ export default function ProductsPage() {
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Search product, SKU, brand"
-                            className="pl-8 dark:bg-slate-900"
+                            placeholder="Search product, category, warehouse, store, SKU"
+                            className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -169,7 +109,7 @@ export default function ProductsPage() {
                                 <SelectValue placeholder="Warehouse" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Warehouse</SelectItem>
+                                <SelectItem value="all">All Warehouse</SelectItem>
                                 <SelectItem value="Lavish Warehouse">Lavish Warehouse</SelectItem>
                                 <SelectItem value="Quaint Warehouse">Quaint Warehouse</SelectItem>
                                 <SelectItem value="Traditional Warehouse">
@@ -202,7 +142,7 @@ export default function ProductsPage() {
                                 <SelectValue placeholder="Store" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Store</SelectItem>
+                                <SelectItem value="all">All Store</SelectItem>
                                 <SelectItem value="Electro Mart">Electro Mart</SelectItem>
                                 <SelectItem value="Quantum Gadgets">Quantum Gadgets</SelectItem>
                                 <SelectItem value="Prime Bazaar">Prime Bazaar</SelectItem>
@@ -220,7 +160,7 @@ export default function ProductsPage() {
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Category</SelectItem>
+                                <SelectItem value="all">All Category</SelectItem>
                                 <SelectItem value="Computers">Computers</SelectItem>
                                 <SelectItem value="Electronics">Electronics</SelectItem>
                                 <SelectItem value="Shoe">Shoe</SelectItem>
@@ -245,8 +185,8 @@ export default function ProductsPage() {
                                         allSelectedOnPage
                                             ? true
                                             : someSelectedOnPage
-                                                ? "indeterminate"
-                                                : false
+                                            ? "indeterminate"
+                                            : false
                                     }
                                     onCheckedChange={(checked) => {
                                         if (checked) {

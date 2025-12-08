@@ -1,11 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import DynamicViewModal from "@/components/common/DynamicViewModal";
-import DynamicFormModal from "@/components/common/DynamicFormModal";
-import { useEntityModals } from "@/hooks/useEntityModals";
-
 import {
     Select,
     SelectContent,
@@ -38,117 +34,81 @@ import {
     Trash2,
     ArrowUpDown,
     Dot,
+    Download,
 } from "lucide-react";
 
-import CATALOG_ROWS from "@/data/ProductData";
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
+import ExportsButtons from "@/components/ui/ExportsButtons";
+
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
+import { useCategory, CATEGORY_VIEW_FIELDS, CATEGORY_FORM_FIELDS } from "./logic/useCategory";
+
+export { CATEGORY_VIEW_FIELDS, CATEGORY_FORM_FIELDS };
 
 export default function Category() {
-    const [search, setSearch] = useState("");
-    const [category, setCategory] = useState("all");
-    const [store, setStore] = useState("all");
-    const [warehouse, setWarehouse] = useState("all");
-    const [loading] = useState(false);
-
-    const filtered = CATALOG_ROWS.filter((r) => {
-        const s = search.toLowerCase();
-        const matchSearch =
-            r.sku.toLowerCase().includes(s) ||
-            r.name.toLowerCase().includes(s) ||
-            r.store.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.category === category;
-        const matchBrand = store === "all" || r.store === store;
-        const matchWarehouse = warehouse === "all" || r.warehouse === warehouse;
-        return matchSearch && matchCat && matchBrand && matchWarehouse;
-    });
-
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [page, setPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
-    const currentPage = Math.min(page, totalPages);
-
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    const paginatedRows = filtered.slice(startIndex, endIndex);
-
-    const [selectedSkus, setSelectedSkus] = useState([]);
-
-    const allSelectedOnPage =
-        paginatedRows.length > 0 &&
-        paginatedRows.every((r) => selectedSkus.includes(r.sku));
-
-    const someSelectedOnPage =
-        paginatedRows.some((r) => selectedSkus.includes(r.sku)) &&
-        !allSelectedOnPage;
-
     const {
-        selectedItem: selectedCategory,
+        search,
+        setSearch,
+        category,
+        setCategory,
+        loading,
+        filtered,
+
+        rowsPerPage,
+        setRowsPerPage,
+        currentPage,
+        totalPages,
+        pageItems,
+        setPage,
+        paginatedRows,
+
+        selectedSkus,
+        setSelectedSkus,
+        allSelectedOnPage,
+        someSelectedOnPage,
+
+        selectedCategory,
         viewOpen,
         setViewOpen,
         editOpen,
         setEditOpen,
         openView,
         openEdit,
-    } = useEntityModals();
+        viewFields,
+        formFields,
+        handleEditSave,
 
-    const viewFields = [
-        { key: "category", label: "Category" },
-        { key: "categorySlug", label: "Category Slug" },
-        { key: "manufacturedDate", label: "Created On" },
-        { key: "status", label: "Status" },
-    ];
-
-    const formFields = [
-        { name: "category", label: "Category", type: "text", required: true },
-        {
-            name: "categorySlug",
-            label: "Category Slug",
-            type: "text",
-            required: true,
-        },
-        { name: "manufacturedDate", label: "Created On", type: "text" },
-        { name: "status", label: "Status", type: "text" },
-    ];
-
-    const handleEditSave = (updated) => {
-        console.log("Updated category", updated);
-    };
-
-    const makePageList = () => {
-        const pages = [];
-
-        if (totalPages <= 7) {
-            for (let i = 1; i <= totalPages; i += 1) pages.push(i);
-        } else {
-            pages.push(1);
-            let start = Math.max(2, currentPage - 1);
-            let end = Math.min(totalPages - 1, currentPage + 1);
-
-            if (start > 2) pages.push("ellipsis-start");
-            for (let i = start; i <= end; i += 1) pages.push(i);
-            if (end < totalPages - 1) pages.push("ellipsis-end");
-
-            pages.push(totalPages);
-        }
-
-        return pages;
-    };
-
-    const pageItems = makePageList();
+        handleExportPdf,
+        handleExportXls,
+        handleExportCurrentCsv,
+        handleExportCurrentPdf,
+        handleExportCurrentXls,
+        handleRefresh,
+    } = useCategory();
 
     return (
         <div className="space-y-4">
             <ProductsDate />
-            <ProductHeader
-                title="Category"
-                breadcrumbs={[
-                    { label: "Dashboard" },
-                    { label: "Category", active: true },
-                ]}
-            />
+            <div className="flex">
+                <ProductHeader
+                    title="Category"
+                    breadcrumbs={[
+                        { label: "Dashboard" },
+                        { label: "Category", active: true },
+                    ]}
+                />
+                <div className="flex gap-2">
+                    <ExportsButtons
+                        onExportPdf={handleExportPdf}
+                        onExportXls={handleExportXls}
+                        onRefresh={handleRefresh}
+                    />
+                </div>
+            </div>
 
             {/* Filters */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-800 p-3">
@@ -156,8 +116,8 @@ export default function Category() {
                     <div className="relative w-full max-w-sm">
                         <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         <Input
-                            placeholder="Search product, SKU, brand"
-                            className="pl-8 dark:bg-slate-900"
+                            placeholder="Search product category, category slug "
+                            className="pl-8 bg-slate-100 dark:bg-slate-900"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -169,12 +129,39 @@ export default function Category() {
                                 <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Status</SelectItem>
+                                <SelectItem value="all">All Status</SelectItem>
                                 <SelectItem value="Active">Active</SelectItem>
                                 <SelectItem value="Inactive">Inactive</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
+                </div>
+
+                {/* paginated export dropdown */}
+                <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 dark:bg-slate-900"
+                            >
+                                <Download className="h-4 w-4" />
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                CSV (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                Excel (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                PDF (this page)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
 
@@ -252,21 +239,28 @@ export default function Category() {
                                                         if (prev.includes(r.sku)) return prev;
                                                         return [...prev, r.sku];
                                                     }
-                                                    return prev.filter((sku) => sku !== r.sku);
+                                                    return prev.filter(
+                                                        (sku) => sku !== r.sku
+                                                    );
                                                 });
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell className="font-medium">{r.category}</TableCell>
+                                    <TableCell className="font-medium">
+                                        {r.category}
+                                    </TableCell>
                                     <TableCell>
                                         <div className="flex flex-col">
-                                            <span className="font-medium">{r.categorySlug}</span>
+                                            <span className="font-medium">
+                                                {r.categorySlug}
+                                            </span>
                                         </div>
                                     </TableCell>
                                     <TableCell>{r.manufacturedDate}</TableCell>
                                     <TableCell>
                                         <div className="bg-green-600 w-18 items-center rounded-lg text-white flex text-center h-5">
-                                            <Dot className="-mr-3 -ml-2" size={40} /> {r.status}
+                                            <Dot className="-mr-3 -ml-2" size={40} />{" "}
+                                            {r.status}
                                         </div>
                                     </TableCell>
                                     <TableCell>
