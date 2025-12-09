@@ -1,15 +1,32 @@
-import { useState } from 'react';
-import { Button } from './button';
-import DatePicker from 'react-datepicker';
+import { useState } from "react";
+import { Button } from "./button";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select';
-import { Calendar } from 'lucide-react';
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "./select";
+import { Calendar } from "lucide-react";
 
-const ReportFilter = () => {
+const ReportFilter = ({ onGenerateReport }) => {
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
-    const [store, setStore] = useState('All');
-    const [product, setProduct] = useState('All');
+    const [store, setStore] = useState("All");
+    const [product, setProduct] = useState("All");
+
+    const handleGenerate = () => {
+        if (onGenerateReport) {
+            onGenerateReport({
+                startDate,
+                endDate,
+                store,
+                product,
+            });
+        }
+    };
 
     return (
         <div className="flex items-center justify-between space-x-4 p-4 border bg-white dark:bg-slate-800 rounded-md">
@@ -69,7 +86,10 @@ const ReportFilter = () => {
             </div>
 
             <div className="flex-none">
-                <Button className="bg-orange-500 text-white mt-5" onClick={() => alert('Generate Report')}>
+                <Button
+                    className="bg-orange-500 text-white mt-5"
+                    onClick={handleGenerate}
+                >
                     Generate Report
                 </Button>
             </div>
