@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,9 +46,9 @@ import {
 import users from "@/data/PurchaseReturnData";
 import ProductsDate from "@/components/ui/ProductsDate";
 import Footer from "@/components/ui/Footer";
-import ButtonComponent from '@/components/ui/ChangeButton'
-import { useNavigate } from 'react-router-dom';
-import PurchasesOverview from '@/components/view/PurchasesOrderView';
+import ButtonComponent from "@/components/ui/ChangeButton";
+import { useNavigate } from "react-router-dom";
+import PurchasesOverview from "@/components/view/PurchasesOrderView";
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
@@ -61,12 +61,41 @@ export default function SaleReports() {
 
     const filtered = users.filter((r) => {
         const s = search.toLowerCase();
-        const matchSearch =
-            r.prSupplier.toLowerCase().includes(s);
+        const matchSearch = r.prSupplier.toLowerCase().includes(s);
         const matchCat = category === "all" || r.pr === category;
         const matchBrand = status === "all" || r.prStatus === status;
         return matchSearch && matchCat && matchBrand;
     });
+
+    // --------- SUMMARY FOR TOP CARDS (BASED ON FILTERED ROWS) ----------
+    const totalOrders = filtered.length;
+
+    // consider anything not "Canceled" as active
+    const activeOrders = filtered.filter(
+        (r) => r.prStatus !== "Canceled"
+    ).length;
+
+    const draftOrders = filtered.filter(
+        (r) => r.prStatus === "Draft"
+    ).length;
+
+    const pendingApproval = filtered.filter(
+        (r) => r.prStatus === "Pending Approval"
+    ).length;
+
+    const approvedOrders = filtered.filter(
+        (r) => r.prStatus === "Approved"
+    ).length;
+
+    const totalValue = filtered.reduce((sum, r) => {
+        const raw =
+            typeof r.prTotalAmount === "string"
+                ? r.prTotalAmount.replace(/[$,]/g, "")
+                : r.prTotalAmount;
+        const value = Number(raw) || 0;
+        return sum + value;
+    }, 0);
+    // -------------------------------------------------------------------
 
     const [isInventoryReportVisible, setInventoryReportVisible] = useState(true);
     const [isStockHistoryVisible, setStockHistoryVisible] = useState(true);
@@ -98,11 +127,11 @@ export default function SaleReports() {
         Commission: "bg-pink-100 text-pink-600",
         "Licensing Revenue": "bg-teal-100 text-teal-700",
 
-        "Manager": "bg-blue-100 text-blue-600",
-        "Admin": "bg-purple-100 text-purple-600",
-        "Staff": "bg-emerald-100 text-emerald-700",
-        "Supervisor": "bg-sky-100 text-sky-600",
-        "Cashier": "bg-orange-100 text-orange-600",
+        Manager: "bg-blue-100 text-blue-600",
+        Admin: "bg-purple-100 text-purple-600",
+        Staff: "bg-emerald-100 text-emerald-700",
+        Supervisor: "bg-sky-100 text-sky-600",
+        Cashier: "bg-orange-100 text-orange-600",
         Finance: "bg-green-100 text-green-600",
     };
 
@@ -181,7 +210,16 @@ export default function SaleReports() {
                 endDate={endDate}
                 onChange={(dates) => setDateRange(dates)}
             />
-            <PurchasesOverview />
+
+            {/* cards now get dynamic props */}
+            <PurchasesOverview
+                totalOrders={totalOrders}
+                activeOrders={activeOrders}
+                draftOrders={draftOrders}
+                pendingApproval={pendingApproval}
+                approvedOrders={approvedOrders}
+                totalValue={totalValue}
+            />
 
             <div className="flex-1 flex-wrap items-center justify-between gap-3 rounded-md border bg-white dark:bg-slate-900">
                 <div className="flex w-full items-center p-3 gap-2">
@@ -202,11 +240,17 @@ export default function SaleReports() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Department</SelectItem>
-                                <SelectItem value="Store Operations">Store Operations</SelectItem>
-                                <SelectItem value="POS Operations">POS Operations</SelectItem>
+                                <SelectItem value="Store Operations">
+                                    Store Operations
+                                </SelectItem>
+                                <SelectItem value="POS Operations">
+                                    POS Operations
+                                </SelectItem>
                                 <SelectItem value="Inventory">Inventory</SelectItem>
                                 <SelectItem value="Sales">Sales</SelectItem>
-                                <SelectItem value="Customer Service">Customer Service</SelectItem>
+                                <SelectItem value="Customer Service">
+                                    Customer Service
+                                </SelectItem>
                                 <SelectItem value="Finance">Finance</SelectItem>
                             </SelectContent>
                         </Select>
@@ -217,7 +261,9 @@ export default function SaleReports() {
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
                                 <SelectItem value="Electro Mart">Active</SelectItem>
-                                <SelectItem value="Quantum Gadgets">Inactive</SelectItem>
+                                <SelectItem value="Quantum Gadgets">
+                                    Inactive
+                                </SelectItem>
                                 <SelectItem value="Prime Bazaar">On Leave</SelectItem>
                             </SelectContent>
                         </Select>
@@ -225,10 +271,11 @@ export default function SaleReports() {
                     <ButtonComponent
                         title="Export"
                         isVisible={isInventoryReportVisible}
-                        // onClick={handleInventoryReportClick}
                         className="bg-green-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Download size={16} />}
-                    ><PlusCircle size={20} /></ButtonComponent>
+                    >
+                        <PlusCircle size={20} />
+                    </ButtonComponent>
 
                     <ButtonComponent
                         title="Add User"
@@ -236,7 +283,9 @@ export default function SaleReports() {
                         onClick={handleAddEmployeeClick}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Plus size={16} />}
-                    ><PlusCircle size={20} /></ButtonComponent>
+                    >
+                        <PlusCircle size={20} />
+                    </ButtonComponent>
                 </div>
 
                 <div className="overflow-hidden">
@@ -296,10 +345,11 @@ export default function SaleReports() {
                                             <Checkbox
                                                 aria-label={`Select ${r.prID}`}
                                                 checked={selectedIds.includes(r.prID)}
-                                                onCheckedChange={(checked) => handleToggleRow(r.prID, checked)}
+                                                onCheckedChange={(checked) =>
+                                                    handleToggleRow(r.prID, checked)
+                                                }
                                             />
                                         </TableCell>
-
 
                                         <TableCell>{r.prCode}</TableCell>
 
@@ -307,7 +357,9 @@ export default function SaleReports() {
                                             {r.prSupplier}
                                         </TableCell>
 
-                                        <TableCell className="whitespace-normal wrap-break-words">{r.prOrderDate}</TableCell>
+                                        <TableCell className="whitespace-normal wrap-break-words">
+                                            {r.prOrderDate}
+                                        </TableCell>
 
                                         <TableCell>{r.prExpectedDelivery}</TableCell>
 
@@ -322,10 +374,10 @@ export default function SaleReports() {
                                         <TableCell>
                                             <div
                                                 className={`
-                                                                                        inline-flex items-center justify-center
-                                                                                        px-3 py-1 min-w-20 h-7
-                                                                                        rounded-full text-xs font-medium
-                                                                                        ${r.prPriority === "Low"
+                                                    inline-flex items-center justify-center
+                                                    px-3 py-1 min-w-20 h-7
+                                                    rounded-full text-xs font-medium
+                                                    ${r.prPriority === "Low"
                                                         ? "bg-blue-100 text-blue-600"
                                                         : r.prPriority === "Medium"
                                                             ? "bg-amber-100 text-amber-600"
@@ -342,12 +394,13 @@ export default function SaleReports() {
                                         <TableCell>
                                             <div
                                                 className={`
-                                                                                        inline-flex items-center justify-center
-                                                                                        px-3 py-1 min-w-20 h-7
-                                                                                        rounded-full text-xs font-medium
-                                                                                        ${r.prStatus === "Approved"
+                                                    inline-flex items-center justify-center
+                                                    px-3 py-1 min-w-20 h-7
+                                                    rounded-full text-xs font-medium
+                                                    ${r.prStatus === "Approved"
                                                         ? "bg-blue-600 text-white"
-                                                        : r.prStatus === "Pending Approval"
+                                                        : r.prStatus ===
+                                                            "Pending Approval"
                                                             ? "bg-amber-500 text-white"
                                                             : r.prStatus === "Completed"
                                                                 ? "bg-green-600 text-white"
@@ -370,7 +423,11 @@ export default function SaleReports() {
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-8 w-8"
+                                                    >
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
@@ -397,13 +454,13 @@ export default function SaleReports() {
                 {/* Pagination */}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center text-sm text-muted-foreground">
-                        <span className='p-4'>Row per page:</span>
+                        <span className="p-4">Row per page:</span>
                         <Select
                             value={String(rowsPerPage)}
                             onValueChange={(value) => {
                                 const num = Number(value);
                                 setRowsPerPage(num);
-                                setPage(1); // Crucial: Reset to page 1 when rowsPerPage changes
+                                setPage(1); // reset when rows per page changes
                             }}
                         >
                             <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
@@ -432,10 +489,10 @@ export default function SaleReports() {
                             typeof item === "number" ? (
                                 <Button
                                     key={idx}
-                                    // FIX: Ensure both dark and light mode styling work for the active button
-                                    className={item === currentPage
-                                        ? "bg-blue-600 text-white hover:bg-blue-700"
-                                        : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
+                                    className={
+                                        item === currentPage
+                                            ? "bg-blue-600 text-white hover:bg-blue-700"
+                                            : "bg-white dark:bg-slate-700 dark:text-white hover:bg-gray-200 dark:hover:bg-slate-600 text-slate-800"
                                     }
                                     size="sm"
                                     onClick={() => setPage(item)}
@@ -443,7 +500,12 @@ export default function SaleReports() {
                                     {item}
                                 </Button>
                             ) : (
-                                <Button key={idx} variant="ghost" size="sm" disabled>
+                                <Button
+                                    key={idx}
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled
+                                >
                                     …
                                 </Button>
                             )
@@ -453,7 +515,9 @@ export default function SaleReports() {
                             variant="ghost"
                             size="sm"
                             disabled={currentPage === totalPages}
-                            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                            onClick={() =>
+                                setPage((p) => Math.min(totalPages, p + 1))
+                            }
                         >
                             Next
                         </Button>
@@ -462,5 +526,5 @@ export default function SaleReports() {
             </div>
             <Footer />
         </div>
-    )
+    );
 }
