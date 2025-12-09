@@ -61,11 +61,36 @@ export default function SaleReports() {
 
     const filtered = purchases.filter((r) => {
         const s = search.toLowerCase();
+
         const matchSearch = r.poSupplier.toLowerCase().includes(s);
         const matchCat = category === "all" || r.poSupplier === category;
         const matchBrand = status === "all" || r.poDeliveryStatus === status;
-        return matchSearch && matchCat && matchBrand;
+
+        // ---------- DATE RANGE FILTER ----------
+        let matchDate = true;
+
+        if (startDate || endDate) {
+            const recordDate = new Date(r.poDate);
+            if (isNaN(recordDate.getTime())) {
+                matchDate = false;
+            } else {
+                if (startDate && recordDate < startDate) {
+                    matchDate = false;
+                }
+
+                if (endDate) {
+                    const inclusiveEnd = new Date(endDate);
+                    inclusiveEnd.setHours(23, 59, 59, 999);
+
+                    if (recordDate > inclusiveEnd) {
+                        matchDate = false;
+                    }
+                }
+            }
+        }
+        return matchSearch && matchCat && matchBrand && matchDate;
     });
+
 
     // ---------- SUMMARY VALUES FOR CARDS (BASED ON FILTERED ROWS) ----------
     const totalPurchasesAmount = filtered.reduce((sum, r) => {
@@ -114,35 +139,7 @@ export default function SaleReports() {
         navigate("/user/users/add");
     };
 
-    const categoryColors = {
-        "Office Supplies": "bg-purple-100 text-purple-600",
-        Utilities: "bg-sky-100 text-sky-600",
-        Marketing: "bg-pink-100 text-pink-600",
-        Transportation: "bg-orange-100 text-orange-600",
-        "Equipment Maintenance": "bg-red-100 text-red-600",
-        Rent: "bg-indigo-100 text-indigo-600",
-        "Professional Services": "bg-cyan-100 text-cyan-700",
-        "Software Subscription": "bg-teal-100 text-teal-700",
-        "Employee Benefits": "bg-emerald-100 text-emerald-700",
-        Travel: "bg-amber-100 text-amber-700",
-
-        "Sales Revenue": "bg-sky-100 text-sky-600",
-        "Service Revenue": "bg-purple-100 text-purple-600",
-        "Recurring Revenue": "bg-emerald-100 text-emerald-700",
-        "Investment Income": "bg-indigo-100 text-indigo-600",
-        "Rental Income": "bg-orange-100 text-orange-600",
-        Commission: "bg-pink-100 text-pink-600",
-        "Licensing Revenue": "bg-teal-100 text-teal-700",
-
-        Manager: "bg-blue-100 text-blue-600",
-        Admin: "bg-purple-100 text-purple-600",
-        Staff: "bg-emerald-100 text-emerald-700",
-        Supervisor: "bg-sky-100 text-sky-600",
-        Cashier: "bg-orange-100 text-orange-600",
-        Finance: "bg-green-100 text-green-600",
-    };
-
-    // pagination logic remains correct
+    // pagination 
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
@@ -309,8 +306,8 @@ export default function SaleReports() {
                                             allSelectedOnPage
                                                 ? true
                                                 : someSelectedOnPage
-                                                ? "indeterminate"
-                                                : false
+                                                    ? "indeterminate"
+                                                    : false
                                         }
                                         onCheckedChange={handleToggleAllOnPage}
                                     />
@@ -391,16 +388,15 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${
-                                                        r.poPaymentStatus === "Paid"
-                                                            ? "bg-emerald-600 text-white"
-                                                            : r.poPaymentStatus === "Partial"
+                                                    ${r.poPaymentStatus === "Paid"
+                                                        ? "bg-emerald-600 text-white"
+                                                        : r.poPaymentStatus === "Partial"
                                                             ? "bg-blue-600 text-white"
                                                             : r.poPaymentStatus === "Overdue"
-                                                            ? "bg-red-600 text-white"
-                                                            : r.poPaymentStatus === "Pending"
-                                                            ? "bg-amber-600 text-white"
-                                                            : "bg-slate-200 text-slate-600"
+                                                                ? "bg-red-600 text-white"
+                                                                : r.poPaymentStatus === "Pending"
+                                                                    ? "bg-amber-600 text-white"
+                                                                    : "bg-slate-200 text-slate-600"
                                                     }
                                                 `}
                                             >
@@ -414,16 +410,15 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${
-                                                        r.poDeliveryStatus === "Delivered"
-                                                            ? "bg-emerald-100 text-green-600"
-                                                            : r.poDeliveryStatus ===
-                                                              "In Transit"
+                                                    ${r.poDeliveryStatus === "Delivered"
+                                                        ? "bg-emerald-100 text-green-600"
+                                                        : r.poDeliveryStatus ===
+                                                            "In Transit"
                                                             ? "bg-blue-100 text-blue-600"
                                                             : r.poDeliveryStatus ===
-                                                              "Processing"
-                                                            ? "bg-amber-100 text-amber-600"
-                                                            : "bg-slate-200 text-slate-600"
+                                                                "Processing"
+                                                                ? "bg-amber-100 text-amber-600"
+                                                                : "bg-slate-200 text-slate-600"
                                                     }
                                                 `}
                                             >

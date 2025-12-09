@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -50,27 +49,126 @@ import ButtonComponent from "@/components/ui/ChangeButton";
 import { useNavigate } from "react-router-dom";
 import PurchasesOverview from "@/components/view/PurchasesOrderView";
 
+// Modal Components
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
+export const PRODUCT_VIEW_FIELDS = [
+    { key: "prCode", label: "Order ID" },
+    { key: "prSupplier", label: "Supplier" },
+    { key: "prOrderDate", label: "Order Date" },
+    { key: "prExpectedDelivery", label: "Expected Delivery" },
+    { key: "prTotalItems", label: "Total Items" },
+    { key: "prTotalAmount", label: "Total Amount" },
+    { key: "prPriority", label: "Priority" },
+    { key: "prStatus", label: "Status" },
+    {
+        key: "prCreatedBy",
+        label: "Created By",
+        render: (val) => (val?.name ? val.name : "-"),
+    },
+];
+
+export const PRODUCT_FORM_FIELDS = [
+    { name: "prCode", label: "Order ID", type: "text", required: true },
+    { name: "prSupplier", label: "Supplier", type: "text", required: true },
+    { name: "prOrderDate", label: "Order Date", type: "text" },
+    { name: "prExpectedDelivery", label: "Expected Delivery", type: "text" },
+    { name: "prTotalItems", label: "Total Items", type: "number" },
+    { name: "prTotalAmount", label: "Total Amount", type: "number" },
+    { name: "prPriority", label: "Priority", type: "text" },
+    { name: "prStatus", label: "Status", type: "text" },
+    { name: "prCreatedBy", label: "Created By", type: "text" },
+];
+
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
     const [category, setCategory] = React.useState("all");
     const [status, setStatus] = React.useState("all");
     const [loading] = React.useState(false);
 
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+    const [addOpen, setAddOpen] = useState(false);
+
     const [dateRange, setDateRange] = useState([null, null]);
     const [startDate, endDate] = dateRange;
 
+    const [deletingId, setDeletingId] = useState(null);
+    const [rows, setRows] = useState(users);
+
+    const viewFields = PRODUCT_VIEW_FIELDS;
+    const formFields = PRODUCT_FORM_FIELDS;
+
+    const handleEditSave = (updated) => {
+        console.log("Updated product", updated);
+        // TODO: PATCH / PUT API call here
+    };
+
+    const handleAddSave = (data) => {
+        console.log("New product", data);
+        // TODO: POST API call here
+    };
+
+    // reusable delete handler
+    const handleDelete = async (rowId, labelForConfirm = "") => {
+        const ok = window.confirm(
+            labelForConfirm
+                ? `Are you sure you want to delete "${labelForConfirm}"?`
+                : "Are you sure you want to delete this item?"
+        );
+        if (!ok) return;
+
+        try {
+            setDeletingId(rowId);
+
+            // TODO: replace with real API call
+            console.log("Delete request sent for id:", rowId);
+
+            setRows((prev) => prev.filter((row) => row.id !== rowId));
+        } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete item. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
     const filtered = users.filter((r) => {
         const s = search.toLowerCase();
+
         const matchSearch = r.prSupplier.toLowerCase().includes(s);
-        const matchCat = category === "all" || r.pr === category;
+        const matchCat = category === "all" || r.prSupplier === category;
         const matchBrand = status === "all" || r.prStatus === status;
-        return matchSearch && matchCat && matchBrand;
+
+        // ----- date range filter -----
+        let matchDate = true;
+
+        if (startDate || endDate) {
+            const recordDate = new Date(r.prOrderDate);
+
+            if (isNaN(recordDate.getTime())) {
+                matchDate = false;
+            } else {
+                if (startDate && recordDate < startDate) {
+                    matchDate = false;
+                }
+                if (endDate) {
+                    const inclusiveEnd = new Date(endDate);
+                    inclusiveEnd.setHours(23, 59, 59, 999);
+                    if (recordDate > inclusiveEnd) {
+                        matchDate = false;
+                    }
+                }
+            }
+        }
+        return matchSearch && matchCat && matchBrand && matchDate;
     });
 
     // --------- SUMMARY FOR TOP CARDS (BASED ON FILTERED ROWS) ----------
     const totalOrders = filtered.length;
 
-    // consider anything not "Canceled" as active
     const activeOrders = filtered.filter(
         (r) => r.prStatus !== "Canceled"
     ).length;
@@ -107,35 +205,7 @@ export default function SaleReports() {
         navigate("/user/users/add");
     };
 
-    const categoryColors = {
-        "Office Supplies": "bg-purple-100 text-purple-600",
-        Utilities: "bg-sky-100 text-sky-600",
-        Marketing: "bg-pink-100 text-pink-600",
-        Transportation: "bg-orange-100 text-orange-600",
-        "Equipment Maintenance": "bg-red-100 text-red-600",
-        Rent: "bg-indigo-100 text-indigo-600",
-        "Professional Services": "bg-cyan-100 text-cyan-700",
-        "Software Subscription": "bg-teal-100 text-teal-700",
-        "Employee Benefits": "bg-emerald-100 text-emerald-700",
-        Travel: "bg-amber-100 text-amber-700",
-
-        "Sales Revenue": "bg-sky-100 text-sky-600",
-        "Service Revenue": "bg-purple-100 text-purple-600",
-        "Recurring Revenue": "bg-emerald-100 text-emerald-700",
-        "Investment Income": "bg-indigo-100 text-indigo-600",
-        "Rental Income": "bg-orange-100 text-orange-600",
-        Commission: "bg-pink-100 text-pink-600",
-        "Licensing Revenue": "bg-teal-100 text-teal-700",
-
-        Manager: "bg-blue-100 text-blue-600",
-        Admin: "bg-purple-100 text-purple-600",
-        Staff: "bg-emerald-100 text-emerald-700",
-        Supervisor: "bg-sky-100 text-sky-600",
-        Cashier: "bg-orange-100 text-orange-600",
-        Finance: "bg-green-100 text-green-600",
-    };
-
-    // pagination logic remains correct
+    // pagination
 
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
@@ -144,8 +214,6 @@ export default function SaleReports() {
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
     const makePageList = () => {
@@ -260,11 +328,11 @@ export default function SaleReports() {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="Electro Mart">Active</SelectItem>
-                                <SelectItem value="Quantum Gadgets">
-                                    Inactive
-                                </SelectItem>
-                                <SelectItem value="Prime Bazaar">On Leave</SelectItem>
+                                <SelectItem value="Approved">Approved</SelectItem>
+                                <SelectItem value="Draft">Draft</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                                <SelectItem value="Cancelled">Cancelled</SelectItem>
+                                <SelectItem value="Pending Approval">Pending Approval</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -280,7 +348,7 @@ export default function SaleReports() {
                     <ButtonComponent
                         title="Add User"
                         isVisible={isInventoryReportVisible}
-                        onClick={handleAddEmployeeClick}
+                        onClick={() => setAddOpen(true)} // Open add modal
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Plus size={16} />}
                     >
@@ -295,13 +363,7 @@ export default function SaleReports() {
                                 <TableHead className="w-10">
                                     <Checkbox
                                         aria-label="Select all"
-                                        checked={
-                                            allSelectedOnPage
-                                                ? true
-                                                : someSelectedOnPage
-                                                    ? "indeterminate"
-                                                    : false
-                                        }
+                                        checked={allSelectedOnPage ? true : someSelectedOnPage ? "indeterminate" : false}
                                         onCheckedChange={handleToggleAllOnPage}
                                     />
                                 </TableHead>
@@ -331,10 +393,7 @@ export default function SaleReports() {
                                 </TableRow>
                             ) : filtered.length === 0 ? (
                                 <TableRow>
-                                    <TableCell
-                                        colSpan={10}
-                                        className="h-24 text-center text-muted-foreground"
-                                    >
+                                    <TableCell colSpan={10} className="h-24 text-center text-muted-foreground">
                                         No products found
                                     </TableCell>
                                 </TableRow>
@@ -373,19 +432,7 @@ export default function SaleReports() {
 
                                         <TableCell>
                                             <div
-                                                className={`
-                                                    inline-flex items-center justify-center
-                                                    px-3 py-1 min-w-20 h-7
-                                                    rounded-full text-xs font-medium
-                                                    ${r.prPriority === "Low"
-                                                        ? "bg-blue-100 text-blue-600"
-                                                        : r.prPriority === "Medium"
-                                                            ? "bg-amber-100 text-amber-600"
-                                                            : r.prPriority === "High"
-                                                                ? "bg-red-100 text-red-600"
-                                                                : "bg-slate-200 text-slate-600"
-                                                    }
-                                                `}
+                                                className={`inline-flex items-center justify-center px-3 py-1 min-w-20 h-7 rounded-full text-xs font-medium ${r.prPriority === "Low" ? "bg-blue-100 text-blue-600" : r.prPriority === "Medium" ? "bg-amber-100 text-amber-600" : r.prPriority === "High" ? "bg-red-100 text-red-600" : "bg-slate-200 text-slate-600"}`}
                                             >
                                                 {r.prPriority}
                                             </div>
@@ -393,53 +440,45 @@ export default function SaleReports() {
 
                                         <TableCell>
                                             <div
-                                                className={`
-                                                    inline-flex items-center justify-center
-                                                    px-3 py-1 min-w-20 h-7
-                                                    rounded-full text-xs font-medium
-                                                    ${r.prStatus === "Approved"
-                                                        ? "bg-blue-600 text-white"
-                                                        : r.prStatus ===
-                                                            "Pending Approval"
-                                                            ? "bg-amber-500 text-white"
-                                                            : r.prStatus === "Completed"
-                                                                ? "bg-green-600 text-white"
-                                                                : r.prStatus === "Draft"
-                                                                    ? "bg-slate-500 text-white"
-                                                                    : r.prStatus === "Canceled"
-                                                                        ? "bg-red-300 text-red-600"
-                                                                        : "bg-slate-200 text-slate-600"
-                                                    }
-                                                `}
+                                                className={`inline-flex items-center justify-center px-3 py-1 min-w-20 h-7 rounded-full text-xs font-medium ${r.prStatus === "Approved" ? "bg-blue-600 text-white" : r.prStatus === "Pending Approval" ? "bg-amber-500 text-white" : r.prStatus === "Completed" ? "bg-green-600 text-white" : r.prStatus === "Draft" ? "bg-slate-500 text-white" : r.prStatus === "Canceled" ? "bg-slate-200 text-slate-600" : "bg-red-600 text-white"}`}
                                             >
                                                 {r.prStatus}
                                             </div>
                                         </TableCell>
 
-                                        <TableCell className="whitespace-nowrap">
-                                            {r.prCreatedBy}
-                                        </TableCell>
+                                        <TableCell className="whitespace-nowrap">{r.prCreatedBy}</TableCell>
 
                                         <TableCell>
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                    >
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8">
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem className="gap-2">
+                                                    <DropdownMenuItem className="gap-2" onClick={() => {
+                                                        setSelectedProduct(r);
+                                                        setViewOpen(true);
+                                                    }}>
                                                         <Eye className="h-4 w-4" /> View
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2">
+                                                    <DropdownMenuItem className="gap-2" onClick={() => {
+                                                        setSelectedProduct(r);
+                                                        setEditOpen(true);
+                                                    }}>
                                                         <Edit className="h-4 w-4" /> Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 text-destructive">
-                                                        <Trash2 className="h-4 w-4" /> Delete
+                                                    <DropdownMenuItem
+                                                        className="gap-2 text-destructive"
+                                                        onClick={() =>
+                                                            handleDelete(r.prID, r.prCode)
+                                                        }
+                                                        disabled={deletingId === r.prID}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        {deletingId === r.prID
+                                                            ? "Deleting..."
+                                                            : "Delete"}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -455,14 +494,11 @@ export default function SaleReports() {
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center text-sm text-muted-foreground">
                         <span className="p-4">Row per page:</span>
-                        <Select
-                            value={String(rowsPerPage)}
-                            onValueChange={(value) => {
-                                const num = Number(value);
-                                setRowsPerPage(num);
-                                setPage(1); // reset when rows per page changes
-                            }}
-                        >
+                        <Select value={String(rowsPerPage)} onValueChange={(value) => {
+                            const num = Number(value);
+                            setRowsPerPage(num);
+                            setPage(1); // reset when rows per page changes
+                        }}>
                             <SelectTrigger className="ml-2 inline-flex h-8 w-[72px]">
                                 <SelectValue />
                             </SelectTrigger>
@@ -524,6 +560,41 @@ export default function SaleReports() {
                     </div>
                 </div>
             </div>
+
+            {/* View modal */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Product details"
+                description="Quick view of the product information."
+                data={selectedProduct}
+                fields={viewFields}
+                imageSrc={selectedProduct?.image}
+                imageAlt={selectedProduct?.name}
+            />
+
+            {/* Edit modal */}
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit product"
+                description="Update the product information."
+                initialData={selectedProduct || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
+            {/* Add modal */}
+            <DynamicFormModal
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                title="Add product"
+                description="Create a new product entry."
+                initialData={{}}
+                fields={formFields}
+                onSubmit={handleAddSave}
+            />
+
             <Footer />
         </div>
     );

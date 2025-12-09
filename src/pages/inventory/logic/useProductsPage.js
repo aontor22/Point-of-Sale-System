@@ -409,6 +409,5 @@ export function useProductsPage() {
         // dates
         startDate,
         endDate,
-        setDateRange,
     };
 }

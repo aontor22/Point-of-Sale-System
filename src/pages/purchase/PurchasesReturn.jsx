@@ -50,21 +50,129 @@ import ButtonComponent from "@/components/ui/ChangeButton";
 import { useNavigate } from "react-router-dom";
 import PurchasesOverview from "@/components/view/PurchasesReturnView";
 
+// Modals
+import DynamicViewModal from "@/components/common/DynamicViewModal";
+import DynamicFormModal from "@/components/common/DynamicFormModal";
+
+const RETURN_VIEW_FIELDS = [
+    { key: "returnCode", label: "Return ID" },
+    { key: "purchaseOrderCode", label: "Purchase Order" },
+    { key: "supplier", label: "Supplier" },
+    { key: "returnDate", label: "Return Date" },
+    { key: "product", label: "Product" },
+    { key: "qtyReturned", label: "Qty Returned" },
+    { key: "refundAmount", label: "Refund Amount" },
+    { key: "reason", label: "Reason" },
+    { key: "status", label: "Status" },
+];
+
+const RETURN_FORM_FIELDS = [
+    { name: "returnCode", label: "Return ID", type: "text", required: true },
+    {
+        name: "purchaseOrderCode",
+        label: "Purchase Order Code",
+        type: "text",
+        required: true,
+    },
+    { name: "supplier", label: "Supplier", type: "text", required: true },
+    { name: "returnDate", label: "Return Date", type: "date", required: true },
+    { name: "product", label: "Product", type: "text", required: true },
+    {
+        name: "qtyReturned",
+        label: "Qty Returned",
+        type: "number",
+        required: true,
+    },
+    {
+        name: "refundAmount",
+        label: "Refund Amount",
+        type: "number",
+        required: true,
+    },
+    { name: "reason", label: "Reason", type: "text" },
+    { name: "status", label: "Status", type: "text" },
+];
+
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
     const [category, setCategory] = React.useState("all");
     const [status, setStatus] = React.useState("all");
     const [loading] = React.useState(false);
 
+    // modal + selected row
+    const [selectedReturn, setSelectedReturn] = useState(null);
+    const [viewOpen, setViewOpen] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
+    const [addOpen, setAddOpen] = useState(false);
+
     const [dateRange, setDateRange] = useState([null, null]);
     const [startDate, endDate] = dateRange;
 
-    const filtered = purchaseReturns.filter((r) => {
+    const [deletingId, setDeletingId] = useState(null);
+    const [rows, setRows] = useState(purchaseReturns);
+
+    const viewFields = RETURN_VIEW_FIELDS;
+    const formFields = RETURN_FORM_FIELDS;
+
+    const handleEditSave = (updated) => {
+        console.log("Updated return", updated);
+        // TODO: PATCH / PUT API call + local state update
+    };
+
+    const handleAddSave = (data) => {
+        console.log("New return", data);
+        // TODO: POST API call + local state update
+    };
+
+    const handleDelete = async (rowId, labelForConfirm = "") => {
+        const ok = window.confirm(
+            labelForConfirm
+                ? `Are you sure you want to delete "${labelForConfirm}"?`
+                : "Are you sure you want to delete this item?"
+        );
+        if (!ok) return;
+
+        try {
+            setDeletingId(rowId);
+            console.log("Delete request sent for id:", rowId);
+            setRows((prev) => prev.filter((row) => row.returnID !== rowId));
+        } catch (err) {
+            console.error("Delete failed:", err);
+            alert("Failed to delete item. Please try again.");
+        } finally {
+            setDeletingId(null);
+        }
+    };
+
+    // use rows instead of original dataset so delete/add can affect table
+    const filtered = rows.filter((r) => {
         const s = search.toLowerCase();
+
         const matchSearch = r.supplier.toLowerCase().includes(s);
         const matchCat = category === "all" || r.supplier === category;
         const matchBrand = status === "all" || r.status === status;
-        return matchSearch && matchCat && matchBrand;
+
+        let matchDate = true;
+
+        if (startDate || endDate) {
+            const recordDate = new Date(r.returnDate);
+
+            if (isNaN(recordDate.getTime())) {
+                matchDate = false;
+            } else {
+                if (startDate && recordDate < startDate) {
+                    matchDate = false;
+                }
+                if (endDate) {
+                    const inclusiveEnd = new Date(endDate);
+                    inclusiveEnd.setHours(23, 59, 59, 999);
+                    if (recordDate > inclusiveEnd) {
+                        matchDate = false;
+                    }
+                }
+            }
+        }
+        return matchSearch && matchCat && matchBrand && matchDate;
     });
 
     // summary values for the top cards based on filtered rows
@@ -97,41 +205,12 @@ export default function SaleReports() {
     const [isSoldStockVisible, setSoldStockVisible] = useState(true);
 
     const navigate = useNavigate();
-
     const handleAddEmployeeClick = () => {
+        // if you want Add User route, keep this
         navigate("/user/users/add");
     };
 
-    const categoryColors = {
-        "Office Supplies": "bg-purple-100 text-purple-600",
-        Utilities: "bg-sky-100 text-sky-600",
-        Marketing: "bg-pink-100 text-pink-600",
-        Transportation: "bg-orange-100 text-orange-600",
-        "Equipment Maintenance": "bg-red-100 text-red-600",
-        Rent: "bg-indigo-100 text-indigo-600",
-        "Professional Services": "bg-cyan-100 text-cyan-700",
-        "Software Subscription": "bg-teal-100 text-teal-700",
-        "Employee Benefits": "bg-emerald-100 text-emerald-700",
-        Travel: "bg-amber-100 text-amber-700",
-
-        "Sales Revenue": "bg-sky-100 text-sky-600",
-        "Service Revenue": "bg-purple-100 text-purple-600",
-        "Recurring Revenue": "bg-emerald-100 text-emerald-700",
-        "Investment Income": "bg-indigo-100 text-indigo-600",
-        "Rental Income": "bg-orange-100 text-orange-600",
-        Commission: "bg-pink-100 text-pink-600",
-        "Licensing Revenue": "bg-teal-100 text-teal-700",
-
-        Manager: "bg-blue-100 text-blue-600",
-        Admin: "bg-purple-100 text-purple-600",
-        Staff: "bg-emerald-100 text-emerald-700",
-        Supervisor: "bg-sky-100 text-sky-600",
-        Cashier: "bg-orange-100 text-orange-600",
-        Finance: "bg-green-100 text-green-600",
-    };
-
     // pagination logic
-
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -139,8 +218,6 @@ export default function SaleReports() {
 
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-
-    // array that holds items for current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
     const makePageList = () => {
@@ -175,7 +252,6 @@ export default function SaleReports() {
         currentPageIds.some((id) => selectedIds.includes(id)) &&
         !allSelectedOnPage;
 
-    // Toggle all rows on current page
     const handleToggleAllOnPage = (checked) => {
         if (checked) {
             setSelectedIds((prev) =>
@@ -187,7 +263,6 @@ export default function SaleReports() {
         }
     };
 
-    // Toggle single row
     const handleToggleRow = (id, checked) => {
         setSelectedIds((prev) => {
             if (checked) {
@@ -274,7 +349,7 @@ export default function SaleReports() {
                     <ButtonComponent
                         title="Add User"
                         isVisible={isInventoryReportVisible}
-                        onClick={handleAddEmployeeClick}
+                        onClick={() => setAddOpen(true)}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
                         icon={<Plus size={16} />}
                     >
@@ -293,8 +368,8 @@ export default function SaleReports() {
                                             allSelectedOnPage
                                                 ? true
                                                 : someSelectedOnPage
-                                                    ? "indeterminate"
-                                                    : false
+                                                ? "indeterminate"
+                                                : false
                                         }
                                         onCheckedChange={handleToggleAllOnPage}
                                     />
@@ -378,24 +453,25 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.reason === "Excess Stock"
-                                                        ? "bg-blue-100 text-blue-600"
-                                                        : r.reason ===
-                                                            "Wrong Specifications"
+                                                    ${
+                                                        r.reason === "Excess Stock"
+                                                            ? "bg-blue-100 text-blue-600"
+                                                            : r.reason ===
+                                                              "Wrong Specifications"
                                                             ? "bg-purple-100 text-purple-600"
                                                             : r.reason ===
-                                                                "Defective Units"
-                                                                ? "bg-red-100 text-red-600"
-                                                                : r.reason ===
-                                                                    "Wrong Model"
-                                                                    ? "bg-purple-100 text-purple-600"
-                                                                    : r.reason ===
-                                                                        "Damaged in Transit"
-                                                                        ? "bg-orange-100 text-orange-600"
-                                                                        : r.reason ===
-                                                                            "Quality Issues"
-                                                                            ? "bg-pink-100 text-pink-600"
-                                                                            : "bg-slate-200 text-slate-600"
+                                                              "Defective Units"
+                                                            ? "bg-red-100 text-red-600"
+                                                            : r.reason ===
+                                                              "Wrong Model"
+                                                            ? "bg-purple-100 text-purple-600"
+                                                            : r.reason ===
+                                                              "Damaged in Transit"
+                                                            ? "bg-orange-100 text-orange-600"
+                                                            : r.reason ===
+                                                              "Quality Issues"
+                                                            ? "bg-pink-100 text-pink-600"
+                                                            : "bg-slate-200 text-slate-600"
                                                     }
                                                 `}
                                             >
@@ -409,17 +485,18 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${r.status === "Approved"
-                                                        ? "bg-blue-600 text-white"
-                                                        : r.status === "Pending"
+                                                    ${
+                                                        r.status === "Approved"
+                                                            ? "bg-blue-600 text-white"
+                                                            : r.status === "Pending"
                                                             ? "bg-amber-500 text-white"
                                                             : r.status === "Completed"
-                                                                ? "bg-green-600 text-white"
-                                                                : r.status === "Processing"
-                                                                    ? "bg-orange-600 text-white"
-                                                                    : r.status === "Rejected"
-                                                                        ? "bg-red-600 text-white"
-                                                                        : "bg-slate-200 text-slate-600"
+                                                            ? "bg-green-600 text-white"
+                                                            : r.status === "Processing"
+                                                            ? "bg-orange-600 text-white"
+                                                            : r.status === "Rejected"
+                                                            ? "bg-red-600 text-white"
+                                                            : "bg-slate-200 text-slate-600"
                                                     }
                                                 `}
                                             >
@@ -439,14 +516,40 @@ export default function SaleReports() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem className="gap-2">
+                                                    <DropdownMenuItem
+                                                        className="gap-2"
+                                                        onClick={() => {
+                                                            setSelectedReturn(r);
+                                                            setViewOpen(true);
+                                                        }}
+                                                    >
                                                         <Eye className="h-4 w-4" /> View
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2">
+                                                    <DropdownMenuItem
+                                                        className="gap-2"
+                                                        onClick={() => {
+                                                            setSelectedReturn(r);
+                                                            setEditOpen(true);
+                                                        }}
+                                                    >
                                                         <Edit className="h-4 w-4" /> Edit
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2 text-destructive">
-                                                        <Trash2 className="h-4 w-4" /> Delete
+                                                    <DropdownMenuItem
+                                                        className="gap-2 text-destructive"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                r.returnID,
+                                                                r.returnCode
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            deletingId === r.returnID
+                                                        }
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                        {deletingId === r.returnID
+                                                            ? "Deleting..."
+                                                            : "Delete"}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -533,6 +636,39 @@ export default function SaleReports() {
                     </div>
                 </div>
             </div>
+
+            {/* View modal */}
+            <DynamicViewModal
+                open={viewOpen}
+                onOpenChange={setViewOpen}
+                title="Return details"
+                description="Quick view of the return information."
+                data={selectedReturn}
+                fields={viewFields}
+            />
+
+            {/* Edit modal */}
+            <DynamicFormModal
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                title="Edit return"
+                description="Update the return information."
+                initialData={selectedReturn || {}}
+                fields={formFields}
+                onSubmit={handleEditSave}
+            />
+
+            {/* Add modal */}
+            <DynamicFormModal
+                open={addOpen}
+                onOpenChange={setAddOpen}
+                title="Add return"
+                description="Create a new return entry."
+                initialData={{}}
+                fields={formFields}
+                onSubmit={handleAddSave}
+            />
+
             <Footer />
         </div>
     );
