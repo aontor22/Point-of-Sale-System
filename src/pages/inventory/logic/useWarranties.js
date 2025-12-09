@@ -23,6 +23,9 @@ export function useWarranties() {
     const [store, setStore] = useState("all");
     const [loading] = useState(false);
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     const filtered = warranties.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch = r.name.toLowerCase().includes(s);
@@ -159,5 +162,11 @@ export function useWarranties() {
         // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
+
     };
 }

@@ -84,14 +84,24 @@ export default function Brand() {
         handleExportCurrentPdf,
         handleExportCurrentXls,
         handleRefresh,
+
         // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     } = useBrand();
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <div className="flex">
                 <ProductHeader
                     title="Brands"

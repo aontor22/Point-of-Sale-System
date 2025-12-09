@@ -45,6 +45,9 @@ export default function SaleReports() {
     const [brand, setBrand] = React.useState("all");
     const [loading] = React.useState(false);
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     const filtered = PRODUCT_ROWS.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
@@ -56,8 +59,7 @@ export default function SaleReports() {
         return matchSearch && matchCat && matchBrand;
     });
 
-    // pagination logic remains correct
-
+    // Pagination
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(1);
     const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
@@ -66,7 +68,6 @@ export default function SaleReports() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
 
-    // This is the array that holds only the items for the current page
     const paginatedRows = filtered.slice(startIndex, endIndex);
 
     const makePageList = () => {
@@ -93,7 +94,11 @@ export default function SaleReports() {
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <div className="flex">
                 <ProductsHeader
                     title="Sales Report" breadcrumbs={

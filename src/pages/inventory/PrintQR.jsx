@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
@@ -7,9 +7,17 @@ import PrintBarcodeQRView from "@/components/view/PrintBarcodeQRView"
 
 export default function Units() {
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
+
             <ProductHeader
                 title="Print QR Code"
                 breadcrumbs={[
@@ -18,7 +26,7 @@ export default function Units() {
                 ]}
             />
             <PrintBarcodeQRView />
-            
+
             <Footer />
         </div>
     );

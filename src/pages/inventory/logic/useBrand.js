@@ -56,6 +56,9 @@ export function useBrand() {
     const [viewOpen, setViewOpen] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     const viewFields = BRAND_VIEW_FIELDS;
     const formFields = BRAND_FORM_FIELDS;
 
@@ -266,5 +269,10 @@ export function useBrand() {
         handleExportCurrentPdf,
         handleExportCurrentXls,
         handleRefresh,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     };
 }

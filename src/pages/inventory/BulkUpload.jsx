@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import ProductHeader from "@/components/ui/ProductHeader";
 import ProductsDate from "@/components/ui/ProductsDate";
@@ -8,9 +8,17 @@ import DownloadFile from "@/components/ui/Download";
 
 export default function Units() {
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
+
             <div className="flex">
                 <ProductHeader
                     title="Bulk Upload"
@@ -19,7 +27,7 @@ export default function Units() {
                         { label: "Bulk Upload (Excel / CSV)", active: true },
                     ]}
                 />
-                <DownloadFile/>
+                <DownloadFile />
             </div>
 
             <ProductBulkUpload />

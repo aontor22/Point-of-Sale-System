@@ -76,14 +76,25 @@ export default function ProductsPage() {
         openEdit,
         viewFields,
         formFields,
-        handleEditSave, // delete
+        handleEditSave,
+
+        // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     } = useProductsPage();
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <ProductHeader
                 title="Low Stock"
                 breadcrumbs={[

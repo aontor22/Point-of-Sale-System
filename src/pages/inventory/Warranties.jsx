@@ -74,14 +74,25 @@ export default function WarrantiesPage() {
         setEditOpen,
         viewFields,
         formFields,
-        handleEditSave, // delete
+        handleEditSave,
+
+        // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     } = useWarranties();
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <ProductHeader
                 title="Warranties"
                 breadcrumbs={[

@@ -77,14 +77,25 @@ export default function SubCategory() {
         openEdit,
         viewFields,
         formFields,
-        handleEditSave, // delete
+        handleEditSave,
+
+        // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     } = useSubCategory();
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <ProductHeader
                 title="Sub Category"
                 breadcrumbs={[

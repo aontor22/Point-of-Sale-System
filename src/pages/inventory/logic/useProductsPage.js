@@ -47,6 +47,9 @@ export function useProductsPage() {
     const [deletingId, setDeletingId] = useState(null);
     const [rows, setRows] = useState(PRODUCT_ROWS);
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     const fileInputRef = useRef(null);
 
     const viewFields = PRODUCT_VIEW_FIELDS;
@@ -402,5 +405,10 @@ export function useProductsPage() {
         handleExportCurrentPdf,
         handleExportCurrentXls,
         handleRefresh,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     };
 }

@@ -88,14 +88,24 @@ export default function Category() {
         handleExportCurrentPdf,
         handleExportCurrentXls,
         handleRefresh,
+
         // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     } = useCategory();
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <div className="flex">
                 <ProductHeader
                     title="Category"

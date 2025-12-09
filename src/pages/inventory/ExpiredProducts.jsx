@@ -78,14 +78,25 @@ export default function ExpiredProducts() {
         openEdit,
         viewFields,
         formFields,
-        handleEditSave, // delete
+        handleEditSave,
+
+        // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     } = useExpiredProducts();
 
     return (
         <div className="space-y-4">
-            <ProductsDate />
+            <ProductsDate
+                startDate={startDate}
+                endDate={endDate}
+                onChange={(dates) => setDateRange(dates)}
+            />
             <div className="flex">
                 <ProductHeader
                     title="Expired Products"

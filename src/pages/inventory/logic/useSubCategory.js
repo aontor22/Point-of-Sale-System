@@ -29,6 +29,9 @@ export function useSubCategory() {
     const [store, setStore] = useState("all");
     const [loading] = useState(false);
 
+    const [dateRange, setDateRange] = useState([null, null]);
+    const [startDate, endDate] = dateRange;
+
     const filtered = CATALOG_ROWS.filter((r) => {
         const s = search.toLowerCase();
         const matchSearch =
@@ -170,5 +173,10 @@ export function useSubCategory() {
         // delete
         handleDelete,
         deletingId,
+
+        // dates
+        startDate,
+        endDate,
+        setDateRange,
     };
 }
