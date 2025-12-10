@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,6 +45,7 @@ import {
     Edit,
     Eye,
     MoreHorizontal,
+    Upload,
 } from "lucide-react";
 
 import purchaseReturns from "@/data/PurchaseOrderData";
@@ -68,27 +73,12 @@ const RETURN_VIEW_FIELDS = [
 
 const RETURN_FORM_FIELDS = [
     { name: "returnCode", label: "Return ID", type: "text", required: true },
-    {
-        name: "purchaseOrderCode",
-        label: "Purchase Order Code",
-        type: "text",
-        required: true,
-    },
+    { name: "purchaseOrderCode", label: "Purchase Order Code", type: "text", required: true },
     { name: "supplier", label: "Supplier", type: "text", required: true },
-    { name: "returnDate", label: "Return Date", type: "date", required: true },
+    { name: "returnDate", label: "Return Date", type: "text", required: true },
     { name: "product", label: "Product", type: "text", required: true },
-    {
-        name: "qtyReturned",
-        label: "Qty Returned",
-        type: "number",
-        required: true,
-    },
-    {
-        name: "refundAmount",
-        label: "Refund Amount",
-        type: "number",
-        required: true,
-    },
+    { name: "qtyReturned", label: "Qty Returned", type: "number", required: true },
+    { name: "refundAmount", label: "Refund Amount", type: "number", required: true },
     { name: "reason", label: "Reason", type: "text" },
     { name: "status", label: "Status", type: "text" },
 ];
@@ -96,6 +86,7 @@ const RETURN_FORM_FIELDS = [
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
     const [category, setCategory] = React.useState("all");
+    const [reasons, setReason] = React.useState("all");
     const [status, setStatus] = React.useState("all");
     const [loading] = React.useState(false);
 
@@ -151,6 +142,7 @@ export default function SaleReports() {
         const matchSearch = r.supplier.toLowerCase().includes(s);
         const matchCat = category === "all" || r.supplier === category;
         const matchBrand = status === "all" || r.status === status;
+        const matchReason = reasons === "all" || r.reason === reasons;
 
         let matchDate = true;
 
@@ -172,7 +164,7 @@ export default function SaleReports() {
                 }
             }
         }
-        return matchSearch && matchCat && matchBrand && matchDate;
+        return matchSearch && matchCat && matchBrand && matchReason && matchDate;
     });
 
     // summary values for the top cards based on filtered rows
@@ -201,14 +193,6 @@ export default function SaleReports() {
     }, 0);
 
     const [isInventoryReportVisible, setInventoryReportVisible] = useState(true);
-    const [isStockHistoryVisible, setStockHistoryVisible] = useState(true);
-    const [isSoldStockVisible, setSoldStockVisible] = useState(true);
-
-    const navigate = useNavigate();
-    const handleAddEmployeeClick = () => {
-        // if you want Add User route, keep this
-        navigate("/user/users/add");
-    };
 
     // pagination logic
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -273,6 +257,105 @@ export default function SaleReports() {
         });
     };
 
+    /** -----------------------------------------
+     * EXPORT CURRENT PAGE (PAGINATED DATA)
+     * ----------------------------------------- */
+
+    const handleExportCurrentCsv = () => {
+        const data = paginatedRows.map((item) => ({
+            ReturnID: item.returnCode,
+            PurchaseOrder: item.purchaseOrderCode,
+            Supplier: item.supplier,
+            ReturnDate: item.returnDate,
+            Product: item.product,
+            QtyReturned: item.qtyReturned,
+            RefundAmount: item.refundAmount,
+            Reason: item.reason,
+            Status: item.status,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `products_page_${currentPage}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleExportCurrentPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "Return ID",
+            "Purchase Order",
+            "Supplier",
+            "Return Date",
+            "Product",
+            "Qty Returned",
+            "Refund Amount",
+            "Reason",
+            "Status",
+        ];
+        const tableRows = [];
+
+        paginatedRows.forEach((item) => {
+            tableRows.push([
+                item.returnCode,
+                item.purchaseOrderCode,
+                item.supplier,
+                item.returnDate,
+                item.product,
+                item.qtyReturned,
+                `$${item.refundAmount}`,
+                item.reason,
+                item.status,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Products Export - Page ${currentPage} (${paginatedRows.length} items)`,
+            14,
+            15
+        );
+        doc.save(`products_page_${currentPage}.pdf`);
+    };
+
+    const handleExportCurrentXls = () => {
+        const data = paginatedRows.map((item) => ({
+            ReturnID: item.returnCode,
+            PurchaseOrder: item.purchaseOrderCode,
+            Supplier: item.supplier,
+            ReturnDate: item.returnDate,
+            Product: item.product,
+            QtyReturned: item.qtyReturned,
+            RefundAmount: item.refundAmount,
+            Reason: item.reason,
+            Status: item.status,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Products_Page");
+
+        XLSX.writeFile(workbook, `products_page_${currentPage}.xlsx`);
+    };
+
+
     return (
         <div className="space-y-4">
             <ProductsDate
@@ -281,7 +364,6 @@ export default function SaleReports() {
                 onChange={(dates) => setDateRange(dates)}
             />
 
-            {/* top cards now receive calculated values */}
             <PurchasesOverview
                 totalReturns={totalReturns}
                 totalItemsReturned={totalItemsReturned}
@@ -303,51 +385,81 @@ export default function SaleReports() {
                     </div>
 
                     <div className="ml-auto gap-3 flex">
-                        <Select value={category} onValueChange={setCategory}>
-                            <SelectTrigger className="w-42.5">
-                                <SelectValue placeholder="Brand" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Department</SelectItem>
-                                <SelectItem value="Store Operations">
-                                    Store Operations
-                                </SelectItem>
-                                <SelectItem value="POS Operations">
-                                    POS Operations
-                                </SelectItem>
-                                <SelectItem value="Inventory">Inventory</SelectItem>
-                                <SelectItem value="Sales">Sales</SelectItem>
-                                <SelectItem value="Customer Service">
-                                    Customer Service
-                                </SelectItem>
-                                <SelectItem value="Finance">Finance</SelectItem>
-                            </SelectContent>
-                        </Select>
                         <Select value={status} onValueChange={setStatus}>
                             <SelectTrigger className="w-42.5">
                                 <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="Electro Mart">Active</SelectItem>
-                                <SelectItem value="Quantum Gadgets">
-                                    Inactive
-                                </SelectItem>
-                                <SelectItem value="Prime Bazaar">On Leave</SelectItem>
+                                <SelectItem value="Approved">Approved</SelectItem>
+                                <SelectItem value="Pending">Pending</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                                <SelectItem value="Rejected">Rejected</SelectItem>
+                                <SelectItem value="Processing">Processing</SelectItem>
                             </SelectContent>
                         </Select>
+                        <Select value={reasons} onValueChange={setReason}>
+                            <SelectTrigger className="w-42.5">
+                                <SelectValue placeholder="Select Reason" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Reasons</SelectItem>
+                                <SelectItem value="Defective Units">Defective Units</SelectItem>
+                                <SelectItem value="Wrong Model">Wrong Model</SelectItem>
+                                <SelectItem value="Damaged in Transit">Damaged in Transit</SelectItem>
+                                <SelectItem value="Customer Order Cancelled">Customer Order Cancelled</SelectItem>
+                                <SelectItem value="Excess Stock">Excess Stock</SelectItem>
+                                <SelectItem value="Wrong Specifications">Wrong Specifications</SelectItem>
+                                <SelectItem value="Quality Issues">Quality Issues</SelectItem>
+                            </SelectContent>
+                        </Select>
+
+                        <Select value={category} onValueChange={setCategory}>
+                            <SelectTrigger className="w-42.5">
+                                <SelectValue placeholder="All Supplier" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Suppliers</SelectItem>
+                                <SelectItem value="Tech Supplies Co.">Tech Supplies Co.</SelectItem>
+                                <SelectItem value="Apple Distributors Inc.">Apple Distributors Inc.</SelectItem>
+                                <SelectItem value="Audio Excellence Ltd.">Audio Excellence Ltd.</SelectItem>
+                                <SelectItem value="Dell Technologies">Dell Technologies</SelectItem>
+                                <SelectItem value="Logitech International">Logitech International</SelectItem>
+                                <SelectItem value="LG Electronics">LG Electronics</SelectItem>
+                                <SelectItem value="Canon Inc.">Canon Inc.</SelectItem>
+                            </SelectContent>
+                        </Select>
+
                     </div>
-                    <ButtonComponent
-                        title="Export"
-                        isVisible={isInventoryReportVisible}
-                        className="bg-green-600 text-white gap-2 hover:bg-orange-600"
-                        icon={<Download size={16} />}
-                    >
-                        <PlusCircle size={20} />
-                    </ButtonComponent>
+
+
+                    {/* PAGINATED EXPORT DROPDOWN (CURRENT PAGE) */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 h-10 bg-green-500 dark:bg-green-500 text-white"
+                            >
+                                <Upload className="h-4 w-4" />
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                CSV (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                Excel (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                PDF (this page)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <ButtonComponent
-                        title="Add User"
+                        title="New Return"
                         isVisible={isInventoryReportVisible}
                         onClick={() => setAddOpen(true)}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
@@ -368,8 +480,8 @@ export default function SaleReports() {
                                             allSelectedOnPage
                                                 ? true
                                                 : someSelectedOnPage
-                                                ? "indeterminate"
-                                                : false
+                                                    ? "indeterminate"
+                                                    : false
                                         }
                                         onCheckedChange={handleToggleAllOnPage}
                                     />
@@ -453,25 +565,24 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${
-                                                        r.reason === "Excess Stock"
-                                                            ? "bg-blue-100 text-blue-600"
-                                                            : r.reason ===
-                                                              "Wrong Specifications"
+                                                    ${r.reason === "Excess Stock"
+                                                        ? "bg-blue-100 text-blue-600"
+                                                        : r.reason ===
+                                                            "Wrong Specifications"
                                                             ? "bg-purple-100 text-purple-600"
                                                             : r.reason ===
-                                                              "Defective Units"
-                                                            ? "bg-red-100 text-red-600"
-                                                            : r.reason ===
-                                                              "Wrong Model"
-                                                            ? "bg-purple-100 text-purple-600"
-                                                            : r.reason ===
-                                                              "Damaged in Transit"
-                                                            ? "bg-orange-100 text-orange-600"
-                                                            : r.reason ===
-                                                              "Quality Issues"
-                                                            ? "bg-pink-100 text-pink-600"
-                                                            : "bg-slate-200 text-slate-600"
+                                                                "Defective Units"
+                                                                ? "bg-red-100 text-red-600"
+                                                                : r.reason ===
+                                                                    "Wrong Model"
+                                                                    ? "bg-purple-100 text-purple-600"
+                                                                    : r.reason ===
+                                                                        "Damaged in Transit"
+                                                                        ? "bg-orange-100 text-orange-600"
+                                                                        : r.reason ===
+                                                                            "Quality Issues"
+                                                                            ? "bg-pink-100 text-pink-600"
+                                                                            : "bg-slate-200 text-slate-600"
                                                     }
                                                 `}
                                             >
@@ -485,18 +596,17 @@ export default function SaleReports() {
                                                     inline-flex items-center justify-center
                                                     px-3 py-1 min-w-20 h-7
                                                     rounded-full text-xs font-medium
-                                                    ${
-                                                        r.status === "Approved"
-                                                            ? "bg-blue-600 text-white"
-                                                            : r.status === "Pending"
+                                                    ${r.status === "Approved"
+                                                        ? "bg-blue-600 text-white"
+                                                        : r.status === "Pending"
                                                             ? "bg-amber-500 text-white"
                                                             : r.status === "Completed"
-                                                            ? "bg-green-600 text-white"
-                                                            : r.status === "Processing"
-                                                            ? "bg-orange-600 text-white"
-                                                            : r.status === "Rejected"
-                                                            ? "bg-red-600 text-white"
-                                                            : "bg-slate-200 text-slate-600"
+                                                                ? "bg-green-600 text-white"
+                                                                : r.status === "Processing"
+                                                                    ? "bg-orange-600 text-white"
+                                                                    : r.status === "Rejected"
+                                                                        ? "bg-red-600 text-white"
+                                                                        : "bg-slate-200 text-slate-600"
                                                     }
                                                 `}
                                             >
