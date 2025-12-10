@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,23 +28,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import {
     Loader2,
-    ArrowUpDown,
     Search,
-    Dot,
     PlusCircle,
-    Download,
     Plus,
-    Mail,
-    PhoneCall,
     Trash2,
     Edit,
     Eye,
     MoreHorizontal,
+    Upload,
 } from "lucide-react";
 
 import users from "@/data/PurchaseReturnData";
@@ -52,6 +52,7 @@ import PurchasesOverview from "@/components/view/PurchasesOrderView";
 // Modal Components
 import DynamicViewModal from "@/components/common/DynamicViewModal";
 import DynamicFormModal from "@/components/common/DynamicFormModal";
+import ProductsHeader from "@/components/ui/ProductHeader";
 
 export const PRODUCT_VIEW_FIELDS = [
     { key: "prCode", label: "Order ID" },
@@ -85,6 +86,7 @@ export default function SaleReports() {
     const [search, setSearch] = React.useState("");
     const [category, setCategory] = React.useState("all");
     const [status, setStatus] = React.useState("all");
+    const [priority, setPriority] = React.useState("all");
     const [loading] = React.useState(false);
 
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -140,6 +142,7 @@ export default function SaleReports() {
 
         const matchSearch = r.prSupplier.toLowerCase().includes(s);
         const matchCat = category === "all" || r.prSupplier === category;
+        const matchPriority = priority === "all" || r.prPriority === priority;
         const matchBrand = status === "all" || r.prStatus === status;
 
         // ----- date range filter -----
@@ -163,7 +166,7 @@ export default function SaleReports() {
                 }
             }
         }
-        return matchSearch && matchCat && matchBrand && matchDate;
+        return matchSearch && matchCat && matchBrand && matchPriority && matchDate;
     });
 
     // --------- SUMMARY FOR TOP CARDS (BASED ON FILTERED ROWS) ----------
@@ -271,6 +274,106 @@ export default function SaleReports() {
         });
     };
 
+    /** -----------------------------------------
+    * EXPORT CURRENT PAGE (PAGINATED DATA)
+    * ----------------------------------------- */
+
+    const handleExportCurrentCsv = () => {
+        const data = paginatedRows.map((item) => ({
+            prID: item.prID,
+            prCode: item.prCode,
+            prSupplier: item.prSupplier,
+            prOrderDate: item.prOrderDate,
+            prExpectedDelivery: item.prExpectedDelivery,
+            prTotalItems: item.prTotalItems,
+            prTotalAmount: item.prTotalAmount,
+            prPriority: item.prPriority,
+            prStatus: item.prStatus,
+            prCreatedBy: item.prCreatedBy?.name || "-",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `purchase_order_page_${currentPage}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleExportCurrentPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "Order ID",
+            "Supplier",
+            "Order Date",
+            "Expected Delivery",
+            "Total Items",
+            "Total Amount",
+            "Priority",
+            "Status",
+            "Created By",
+        ];
+        const tableRows = [];
+
+        paginatedRows.forEach((item) => {
+            tableRows.push([
+                item.prCode,
+                item.prSupplier,
+                item.prOrderDate,
+                item.prExpectedDelivery,
+                item.prTotalItems,
+                `$${item.prTotalAmount}`,
+                item.prPriority,
+                item.prStatus,
+                item.prCreatedBy?.name || "-",
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Purchase Order Export - Page ${currentPage} (${paginatedRows.length} items)`,
+            14,
+            15
+        );
+        doc.save(`purchase_order_page_${currentPage}.pdf`);
+    };
+
+    const handleExportCurrentXls = () => {
+        const data = paginatedRows.map((item) => ({
+            prID: item.prID,
+            prCode: item.prCode,
+            prSupplier: item.prSupplier,
+            prOrderDate: item.prOrderDate,
+            prExpectedDelivery: item.prExpectedDelivery,
+            prTotalItems: item.prTotalItems,
+            prTotalAmount: item.prTotalAmount,
+            prPriority: item.prPriority,
+            prStatus: item.prStatus,
+            prCreatedBy: item.prCreatedBy?.name || "-",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase_Order_Page");
+
+        XLSX.writeFile(workbook, `purchase_order_page_${currentPage}.xlsx`);
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate
@@ -279,7 +382,14 @@ export default function SaleReports() {
                 onChange={(dates) => setDateRange(dates)}
             />
 
-            {/* cards now get dynamic props */}
+            <ProductsHeader
+                title="Purchase Order"
+                breadcrumbs={[
+                    { label: "Dashboard" },
+                    { label: "Purchase Order", active: true },
+                ]}
+            />
+
             <PurchasesOverview
                 totalOrders={totalOrders}
                 activeOrders={activeOrders}
@@ -302,26 +412,6 @@ export default function SaleReports() {
                     </div>
 
                     <div className="ml-auto gap-3 flex">
-                        <Select value={category} onValueChange={setCategory}>
-                            <SelectTrigger className="w-42.5">
-                                <SelectValue placeholder="Brand" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">All Department</SelectItem>
-                                <SelectItem value="Store Operations">
-                                    Store Operations
-                                </SelectItem>
-                                <SelectItem value="POS Operations">
-                                    POS Operations
-                                </SelectItem>
-                                <SelectItem value="Inventory">Inventory</SelectItem>
-                                <SelectItem value="Sales">Sales</SelectItem>
-                                <SelectItem value="Customer Service">
-                                    Customer Service
-                                </SelectItem>
-                                <SelectItem value="Finance">Finance</SelectItem>
-                            </SelectContent>
-                        </Select>
                         <Select value={status} onValueChange={setStatus}>
                             <SelectTrigger className="w-42.5">
                                 <SelectValue placeholder="Status" />
@@ -335,18 +425,61 @@ export default function SaleReports() {
                                 <SelectItem value="Pending Approval">Pending Approval</SelectItem>
                             </SelectContent>
                         </Select>
+                        <Select value={category} onValueChange={setCategory}>
+                            <SelectTrigger className="w-42.5">
+                                <SelectValue placeholder="All Supplier" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Suppliers</SelectItem>
+                                <SelectItem value="Tech Supplies Co.">Tech Supplies Co.</SelectItem>
+                                <SelectItem value="Apple Distributors Inc.">Apple Distributors Inc.</SelectItem>
+                                <SelectItem value="Audio Excellence Ltd.">Audio Excellence Ltd.</SelectItem>
+                                <SelectItem value="Dell Technologies">Dell Technologies</SelectItem>
+                                <SelectItem value="Logitech International">Logitech International</SelectItem>
+                                <SelectItem value="LG Electronics">LG Electronics</SelectItem>
+                                <SelectItem value="Canon Inc.">Canon Inc.</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Select value={priority} onValueChange={setPriority}>
+                            <SelectTrigger className="w-42.5">
+                                <SelectValue placeholder="All Priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Priority</SelectItem>
+                                <SelectItem value="High">High</SelectItem>
+                                <SelectItem value="Medium">Medium</SelectItem>
+                                <SelectItem value="Low">Low</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
-                    <ButtonComponent
-                        title="Export"
-                        isVisible={isInventoryReportVisible}
-                        className="bg-green-600 text-white gap-2 hover:bg-orange-600"
-                        icon={<Download size={16} />}
-                    >
-                        <PlusCircle size={20} />
-                    </ButtonComponent>
+
+                    {/* PAGINATED EXPORT DROPDOWN (CURRENT PAGE) */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 h-10 bg-green-500 dark:bg-green-500 text-white"
+                            >
+                                <Upload className="h-4 w-4" />
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                CSV (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                Excel (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                PDF (this page)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <ButtonComponent
-                        title="Add User"
+                        title="Create Order"
                         isVisible={isInventoryReportVisible}
                         onClick={() => setAddOpen(true)} // Open add modal
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"

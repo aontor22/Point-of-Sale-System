@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import * as XLSX from "xlsx";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,23 +28,18 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import {
     Loader2,
-    ArrowUpDown,
     Search,
-    Dot,
     PlusCircle,
-    Download,
     Plus,
-    Mail,
-    PhoneCall,
     Trash2,
     Edit,
     Eye,
     MoreHorizontal,
+    Upload,
 } from "lucide-react";
 
 import purchases from "@/data/PurchaseData";
@@ -49,6 +48,7 @@ import Footer from "@/components/ui/Footer";
 import ButtonComponent from "@/components/ui/ChangeButton";
 import { useNavigate } from "react-router-dom";
 import PurchasesOverview from "@/components/view/PurchaseView";
+import ProductsHeader from "@/components/ui/ProductHeader";
 
 export default function SaleReports() {
     const [search, setSearch] = React.useState("");
@@ -64,7 +64,7 @@ export default function SaleReports() {
 
         const matchSearch = r.poSupplier.toLowerCase().includes(s);
         const matchCat = category === "all" || r.poSupplier === category;
-        const matchBrand = status === "all" || r.poDeliveryStatus === status;
+        const matchBrand = status === "all" || r.poPaymentStatus === status;
 
         // ---------- DATE RANGE FILTER ----------
         let matchDate = true;
@@ -207,6 +207,106 @@ export default function SaleReports() {
         });
     };
 
+    /** -----------------------------------------
+ * EXPORT CURRENT PAGE (PAGINATED DATA)
+ * ----------------------------------------- */
+
+    const handleExportCurrentCsv = () => {
+        const data = paginatedRows.map((item) => ({
+            poID: item.poID,
+            poCode: `PO-2025-${String(item.poID).padStart(3, "0")}`,
+            poSupplier: item.poSupplier,
+            poDate: item.poDate,
+            poProduct: item.poProduct,
+            poQuantity: item.poQuantity,
+            poUnitPrice: item.poUnitPrice,
+            poTotalAmount: item.poTotalAmount,
+            poPaymentStatus: item.poPaymentStatus,
+            poDeliveryStatus: item.poDeliveryStatus,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const csv = XLSX.utils.sheet_to_csv(worksheet);
+
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8;",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", `purchase_page_${currentPage}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    const handleExportCurrentPdf = () => {
+        const doc = new jsPDF();
+
+        const tableColumn = [
+            "Purchase ID",
+            "Supplier",
+            "Date",
+            "Product",
+            "Quantity",
+            "Unit Price",
+            "Total Amount",
+            "Payment Status",
+            "Delivery Status",
+        ];
+        const tableRows = [];
+
+        paginatedRows.forEach((item) => {
+            tableRows.push([
+                `PO-2025-${String(item.poID).padStart(3, "0")}`,
+                item.poSupplier,
+                item.poDate,
+                item.poProduct,
+                item.poQuantity,
+                `$${item.poUnitPrice}`,
+                `$${item.poTotalAmount}`,
+                item.poPaymentStatus,
+                item.poDeliveryStatus,
+            ]);
+        });
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 20,
+        });
+
+        doc.text(
+            `Purchase Export - Page ${currentPage} (${paginatedRows.length} items)`,
+            14,
+            15
+        );
+        doc.save(`purchase_page_${currentPage}.pdf`);
+    };
+
+    const handleExportCurrentXls = () => {
+        const data = paginatedRows.map((item) => ({
+            poID: item.poID,
+            poCode: `PO-2025-${String(item.poID).padStart(3, "0")}`,
+            poSupplier: item.poSupplier,
+            poDate: item.poDate,
+            poProduct: item.poProduct,
+            poQuantity: item.poQuantity,
+            poUnitPrice: item.poUnitPrice,
+            poTotalAmount: item.poTotalAmount,
+            poPaymentStatus: item.poPaymentStatus,
+            poDeliveryStatus: item.poDeliveryStatus,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Purchase_Page");
+
+        XLSX.writeFile(workbook, `purchase_page_${currentPage}.xlsx`);
+    };
+
     return (
         <div className="space-y-4">
             <ProductsDate
@@ -215,7 +315,14 @@ export default function SaleReports() {
                 onChange={(dates) => setDateRange(dates)}
             />
 
-            {/* cards get dynamic values */}
+            <ProductsHeader
+                title="Purchase"
+                breadcrumbs={[
+                    { label: "Dashboard" },
+                    { label: "Purchase", active: true },
+                ]}
+            />
+
             <PurchasesOverview
                 totalPurchasesAmount={totalPurchasesAmount}
                 paidAmount={paidAmount}
@@ -239,22 +346,17 @@ export default function SaleReports() {
                     <div className="ml-auto gap-3 flex">
                         <Select value={category} onValueChange={setCategory}>
                             <SelectTrigger className="w-42.5">
-                                <SelectValue placeholder="Brand" />
+                                <SelectValue placeholder="All Supplier" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Department</SelectItem>
-                                <SelectItem value="Store Operations">
-                                    Store Operations
-                                </SelectItem>
-                                <SelectItem value="POS Operations">
-                                    POS Operations
-                                </SelectItem>
-                                <SelectItem value="Inventory">Inventory</SelectItem>
-                                <SelectItem value="Sales">Sales</SelectItem>
-                                <SelectItem value="Customer Service">
-                                    Customer Service
-                                </SelectItem>
-                                <SelectItem value="Finance">Finance</SelectItem>
+                                <SelectItem value="all">All Suppliers</SelectItem>
+                                <SelectItem value="Tech Supplies Co.">Tech Supplies Co.</SelectItem>
+                                <SelectItem value="Apple Distributors Inc.">Apple Distributors Inc.</SelectItem>
+                                <SelectItem value="Audio Excellence Ltd.">Audio Excellence Ltd.</SelectItem>
+                                <SelectItem value="Dell Technologies">Dell Technologies</SelectItem>
+                                <SelectItem value="Logitech International">Logitech International</SelectItem>
+                                <SelectItem value="LG Electronics">LG Electronics</SelectItem>
+                                <SelectItem value="Canon Inc.">Canon Inc.</SelectItem>
                             </SelectContent>
                         </Select>
                         <Select value={status} onValueChange={setStatus}>
@@ -262,30 +364,44 @@ export default function SaleReports() {
                                 <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">All Status</SelectItem>
-                                <SelectItem value="Electro Mart">Active</SelectItem>
-                                <SelectItem value="Quantum Gadgets">
-                                    Inactive
+                                <SelectItem value="all">All Payment</SelectItem>
+                                <SelectItem value="Paid">Paid</SelectItem>
+                                <SelectItem value="Pending">
+                                    Pending
                                 </SelectItem>
-                                <SelectItem value="Prime Bazaar">On Leave</SelectItem>
+                                <SelectItem value="Overdue">Overdue</SelectItem>
+                                <SelectItem value="Partial">Partial</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
-                    {/* You had an extra ProductsDate here, leaving it as-is */}
-                    <ProductsDate />
+                    {/* PAGINATED EXPORT DROPDOWN (CURRENT PAGE) */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-2 h-10 bg-green-500 dark:bg-green-500 text-white"
+                            >
+                                <Upload className="h-4 w-4" />
+                                Export
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem onClick={handleExportCurrentCsv}>
+                                CSV (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentXls}>
+                                Excel (this page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleExportCurrentPdf}>
+                                PDF (this page)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
                     <ButtonComponent
-                        title="Export"
-                        isVisible={isInventoryReportVisible}
-                        className="bg-green-600 text-white gap-2 hover:bg-orange-600"
-                        icon={<Download size={16} />}
-                    >
-                        <PlusCircle size={20} />
-                    </ButtonComponent>
-
-                    <ButtonComponent
-                        title="Add User"
+                        title="New Purchase"
                         isVisible={isInventoryReportVisible}
                         onClick={handleAddEmployeeClick}
                         className="bg-blue-600 text-white gap-2 hover:bg-orange-600"
