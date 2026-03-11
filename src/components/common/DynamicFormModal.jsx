@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+// Core Functions
 export default function DynamicFormModal({
     open,
     onOpenChange,
