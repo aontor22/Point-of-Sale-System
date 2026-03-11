@@ -36,6 +36,8 @@ export default function DynamicFormModal({
     };
 
     return (
+
+        // Design
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg max-h-[90vh] dark:bg-slate-900 no-scrollbar overflow-y-auto">
                 <DialogHeader>
